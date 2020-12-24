@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/climbing_alien_painter.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
+import 'package:climbing_alien/widgets/control_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -71,6 +72,18 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildBackgroundImage(),
           ...painters,
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                width: 100,
+                height: 100,
+                child: Material(borderRadius: BorderRadius.circular(50), color: Colors.grey, child: ControlButton()),
+              ),
+            ),
+          )
         ],
       ),
     );
