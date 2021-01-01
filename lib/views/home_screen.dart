@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
+import 'package:climbing_alien/widgets/header_control.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String backgroundImagePath;
 
   Offset climaxPosition = Offset.zero;
+  int climaxNumberOfLimbs = 5;
+  int currentSelectedLimb = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     List<Widget> _widgetOptions = [
-      _buildPainterWidget(), CameraWidget()
+      _buildPainterWidget(context), CameraWidget()
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Climbing Alien"),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Climbing Alien"),
+      // ),
       body: _widgetOptions.elementAt(_selectedWidgetIndex),
       // floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
       // floatingActionButton: FloatingActionButton(
@@ -58,16 +62,31 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPainterWidget() {
-    return Stack(
-      fit: StackFit.expand,
+  Widget _buildPainterWidget(BuildContext context) {
+    return Column(
       children: [
-        _buildBackgroundImage(),
-        Climax(
-          position: climaxPosition,
+        HeaderControl(selectNextLimb),
+        Expanded(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _buildBackgroundImage(),
+              Climax(
+                position: climaxPosition,
+                selection: this.currentSelectedLimb,
+              ),
+            ],
+          ),
         ),
       ],
     );
+  }
+
+  void selectNextLimb() {
+    setState(() {
+      this.currentSelectedLimb = (this.currentSelectedLimb % climaxNumberOfLimbs) + 1;
+      log(this.currentSelectedLimb.toString());
+    });
   }
 
   Widget _buildBackgroundImage() {

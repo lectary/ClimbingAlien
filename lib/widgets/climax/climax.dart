@@ -15,8 +15,9 @@ enum ClimaxLimb {
 
 class Climax extends StatefulWidget {
   final Offset position;
+  final int selection;
 
-  Climax({this.position, Key key}) : super(key: key);
+  Climax({this.position, this.selection, Key key}) : super(key: key);
 
   @override
   _ClimaxState createState() => _ClimaxState();
@@ -30,6 +31,12 @@ class _ClimaxState extends State<Climax> {
   Rect rightLegRect;
 
   int selectedIndex = -1;
+
+  @override
+  void didUpdateWidget(Climax oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    this.selectedIndex = widget.selection;
+  }
 
   @override
   Widget build(BuildContext context) {
