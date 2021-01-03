@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class ClimbingProviderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => ImageViewModel()),
+      ChangeNotifierProvider(create: (context) => ClimaxViewModel()),
     ], child: ClimbingApp());
   }
 }
