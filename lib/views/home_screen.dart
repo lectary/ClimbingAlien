@@ -4,6 +4,9 @@ import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/climbing_alien_painter.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/control_button.dart';
+import 'package:climbing_alien/widgets/joystick.dart';
+import 'package:climbing_alien/widgets/joystick2.dart';
+import 'package:control_pad/control_pad.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
-    List<Widget> _widgetOptions = [
-      _buildPainterWidget(), CameraWidget()
-    ];
+    List<Widget> _widgetOptions = [_buildPainterWidget(), CameraWidget()];
     return Scaffold(
       appBar: AppBar(
         title: Text("Climbing Alien"),
@@ -47,8 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: "Painter",
             icon: Icon(Icons.format_paint),
           ),
-          BottomNavigationBarItem(
-              label: "Camera", icon: Icon(Icons.camera_alt_outlined)),
+          BottomNavigationBarItem(label: "Camera", icon: Icon(Icons.camera_alt_outlined)),
         ],
       ),
     );
@@ -71,27 +71,44 @@ class _HomeScreenState extends State<HomeScreen> {
         fit: StackFit.expand,
         children: [
           _buildBackgroundImage(),
-          ...painters,
           Positioned(
-            right: 0,
-            bottom: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: 100,
-                height: 100,
-                child: Material(borderRadius: BorderRadius.circular(50), color: Colors.grey, child: ControlButton()),
-              ),
+            right: 50,
+            top: 50,
+            child: JoystickView(
+              size: 100,
+              backgroundColor: Colors.blue,
+              innerCircleColor: Colors.blue[800],
+              onDirectionChanged: (degree, distance) {
+                print("degrees:$degree");
+                print("distance:$distance");
+              },
             ),
+          ),
+          Positioned(
+            left: 50,
+            top: 50,
+            child: ControlButton(),
+          ),
+          Positioned(
+            left: 50,
+            bottom: 150,
+            child: Joystick(),
+          ),
+          Positioned(
+            left: 250,
+            bottom: 150,
+            child: Joystick2(),
           )
         ],
       ),
     );
   }
 
+  moveRight() {}
+
   Widget _buildBackgroundImage() {
     return backgroundImagePath == null
-    ? Container()
-    : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
+        ? Container()
+        : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
   }
 }
