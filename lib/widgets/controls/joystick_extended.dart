@@ -10,7 +10,7 @@ typedef JoystickSliderCallback = void Function(double speed);
 const defaultSize = 100.0;
 const defaultStickSize = 50.0;
 
-class JoystickWithControlButtons extends StatefulWidget {
+class JoystickWithButtonAndSlider extends StatefulWidget {
   final double size;
   final double sizeControlStick;
   final JoystickDirectionCallback onDirectionChanged;
@@ -24,7 +24,7 @@ class JoystickWithControlButtons extends StatefulWidget {
   final Function onClickedLeft;
   final Function onClickedRight;
 
-  JoystickWithControlButtons(
+  JoystickWithButtonAndSlider(
       {this.size = defaultSize,
       this.sizeControlStick = defaultStickSize,
       this.onDirectionChanged,
@@ -40,10 +40,10 @@ class JoystickWithControlButtons extends StatefulWidget {
       : super(key: key);
 
   @override
-  _JoystickWithControlButtonsState createState() => _JoystickWithControlButtonsState();
+  _JoystickWithButtonAndSliderState createState() => _JoystickWithButtonAndSliderState();
 }
 
-class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons> {
+class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlider> {
   double outerSize;
   double controlStickSize;
   Offset controlStickPosition;

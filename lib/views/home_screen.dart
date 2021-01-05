@@ -5,7 +5,7 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
-import 'package:climbing_alien/widgets/controls/joystick_control.dart';
+import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   bottom: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
-                    child: JoystickWithControlButtons(
+                    child: JoystickWithButtonAndSlider(
                       onDirectionChanged: (degrees, distance) {
                         climaxModel.moveLimbFree(degrees, distance);
                       },
