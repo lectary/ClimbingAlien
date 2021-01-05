@@ -45,7 +45,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
 
   double _degrees = 0.0; // direction, analogues to clock
-  double _speed = 0.0;
+  double _speed = _defaultSpeed;
   double _strength = 0.0;
 
   ClimaxViewModel() {
@@ -125,14 +125,21 @@ class ClimaxViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
-  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb, double speed = _defaultSpeed}) {
-    updateLimbDirectional(limb ?? this._selectedLimb, direction, speed);
+  updateSpeed(double speed) {
+    this._speed = speed;
+    notifyListeners();
   }
 
-  updateLimbDirectional(ClimaxLimbEnum limb, Direction direction, double speed) {
+  /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
+  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb}) {
+    updateLimbDirectional(limb ?? this._selectedLimb, direction);
+  }
+
+  updateLimbDirectional(ClimaxLimbEnum limb, Direction direction) {
     double moveX = 0;
     double moveY = 0;
+
+    double speed = this._speed;
 
     switch (direction) {
       case Direction.UP:

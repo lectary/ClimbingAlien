@@ -4,7 +4,8 @@ import 'package:climbing_alien/widgets/custom_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-typedef JoystickDirectionCallback = void Function(double degrees, double distance, double speed);
+typedef JoystickDirectionCallback = void Function(double degrees, double distance);
+typedef JoystickSliderCallback = void Function(double speed);
 
 const defaultSize = 100.0;
 const defaultStickSize = 50.0;
@@ -13,6 +14,7 @@ class JoystickWithControlButtons extends StatefulWidget {
   final double size;
   final double sizeControlStick;
   final JoystickDirectionCallback onDirectionChanged;
+  final JoystickSliderCallback onSliderChanged;
   final Color colorBackground;
   final Color colorControlStick;
   final Color colorIcon;
@@ -26,6 +28,7 @@ class JoystickWithControlButtons extends StatefulWidget {
       {this.size = defaultSize,
       this.sizeControlStick = defaultStickSize,
       this.onDirectionChanged,
+      this.onSliderChanged,
       this.colorBackground = Colors.grey,
       this.colorControlStick = Colors.blueGrey,
       this.colorIcon = Colors.white,
@@ -78,7 +81,7 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
     double normalizedDistance = _math.min(distance / (bigRadius - smallRadius), 1.0);
 
     if (widget.onDirectionChanged != null) {
-      widget.onDirectionChanged(degrees, normalizedDistance, speed);
+      widget.onDirectionChanged(degrees, normalizedDistance);
     }
   }
 
@@ -192,7 +195,12 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
             ),
           ),
         ),
-        CustomSliderWithLabel(widget.size, maxSpeed, speed, (double value) => setState(() => speed = value)),
+        CustomSliderWithLabel(widget.size, maxSpeed, speed, (double value) => setState(() {
+          speed = value;
+          if (widget.onSliderChanged != null) {
+            widget.onSliderChanged(value);
+          }
+        })),
       ],
     );
   }
