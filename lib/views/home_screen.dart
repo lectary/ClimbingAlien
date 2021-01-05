@@ -103,10 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
                     child: JoystickWithControlButtons(
-                      onDirectionChanged: (degrees, distance) {
-                        print(degrees);
-                        print(distance);
-                        climaxModel.moveLimbFree(degrees, distance);
+                      onDirectionChanged: (degrees, distance, speed) {
+                        climaxModel.moveLimbFree(degrees, distance, speed: speed);
                       },
                       onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
                       onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
