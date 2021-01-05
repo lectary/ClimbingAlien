@@ -21,9 +21,9 @@ enum Direction {
 class ClimaxViewModel extends ChangeNotifier {
   static const _defaultSpeed = 10.0;
 
-  static const radius = 20.0;
-  static const bodyWidth = 50.0;
-  static const bodyHeight = 80.0;
+  final radius = 20.0;
+  final bodyWidth = 50.0;
+  final bodyHeight = 80.0;
 
   Offset _climaxPosition;
   Offset _leftArmOffset;
