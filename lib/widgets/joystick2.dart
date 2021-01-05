@@ -22,6 +22,27 @@ class _Joystick2State extends State<Joystick2> {
     stickPosition = updatePosition(lastPosition, Offset.zero);
   }
 
+  void processGesture(Offset offset) {
+    double middle = widget.size / 2.0;
+
+    double angle = _math.atan2(offset.dy - middle, offset.dx - middle);
+    double degrees = angle * 180 / _math.pi + 90;
+    if (offset.dx < middle && offset.dy < middle) {
+      degrees = 360 + degrees;
+    }
+
+    // calculate data for callback
+    double dx = _math.max(0, _math.min(offset.dx, widget.size));
+    double dy = _math.max(0, _math.min(offset.dy, widget.size));
+
+    double distance =
+    _math.sqrt(_math.pow(middle - dx, 2) + _math.pow(middle - dy, 2));
+
+    double normalizedDistance = _math.min(distance / (widget.size / 2), 1.0);
+    print("Degrees: $degrees");
+    print("Distance: $normalizedDistance");
+  }
+
   Offset updatePosition(Offset lastPosition, Offset offset) {
     double middle = widget.size / 2.0;
 
@@ -30,6 +51,8 @@ class _Joystick2State extends State<Joystick2> {
     if (offset.dx < middle && offset.dy < middle) {
       degrees = 360 + degrees;
     }
+
+    // calculate position
     bool isStartPosition = lastPosition.dx == stickSize && lastPosition.dy == stickSize;
     double lastAngleRadians = (isStartPosition) ? 0 : (degrees) * (_math.pi / 180.0);
 
@@ -90,6 +113,7 @@ class _Joystick2State extends State<Joystick2> {
           onPanUpdate: (details) =>
               setState(() {
                 stickPosition = updatePosition(lastPosition, details.localPosition);
+                processGesture(details.localPosition);
                 lastPosition = details.localPosition;
               }),
           onPanEnd: (details) =>
