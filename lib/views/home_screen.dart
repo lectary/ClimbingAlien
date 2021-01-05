@@ -34,15 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+    // Updating climax default position after finishing widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
       screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight * 2);
       climaxModel.updateClimaxPosition(screenCenter);
     });
     // Using timer for continuously drawing climax to enable continuous movement via joystick
-    timer = Timer.periodic(Duration(
-            milliseconds: refreshTime),
-            (Timer t) => climaxModel.updateLimbFree());
+    timer = Timer.periodic(Duration(milliseconds: refreshTime), (Timer t) => climaxModel.updateLimbFree());
   }
 
   @override
@@ -111,8 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
                     onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
                     onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
-                  )
-              ),
+                  )),
             ],
           ),
         ),

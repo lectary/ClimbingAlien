@@ -19,17 +19,17 @@ enum Direction {
 }
 
 class ClimaxViewModel extends ChangeNotifier {
-  static const defaultSpeed = 10.0;
+  static const _defaultSpeed = 10.0;
 
-  final radius = 20.0;
-  final bodyWidth = 50.0;
-  final bodyHeight = 80.0;
+  static const radius = 20.0;
+  static const bodyWidth = 50.0;
+  static const bodyHeight = 80.0;
 
-  Offset climaxPosition;
-  Offset leftArmOffset;
-  Offset rightArmOffset;
-  Offset leftLegOffset;
-  Offset rightLegOffset;
+  Offset _climaxPosition;
+  Offset _leftArmOffset;
+  Offset _rightArmOffset;
+  Offset _leftLegOffset;
+  Offset _rightLegOffset;
 
   Rect _bodyRect;
   Rect _leftArmRect;
@@ -37,25 +37,30 @@ class ClimaxViewModel extends ChangeNotifier {
   Rect _leftLegRect;
   Rect _rightLegRect;
 
-  Map<ClimaxLimbEnum, Rect> climaxLimbs;
-  ClimaxLimbEnum selectedLimb = ClimaxLimbEnum.BODY;
+  Map<ClimaxLimbEnum, Rect> _climaxLimbs;
+  Map<ClimaxLimbEnum, Rect> get climaxLimbs => _climaxLimbs;
 
-  double degrees = 0.0; // direction, analogues to clock
-  double speed = 0.0;
-  double acceleration = 0.0;
+  ClimaxLimbEnum _selectedLimb = ClimaxLimbEnum.BODY;
+  ClimaxLimbEnum get selectedLimb => _selectedLimb;
+
+
+  double _degrees = 0.0; // direction, analogues to clock
+  double _speed = 0.0;
+  double _strength = 0.0;
 
   ClimaxViewModel() {
     resetClimax();
   }
 
-  updateClimax() {
-    _bodyRect = Rect.fromCenter(center: climaxPosition, width: bodyWidth, height: bodyHeight);
-    _leftArmRect = Rect.fromCircle(center: climaxPosition + leftArmOffset, radius: radius);
-    _rightArmRect = Rect.fromCircle(center: climaxPosition + rightArmOffset, radius: radius);
-    _leftLegRect = Rect.fromCircle(center: climaxPosition + leftLegOffset, radius: radius);
-    _rightLegRect = Rect.fromCircle(center: climaxPosition + rightLegOffset, radius: radius);
+  /// Updates climax' rectangles data for redrawing.
+  _updateClimax() {
+    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth, height: bodyHeight);
+    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset, radius: radius);
+    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset, radius: radius);
+    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset, radius: radius);
+    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset, radius: radius);
 
-    climaxLimbs = HashMap.from({
+    _climaxLimbs = HashMap.from({
       ClimaxLimbEnum.BODY: _bodyRect,
       ClimaxLimbEnum.LEFT_ARM: _leftArmRect,
       ClimaxLimbEnum.RIGHT_ARM: _rightArmRect,
@@ -66,35 +71,35 @@ class ClimaxViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Resets the position of climax to an optional offset. Default is [Offset.zero], i.e. left-top screen dorner.
   resetClimax({Offset position = Offset.zero}) {
-    climaxPosition = position;
-    leftArmOffset = Offset(-50, -70);
-    rightArmOffset = Offset(50, -70);
-    leftLegOffset = Offset(-50, 70);
-    rightLegOffset = Offset(50, 70);
+    _climaxPosition = position;
+    _leftArmOffset = Offset(-50, -70);
+    _rightArmOffset = Offset(50, -70);
+    _leftLegOffset = Offset(-50, 70);
+    _rightLegOffset = Offset(50, 70);
 
-    updateClimax();
+    _updateClimax();
   }
 
   updateClimaxPosition(Offset newPosition) {
-    climaxPosition = newPosition;
-    print(newPosition);
-    updateClimax();
+    _climaxPosition = newPosition;
+    _updateClimax();
   }
 
   selectNextLimb() {
-    selectedLimb = ClimaxLimbEnum.values[(selectedLimb.index + 1) % 5];
+    _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb.index + 1) % 5];
     notifyListeners();
   }
 
   selectLimb(ClimaxLimbEnum limb) {
-    this.selectedLimb = limb;
+    this._selectedLimb = limb;
     notifyListeners();
   }
 
   /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
-  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb, double speed = defaultSpeed}) {
-    updateLimbDirectional(limb ?? this.selectedLimb, direction, speed);
+  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb, double speed = _defaultSpeed}) {
+    updateLimbDirectional(limb ?? this._selectedLimb, direction, speed);
   }
 
   updateLimbDirectional(ClimaxLimbEnum limb, Direction direction, double speed) {
@@ -121,38 +126,38 @@ class ClimaxViewModel extends ChangeNotifier {
 
     switch (limb) {
       case ClimaxLimbEnum.BODY:
-        climaxPosition = climaxPosition + Offset(moveX, moveY);
+        _climaxPosition = _climaxPosition + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_ARM:
-        leftArmOffset = leftArmOffset + Offset(moveX, moveY);
+        _leftArmOffset = _leftArmOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        rightArmOffset = rightArmOffset + Offset(moveX, moveY);
+        _rightArmOffset = _rightArmOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        leftLegOffset = leftLegOffset + Offset(moveX, moveY);
+        _leftLegOffset = _leftLegOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        rightLegOffset = rightLegOffset + Offset(moveX, moveY);
+        _rightLegOffset = _rightLegOffset + Offset(moveX, moveY);
         break;
     }
 
-    updateClimax();
+    _updateClimax();
   }
 
   /// Moving limbs freely by a joystick. Sets the parameter for calculating the position.
   /// Uses [degrees] to calculate the direction and [strength] to determine
   /// how hard the joystick is pulled to the outer border, which influences the speed. Asserts that [strength] is
   /// between 0 and 1.
-  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb, double speed = defaultSpeed}) {
-    if (limb != null) this.selectedLimb = limb;
-    this.speed = speed;
-    this.degrees = degrees;
-    this.acceleration = strength;
+  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb, double speed = _defaultSpeed}) {
+    if (limb != null) this._selectedLimb = limb;
+    this._speed = speed;
+    this._degrees = degrees;
+    this._strength = strength;
   }
 
   /// Calculates the position of Climax' limbs based on the current movement values, set by [moveLimbFree].
@@ -160,8 +165,8 @@ class ClimaxViewModel extends ChangeNotifier {
     double moveX = 0;
     double moveY = 0;
 
-    var x = this.acceleration * defaultSpeed * _math.cos(this.degrees * _math.pi / 180);
-    var y = this.acceleration * defaultSpeed * _math.sin(this.degrees * _math.pi / 180);
+    var x = this._strength * this._speed * _math.cos(this._degrees * _math.pi / 180);
+    var y = this._strength * this._speed * _math.sin(this._degrees * _math.pi / 180);
 
     // Corrections needed because the origin is the top-left corner and (x,y) uses an origin in the center.
     moveX = y;
@@ -169,26 +174,26 @@ class ClimaxViewModel extends ChangeNotifier {
 
     switch (this.selectedLimb) {
       case ClimaxLimbEnum.BODY:
-        climaxPosition = climaxPosition + Offset(moveX, moveY);
+        _climaxPosition = _climaxPosition + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_ARM:
-        leftArmOffset = leftArmOffset + Offset(moveX, moveY);
+        _leftArmOffset = _leftArmOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        rightArmOffset = rightArmOffset + Offset(moveX, moveY);
+        _rightArmOffset = _rightArmOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        leftLegOffset = leftLegOffset + Offset(moveX, moveY);
+        _leftLegOffset = _leftLegOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        rightLegOffset = rightLegOffset + Offset(moveX, moveY);
+        _rightLegOffset = _rightLegOffset + Offset(moveX, moveY);
         break;
     }
 
-    updateClimax();
+    _updateClimax();
   }
 }
