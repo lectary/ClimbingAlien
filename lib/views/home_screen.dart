@@ -4,8 +4,8 @@ import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/climbing_alien_painter.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/control_button.dart';
+import 'package:climbing_alien/widgets/joystick_draggable.dart';
 import 'package:climbing_alien/widgets/joystick.dart';
-import 'package:climbing_alien/widgets/joystick2.dart';
 import 'package:control_pad/control_pad.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,56 +55,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPainterWidget() {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (tapDownDetails) {
-        setState(() {
-          tapPoint = tapDownDetails.localPosition;
-          final paint = CustomPaint(
-            painter: ClimbingAlienPainter(position: tapPoint),
-            child: Center(child: Container()),
-          );
-          painters.add(paint);
-        });
-      },
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          _buildBackgroundImage(),
-          Positioned(
-            right: 50,
-            top: 50,
-            child: JoystickView(
-              size: 100,
-              backgroundColor: Colors.blue,
-              innerCircleColor: Colors.blue[800],
-              onDirectionChanged: (degree, distance) {
-                print("degrees:$degree");
-                print("distance:$distance");
-              },
-            ),
-          ),
-          Positioned(
-            left: 50,
-            top: 50,
-            child: ControlButton(),
-          ),
-          Positioned(
-            left: 50,
-            bottom: 150,
-            child: Joystick(),
-          ),
-          Positioned(
-            left: 250,
-            bottom: 150,
-            child: Joystick2(),
-          )
-        ],
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildBackgroundImage(),
+        Positioned(
+          right: 50,
+          top: 50,
+          child: JoystickView(size: 100),
+        ),
+        Positioned(
+          left: 50,
+          top: 50,
+          child: ControlButton(),
+        ),
+        Positioned(
+          left: 50,
+          bottom: 150,
+          child: JoystickDraggable(),
+        ),
+        Positioned(
+          left: 250,
+          bottom: 150,
+          child: Joystick(),
+        )
+      ],
     );
   }
-
-  moveRight() {}
 
   Widget _buildBackgroundImage() {
     return backgroundImagePath == null
