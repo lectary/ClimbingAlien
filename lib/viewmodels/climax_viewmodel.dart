@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math' as _math;
 
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,8 @@ enum Direction {
 }
 
 class ClimaxViewModel extends ChangeNotifier {
+  static const defaultSpeed = 10.0;
+
   final radius = 20.0;
   final bodyWidth = 50.0;
   final bodyHeight = 80.0;
@@ -59,8 +62,8 @@ class ClimaxViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  resetClimax() {
-    climaxPosition = Offset.zero;
+  resetClimax({Offset position = Offset.zero}) {
+    climaxPosition = position;
     leftArmOffset = Offset(-50, -70);
     rightArmOffset = Offset(50, -70);
     leftLegOffset = Offset(-50, 70);
@@ -71,6 +74,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
   updateClimaxPosition(Offset newPosition) {
     climaxPosition = newPosition;
+    print(newPosition);
     updateClimax();
   }
 
@@ -81,35 +85,85 @@ class ClimaxViewModel extends ChangeNotifier {
 
   selectLimb(ClimaxLimbEnum limb) {}
 
-  moveSelectedLimb(Direction direction) {
-    updateLimb(this.selectedLimb, direction);
+  /// Moving limbs directional. Uses [Direction] to determine direction.
+  moveSelectedLimb(Direction direction, {double speed = defaultSpeed}) {
+    updateLimbDirectional(this.selectedLimb, direction, speed);
   }
 
-  moveLimb(ClimaxLimbEnum limb, Direction direction) {
-    updateLimb(limb, direction);
+  moveLimb(ClimaxLimbEnum limb, Direction direction, {double speed = defaultSpeed}) {
+    updateLimbDirectional(limb, direction, speed);
   }
 
-  updateLimb(ClimaxLimbEnum limb, Direction direction) {
+  updateLimbDirectional(ClimaxLimbEnum limb, Direction direction, double speed) {
     double moveX = 0;
     double moveY = 0;
 
     switch (direction) {
       case Direction.UP:
-        moveY = 10;
+        moveY = -speed;
         break;
 
       case Direction.DOWN:
-        moveY = -10;
+        moveY = speed;
         break;
 
       case Direction.LEFT:
-        moveX = -10;
+        moveX = -speed;
         break;
 
       case Direction.RIGHT:
-        moveX = 10;
+        moveX = speed;
         break;
     }
+
+    switch (limb) {
+      case ClimaxLimbEnum.BODY:
+        climaxPosition = climaxPosition + Offset(moveX, moveY);
+        break;
+
+      case ClimaxLimbEnum.LEFT_ARM:
+        leftArmOffset = leftArmOffset + Offset(moveX, moveY);
+        break;
+
+      case ClimaxLimbEnum.RIGHT_ARM:
+        rightArmOffset = rightArmOffset + Offset(moveX, moveY);
+        break;
+
+      case ClimaxLimbEnum.LEFT_LEG:
+        leftLegOffset = leftLegOffset + Offset(moveX, moveY);
+        break;
+
+      case ClimaxLimbEnum.RIGHT_LEG:
+        rightLegOffset = rightLegOffset + Offset(moveX, moveY);
+        break;
+    }
+
+    updateClimax();
+  }
+
+  /// Moving limbs freely by a joystick. Using degrees to calculate direction and optional strength to
+  /// how hard the joystick is pulled to one side.
+  moveSelectedLimbFree(double degrees, double strength, {double speed = defaultSpeed}) {
+    updateLimbFree(this.selectedLimb, degrees, strength, speed);
+  }
+
+  moveLimbFree(ClimaxLimbEnum limb, double degrees, double strength, {double speed = defaultSpeed}) {
+    updateLimbFree(limb, degrees, strength, speed);
+  }
+
+  updateLimbFree(ClimaxLimbEnum limb, double degrees, double acceleration, double speed) {
+    double moveX = 0;
+    double moveY = 0;
+
+    moveX = acceleration * speed * _math.cos(degrees * _math.pi / 180);
+    moveY = acceleration * speed * _math.sin(degrees * _math.pi / 180);
+
+    // Fixing directions, needed because the origin is the top-left corner.
+    moveX = -moveY;
+    moveY = moveX;
+
+    print("MoveX: $moveX");
+    print("MoveY: $moveY");
 
     switch (limb) {
       case ClimaxLimbEnum.BODY:

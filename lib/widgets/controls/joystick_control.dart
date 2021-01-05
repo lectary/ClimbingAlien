@@ -73,6 +73,10 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
     // Calculating distance how far the stick is pulled towards the outer border, normalized to [0,1]
     double distance = (offset - center).distance;
     double normalizedDistance = _math.min(distance / (bigRadius - smallRadius), 1.0);
+
+    if (widget.onDirectionChanged != null) {
+      widget.onDirectionChanged(degrees, normalizedDistance);
+    }
   }
 
   /// Calculates the new position of the control stick.
@@ -160,7 +164,7 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedUp ??
+                          onTap: widget.onClickedDown ??
                               () {
                                 print("down");
                               },
@@ -170,7 +174,7 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedUp ??
+                          onTap: widget.onClickedLeft ??
                               () {
                                 print("left");
                               },
@@ -180,7 +184,7 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedUp ??
+                          onTap: widget.onClickedRight ??
                               () {
                                 print("right");
                               },

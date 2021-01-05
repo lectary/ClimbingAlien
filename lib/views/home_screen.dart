@@ -4,9 +4,11 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
+import 'package:climbing_alien/widgets/controls/joystick_control.dart';
 import 'package:climbing_alien/widgets/header_control.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,10 +26,17 @@ class _HomeScreenState extends State<HomeScreen> {
   String backgroundImagePath;
   ClimaxViewModel climaxModel;
 
+  Offset screenCenter;
+
   @override
   void initState() {
     super.initState();
     climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final size = MediaQuery.of(context).size;
+      screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight * 2);
+      climaxModel.updateClimaxPosition(screenCenter);
+    });
   }
 
   @override
@@ -40,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         heroTag: "fab_reset",
         child: Text("Reset"),
-        onPressed: () => climaxModel.resetClimax(),
+        onPressed: () => climaxModel.resetClimax(position: screenCenter),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedWidgetIndex,
@@ -78,28 +87,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Climax()),
               Positioned(
-                right: 0,
-                bottom: 0,
-                child: Column(
-                  children: [
-                    RaisedButton(
-                      onPressed: () => climaxModel.moveSelectedLimb(Direction.RIGHT),
-                      child: Text("Move limb Right"),
-                    ),
-                    RaisedButton(
-                      onPressed: () => climaxModel.moveSelectedLimb(Direction.LEFT),
-                      child: Text("Move limb Left"),
-                    ),
-                    RaisedButton(
-                      onPressed: () => climaxModel.moveSelectedLimb(Direction.UP),
-                      child: Text("Move limb up"),
-                    ),
-                    RaisedButton(
-                      onPressed: () => climaxModel.moveSelectedLimb(Direction.DOWN),
-                      child: Text("Move limb down"),
-                    ),
-                  ],
-                ),
+                  right: 0,
+                  bottom: 0,
+                  child: JoystickWithControlButtons(
+                    onDirectionChanged: (degrees, distance) {
+                      print(degrees);
+                      print(distance);
+                      climaxModel.moveSelectedLimbFree(degrees, distance);
+                    },
+                    onClickedUp: () => climaxModel.moveSelectedLimb(Direction.UP),
+                    onClickedDown: () => climaxModel.moveSelectedLimb(Direction.DOWN),
+                    onClickedLeft: () => climaxModel.moveSelectedLimb(Direction.LEFT),
+                    onClickedRight: () => climaxModel.moveSelectedLimb(Direction.RIGHT),
+                  )
               ),
             ],
           ),
