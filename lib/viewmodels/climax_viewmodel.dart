@@ -87,6 +87,34 @@ class ClimaxViewModel extends ChangeNotifier {
     _updateClimax();
   }
 
+  /// Updates the offset of the currently selected limb.
+  updateSelectedLimbPosition(Offset newPosition) {
+    switch (this._selectedLimb) {
+      case ClimaxLimbEnum.BODY:
+        _climaxPosition = newPosition;
+        break;
+
+      // For arms and legs, calculate the new offset relative to the body
+      case ClimaxLimbEnum.LEFT_ARM:
+        _leftArmOffset = newPosition - _climaxPosition;
+        break;
+
+      case ClimaxLimbEnum.RIGHT_ARM:
+        _rightArmOffset = newPosition - _climaxPosition;
+        break;
+
+      case ClimaxLimbEnum.RIGHT_LEG:
+        _rightLegOffset = newPosition - _climaxPosition;
+        break;
+
+      case ClimaxLimbEnum.LEFT_LEG:
+        _leftLegOffset = newPosition - _climaxPosition;
+        break;
+    }
+
+    _updateClimax();
+  }
+
   selectNextLimb() {
     _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb.index + 1) % 5];
     notifyListeners();

@@ -89,11 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTapDown: (details) {
                     RenderBox box = context.findRenderObject();
                     final offset = box.localToGlobal(details.localPosition);
-                    print(offset);
                     setState(() {
-                      if (climaxModel.selectedLimb == ClimaxLimbEnum.BODY) {
-                        climaxModel.updateClimaxPosition(offset);
-                      }
+                      climaxModel.updateSelectedLimbPosition(offset);
                     });
                   },
                   child: Climax()),
