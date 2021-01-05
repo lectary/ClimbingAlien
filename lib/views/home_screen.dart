@@ -100,16 +100,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned(
                   right: 0,
                   bottom: 0,
-                  child: JoystickWithControlButtons(
-                    onDirectionChanged: (degrees, distance) {
-                      print(degrees);
-                      print(distance);
-                      climaxModel.moveLimbFree(degrees, distance);
-                    },
-                    onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
-                    onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
-                    onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
-                    onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: JoystickWithControlButtons(
+                      onDirectionChanged: (degrees, distance) {
+                        print(degrees);
+                        print(distance);
+                        climaxModel.moveLimbFree(degrees, distance);
+                      },
+                      onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
+                      onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
+                      onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
+                      onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
+                    ),
                   )),
             ],
           ),
