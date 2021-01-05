@@ -5,6 +5,7 @@ import 'package:climbing_alien/views/climbing_alien_painter.dart';
 import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/controls/control_button.dart';
 import 'package:climbing_alien/widgets/controls/joystick.dart';
+import 'package:climbing_alien/widgets/controls/joystick_control.dart';
 import 'package:climbing_alien/widgets/controls/joystick_draggable.dart';
 import 'package:control_pad/control_pad.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,13 +71,22 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ControlButton(),
         ),
         Positioned(
+          left: 150,
+          bottom: 250,
+          child: JoystickWithControlButtons(
+            colorBackground: Colors.greenAccent,
+            colorControlStick: Colors.teal,
+            colorIcon: Colors.black,
+          ),
+        ),
+        Positioned(
           left: 50,
-          bottom: 150,
+          bottom: 100,
           child: JoystickDraggable(),
         ),
         Positioned(
           left: 250,
-          bottom: 150,
+          bottom: 100,
           child: Joystick(),
         )
       ],
