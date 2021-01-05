@@ -131,10 +131,6 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
         color: widget.colorBackground,
         child: GestureDetector(
           behavior: HitTestBehavior.deferToChild,
-          onPanStart: (details) =>
-              setState(() {
-                print("Start Offset: ${details.localPosition}");
-              }),
           onPanUpdate: (details) =>
               setState(() {
                 print("Offset: ${details.localPosition}");
@@ -144,6 +140,7 @@ class _JoystickWithControlButtonsState extends State<JoystickWithControlButtons>
           onPanEnd: (details) =>
               setState(() {
                 controlStickPosition = calculateControlStickPosition(center);
+                processCallback(center);
               }),
           child: Stack(
             children: [

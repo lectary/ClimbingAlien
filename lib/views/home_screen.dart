@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -6,7 +7,6 @@ import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/controls/joystick_control.dart';
 import 'package:climbing_alien/widgets/header_control.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ClimaxViewModel climaxModel;
 
   Offset screenCenter;
+  Timer timer;
+  final int refreshTime = 60;
 
   @override
   void initState() {
@@ -37,6 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
       screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight * 2);
       climaxModel.updateClimaxPosition(screenCenter);
     });
+    // Using timer for continuously drawing climax to enable continuous movement via joystick
+    timer = Timer.periodic(Duration(
+            milliseconds: refreshTime),
+            (Timer t) => climaxModel.updateLimbFree());
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -93,12 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     onDirectionChanged: (degrees, distance) {
                       print(degrees);
                       print(distance);
-                      climaxModel.moveSelectedLimbFree(degrees, distance);
+                      climaxModel.moveLimbFree(degrees, distance);
                     },
-                    onClickedUp: () => climaxModel.moveSelectedLimb(Direction.UP),
-                    onClickedDown: () => climaxModel.moveSelectedLimb(Direction.DOWN),
-                    onClickedLeft: () => climaxModel.moveSelectedLimb(Direction.LEFT),
-                    onClickedRight: () => climaxModel.moveSelectedLimb(Direction.RIGHT),
+                    onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
+                    onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
+                    onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
+                    onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
                   )
               ),
             ],

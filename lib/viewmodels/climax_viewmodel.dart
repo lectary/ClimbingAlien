@@ -40,6 +40,10 @@ class ClimaxViewModel extends ChangeNotifier {
   Map<ClimaxLimbEnum, Rect> climaxLimbs;
   ClimaxLimbEnum selectedLimb = ClimaxLimbEnum.BODY;
 
+  double degrees = 0.0; // direction, analogues to clock
+  double speed = 0.0;
+  double acceleration = 0.0;
+
   ClimaxViewModel() {
     resetClimax();
   }
@@ -83,15 +87,14 @@ class ClimaxViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  selectLimb(ClimaxLimbEnum limb) {}
-
-  /// Moving limbs directional. Uses [Direction] to determine direction.
-  moveSelectedLimb(Direction direction, {double speed = defaultSpeed}) {
-    updateLimbDirectional(this.selectedLimb, direction, speed);
+  selectLimb(ClimaxLimbEnum limb) {
+    this.selectedLimb = limb;
+    notifyListeners();
   }
 
-  moveLimb(ClimaxLimbEnum limb, Direction direction, {double speed = defaultSpeed}) {
-    updateLimbDirectional(limb, direction, speed);
+  /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
+  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb, double speed = defaultSpeed}) {
+    updateLimbDirectional(limb ?? this.selectedLimb, direction, speed);
   }
 
   updateLimbDirectional(ClimaxLimbEnum limb, Direction direction, double speed) {
@@ -141,31 +144,30 @@ class ClimaxViewModel extends ChangeNotifier {
     updateClimax();
   }
 
-  /// Moving limbs freely by a joystick. Using degrees to calculate direction and optional strength to
-  /// how hard the joystick is pulled to one side.
-  moveSelectedLimbFree(double degrees, double strength, {double speed = defaultSpeed}) {
-    updateLimbFree(this.selectedLimb, degrees, strength, speed);
+  /// Moving limbs freely by a joystick. Sets the parameter for calculating the position.
+  /// Uses [degrees] to calculate the direction and [strength] to determine
+  /// how hard the joystick is pulled to the outer border, which influences the speed. Asserts that [strength] is
+  /// between 0 and 1.
+  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb, double speed = defaultSpeed}) {
+    if (limb != null) this.selectedLimb = limb;
+    this.speed = speed;
+    this.degrees = degrees;
+    this.acceleration = strength;
   }
 
-  moveLimbFree(ClimaxLimbEnum limb, double degrees, double strength, {double speed = defaultSpeed}) {
-    updateLimbFree(limb, degrees, strength, speed);
-  }
-
-  updateLimbFree(ClimaxLimbEnum limb, double degrees, double acceleration, double speed) {
+  /// Calculates the position of Climax' limbs based on the current movement values, set by [moveLimbFree].
+  updateLimbFree() {
     double moveX = 0;
     double moveY = 0;
 
-    moveX = acceleration * speed * _math.cos(degrees * _math.pi / 180);
-    moveY = acceleration * speed * _math.sin(degrees * _math.pi / 180);
+    var x = this.acceleration * defaultSpeed * _math.cos(this.degrees * _math.pi / 180);
+    var y = this.acceleration * defaultSpeed * _math.sin(this.degrees * _math.pi / 180);
 
-    // Fixing directions, needed because the origin is the top-left corner.
-    moveX = -moveY;
-    moveY = moveX;
+    // Corrections needed because the origin is the top-left corner and (x,y) uses an origin in the center.
+    moveX = y;
+    moveY = -x;
 
-    print("MoveX: $moveX");
-    print("MoveY: $moveY");
-
-    switch (limb) {
+    switch (this.selectedLimb) {
       case ClimaxLimbEnum.BODY:
         climaxPosition = climaxPosition + Offset(moveX, moveY);
         break;
