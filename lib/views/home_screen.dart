@@ -3,10 +3,9 @@ import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
-import 'package:climbing_alien/widgets/camera_widget.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
-import 'package:climbing_alien/widgets/header_control.dart';
+import 'package:climbing_alien/widgets/header_control/header_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ImageViewModel model;
-  int _selectedWidgetIndex = 0;
   String backgroundImagePath;
   ClimaxViewModel climaxModel;
 
@@ -37,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Updating climax default position after finishing widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
-      screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight * 2);
+      screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
       climaxModel.updateClimaxPosition(screenCenter);
     });
     // Using timer for continuously drawing climax to enable continuous movement via joystick
@@ -53,33 +51,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
-    List<Widget> _widgetOptions = [_buildPainterWidget(context), CameraWidget()];
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedWidgetIndex),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-      floatingActionButton: FloatingActionButton(
-        heroTag: "fab_reset",
-        child: Text("Reset"),
-        onPressed: () => climaxModel.resetClimax(position: screenCenter),
+      appBar: AppBar(
+        title: Text("Climax"),
+        flexibleSpace: HeaderControl(
+          nextSelectionCallback: climaxModel.selectNextLimb,
+          resetCallback: () => climaxModel.resetClimax(position: screenCenter),
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedWidgetIndex,
-        onTap: (index) => setState(() => _selectedWidgetIndex = index),
-        items: [
-          BottomNavigationBarItem(
-            label: "Painter",
-            icon: Icon(Icons.format_paint),
-          ),
-          BottomNavigationBarItem(label: "Camera", icon: Icon(Icons.camera_alt_outlined)),
-        ],
-      ),
+      body: _buildPainterWidget(context),
     );
   }
 
   Widget _buildPainterWidget(BuildContext context) {
     return Column(
       children: [
-        HeaderControl(climaxModel.selectNextLimb),
         Expanded(
           child: Stack(
             fit: StackFit.expand,
