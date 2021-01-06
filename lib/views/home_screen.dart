@@ -5,7 +5,7 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
-import 'package:climbing_alien/widgets/header_control.dart';
+import 'package:climbing_alien/widgets/header_control/header_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';

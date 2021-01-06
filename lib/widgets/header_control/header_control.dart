@@ -1,3 +1,4 @@
+import 'package:climbing_alien/widgets/header_control/header_extension_animation.dart';
 import 'package:flutter/material.dart';
 
 class HeaderControl extends StatefulWidget {
@@ -25,11 +26,13 @@ class _HeaderControlState extends State<HeaderControl> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FlatButton(
-              padding: EdgeInsets.zero,
-              onPressed: widget.resetCallback ?? () {},
-              child: Text("Reset"),
-            ),
+            HeaderExtensionAnimation(children: [
+              FlatButton(
+                padding: EdgeInsets.zero,
+                onPressed: widget.resetCallback ?? () {},
+                child: Text("Reset"),
+              )
+            ]),
             InkWell(
               onTap: widget.nextSelectionCallback ?? () {},
               child: Container(
