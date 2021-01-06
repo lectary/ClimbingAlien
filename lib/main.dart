@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/views/camera/camera_screen.dart';
 import 'package:climbing_alien/views/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,7 @@ class ClimbingApp extends StatelessWidget {
       initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => HomeScreen(),
+        CameraScreen.routeName: (context) => CameraScreen(),
       },
     );
   }

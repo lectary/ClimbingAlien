@@ -13,16 +13,12 @@ class DisplayImageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = Provider.of<ImageViewModel>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(
-
-      ),
+      appBar: AppBar(title: Text("Do you want to save your photo?")),
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: FileImage(File(imagePath)),
-            fit: BoxFit.fill
-          )
-        ),
+            image: DecorationImage(
+                image: FileImage(File(imagePath)),
+                fit: BoxFit.fill)),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
@@ -32,38 +28,10 @@ class DisplayImageScreen extends StatelessWidget {
           Navigator.pop(context);
         },
         items: [
-          BottomNavigationBarItem(
-            label: "Cancel",
-            icon: Icon(Icons.cancel)
-          ),
-          BottomNavigationBarItem(
-              label: "Ok",
-              icon: Icon(Icons.check)
-          ),
+          BottomNavigationBarItem(label: "Cancel", icon: Icon(Icons.cancel)),
+          BottomNavigationBarItem(label: "Ok", icon: Icon(Icons.check)),
         ],
       ),
     );
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.end,
-    //   children: [
-    //     Image.file(File(imagePath)),
-    //     Row(
-    //       children: [
-    //         IconButton(
-    //           icon: Icon(Icons.clear),
-    //           onPressed: () {
-    //             Navigator.pop(context);
-    //           },
-    //         ),
-    //         IconButton(
-    //           icon: Icon(Icons.check),
-    //           onPressed: () {
-    //             Navigator.pop(context);
-    //           },
-    //         ),
-    //       ],
-    //     )
-    //   ]
-    // );
   }
 }
