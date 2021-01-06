@@ -1,6 +1,7 @@
 import 'package:climbing_alien/views/camera/camera_screen.dart';
 import 'package:climbing_alien/views/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -25,7 +26,8 @@ class AppDrawer extends StatelessWidget {
                       Navigator.pop(context);
                       return Navigator.pushNamed(context, CameraScreen.routeName);
                     }),
-                ListTile(title: Text("Image management"), onTap: () => {}),
+                ListTile(title: Text("Image management"), onTap: () => Fluttertoast.showToast(msg: "Coming soon!")),
+                ListTile(title: Text("Route management"), onTap: () => Fluttertoast.showToast(msg: "Coming soon!")),
               ],
             ),
           )
