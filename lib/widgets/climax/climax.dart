@@ -18,7 +18,8 @@ class Climax extends StatelessWidget {
       onTapDown: (details) {
         RenderBox box = context.findRenderObject();
         final offset = box.globalToLocal(details.globalPosition);
-        // Provider.of<ClimaxViewModel>(context, listen: false).selectedLimb = limbs.entries.where((entry) => entry.value.contains(offset)).last.key;
+        final limb = limbs.entries.lastWhere((entry) => entry.value.contains(offset), orElse: () => null);
+        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
       },
       child: CustomPaint(
         painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection),
