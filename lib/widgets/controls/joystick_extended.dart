@@ -195,12 +195,14 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
             ),
           ),
         ),
-        CustomSliderWithLabel(widget.size, maxSpeed, speed, (double value) => setState(() {
-          speed = value;
+        CustomSliderWithLabel(widget.size, maxSpeed, speed, (double value) {
           if (widget.onSliderChanged != null) {
             widget.onSliderChanged(value);
           }
-        })),
+          setState(() {
+            speed = value;
+          });
+        }),
       ],
     );
   }

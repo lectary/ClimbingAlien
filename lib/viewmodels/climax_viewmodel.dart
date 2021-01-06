@@ -188,9 +188,8 @@ class ClimaxViewModel extends ChangeNotifier {
   /// Uses [degrees] to calculate the direction and [strength] to determine
   /// how hard the joystick is pulled to the outer border, which influences the speed. Asserts that [strength] is
   /// between 0 and 1.
-  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb, double speed = _defaultSpeed}) {
+  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb}) {
     if (limb != null) this._selectedLimb = limb;
-    this._speed = speed;
     this._degrees = degrees;
     this._strength = strength;
   }
