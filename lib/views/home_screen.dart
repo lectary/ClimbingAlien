@@ -72,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _buildBackgroundImage(),
               GestureDetector(
                   onTapDown: (details) {
                     RenderBox box = context.findRenderObject();
@@ -82,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                   child: Climax()),
+              InteractiveViewer(child: _buildBackgroundImage(), minScale: 0.1, maxScale: 10.0),
               Positioned(
                   right: 0,
                   bottom: 0,
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBackgroundImage() {
     return backgroundImagePath == null
-        ? Container()
+        ? Image.asset("assets/images/routes/route1.png", fit: BoxFit.cover)
         : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
   }
 }
