@@ -10,6 +10,7 @@ import 'package:climbing_alien/widgets/header_control/header_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:zoom_widget/zoom_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/";
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Offset screenCenter;
   Timer timer;
   final int refreshTime = 60;
+  Size size;
 
   @override
   void initState() {
@@ -65,6 +67,30 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildBackgroundWithClimax() {
+    size = MediaQuery.of(context).size;
+    return Zoom(
+      width: 1000,
+      height: 2000,
+      centerOnScale: false,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _buildBackgroundImage(),
+          GestureDetector(
+              onTapDown: (details) {
+                RenderBox box = context.findRenderObject();
+                final offset = box.localToGlobal(details.localPosition);
+                setState(() {
+                  climaxModel.updateSelectedLimbPosition(offset);
+                });
+              },
+              child: Climax()),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPainterWidget(BuildContext context) {
     return Column(
       children: [
@@ -72,16 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              GestureDetector(
-                  onTapDown: (details) {
-                    RenderBox box = context.findRenderObject();
-                    final offset = box.localToGlobal(details.localPosition);
-                    setState(() {
-                      climaxModel.updateSelectedLimbPosition(offset);
-                    });
-                  },
-                  child: Climax()),
-              InteractiveViewer(child: _buildBackgroundImage(), minScale: 0.1, maxScale: 10.0),
+              _buildBackgroundWithClimax(),
               Positioned(
                   right: 0,
                   bottom: 0,
