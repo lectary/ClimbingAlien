@@ -1,5 +1,5 @@
 import 'package:climbing_alien/views/camera/camera_screen.dart';
-import 'package:climbing_alien/views/home_screen.dart';
+import 'package:climbing_alien/views/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

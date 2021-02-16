@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/drawer/app_drawer.dart';
+import 'package:climbing_alien/views/home/RenderView.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control/header_control.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -52,9 +54,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
+    final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     return Scaffold(
       appBar: AppBar(
         title: Text("Climax"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
+            onPressed: () {
+              setState(() {
+                climaxModel.backgroundSelected = !backgroundSelected;
+              });
+            },
+          )
+        ],
         flexibleSpace: HeaderControl(
           nextSelectionCallback: climaxModel.selectNextLimb,
           resetCallback: () => climaxModel.resetClimax(position: screenCenter),
@@ -72,16 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              GestureDetector(
-                  onTapDown: (details) {
-                    RenderBox box = context.findRenderObject();
-                    final offset = box.localToGlobal(details.localPosition);
-                    setState(() {
-                      climaxModel.updateSelectedLimbPosition(offset);
-                    });
-                  },
-                  child: Climax()),
-              InteractiveViewer(child: _buildBackgroundImage(), minScale: 0.1, maxScale: 10.0),
+              RenderView(),
               Positioned(
                   right: 0,
                   bottom: 0,
@@ -103,11 +107,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
-  }
-
-  Widget _buildBackgroundImage() {
-    return backgroundImagePath == null
-        ? Image.asset("assets/images/routes/route1.png", fit: BoxFit.cover)
-        : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
   }
 }
