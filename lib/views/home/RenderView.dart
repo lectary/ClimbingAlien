@@ -30,7 +30,9 @@ class _RenderViewState extends State<RenderView> {
   Widget build(BuildContext context) {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
-    backgroundWidget = image;
+    final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
+    final translateX = context.select((ClimaxViewModel model) => model.translateX);
+    backgroundWidget = Transform.translate(offset: Offset(translateX, 0) ,child: Transform.scale(scale: scaleBackground, child: image));
     return Stack(fit: StackFit.expand, children: [
       _buildBackgroundImage(),
       Positioned.fill(
@@ -38,7 +40,16 @@ class _RenderViewState extends State<RenderView> {
             onPanUpdate: (DragUpdateDetails details) {
               setState(() {
                 if (backgroundSelected) {
+                  climaxModel.scaleBackground += details.delta.dx / 100;
+                } else {
                   climaxModel.scaleClimax += details.delta.dx / 100;
+                }
+              });
+            },
+            onHorizontalDragUpdate: (DragUpdateDetails details) {
+              setState(() {
+                if (backgroundSelected) {
+                  climaxModel.translateX += details.delta.dx;
                 }
               });
             },

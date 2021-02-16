@@ -48,17 +48,24 @@ class ClimaxViewModel extends ChangeNotifier {
   double _speed = _defaultSpeed;
   double _strength = 0.0;
 
+  bool backgroundSelected = false;
+
+  double scaleClimax = 1.0;
+  double scaleBackground = 1.0;
+  double translateX = 1.0;
+  double translateY = 1.0;
+
   ClimaxViewModel() {
     resetClimax();
   }
 
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth, height: bodyHeight);
-    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset, radius: radius);
-    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset, radius: radius);
-    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset, radius: radius);
-    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset, radius: radius);
+    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth * scaleClimax, height: bodyHeight * scaleClimax);
+    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset * scaleClimax, radius: radius * scaleClimax);
+    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset * scaleClimax, radius: radius * scaleClimax);
+    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset * scaleClimax, radius: radius * scaleClimax);
+    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset * scaleClimax, radius: radius * scaleClimax);
 
     _climaxLimbs = HashMap.from({
       ClimaxLimbEnum.BODY: _bodyRect,
