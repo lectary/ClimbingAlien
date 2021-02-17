@@ -86,6 +86,11 @@ class ClimaxViewModel extends ChangeNotifier {
     _leftLegOffset = Offset(-50, 70);
     _rightLegOffset = Offset(50, 70);
 
+    scaleClimax = 1.0;
+    scaleBackground = 1.0;
+    translateX = 1.0;
+    translateY = 1.0;
+
     _updateClimax();
   }
 
