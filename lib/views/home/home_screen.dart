@@ -13,6 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+// Used for switching between different route editors
+class HomeScreenRouteArguments {
+  final int routeEditorPrototype;
+
+  HomeScreenRouteArguments(this.routeEditorPrototype);
+}
+
 class HomeScreen extends StatefulWidget {
   static const routeName = "/";
 
@@ -53,11 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final HomeScreenRouteArguments args = ModalRoute.of(context).settings.arguments;
+
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Climax"),
+        title: Text(_getRouteEditorTitle(args?.routeEditorPrototype ?? 1)),
         actions: [
           IconButton(
             icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
@@ -74,38 +83,56 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       drawer: AppDrawer(),
-      body: _buildPainterWidget(context),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _getRouteEditorPrototype(args?.routeEditorPrototype ?? 1),
+                Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32.0),
+                      child: JoystickWithButtonAndSlider(
+                        onDirectionChanged: (degrees, distance) {
+                          climaxModel.moveLimbFree(degrees, distance);
+                        },
+                        onSliderChanged: (speed) => climaxModel.updateSpeed(speed),
+                        onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
+                        onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
+                        onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
+                        onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
+                      ),
+                    )),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildPainterWidget(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              RouteEditor(),
-              Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32.0),
-                    child: JoystickWithButtonAndSlider(
-                      onDirectionChanged: (degrees, distance) {
-                        climaxModel.moveLimbFree(degrees, distance);
-                      },
-                      onSliderChanged: (speed) => climaxModel.updateSpeed(speed),
-                      onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
-                      onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
-                      onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
-                      onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
-                    ),
-                  )),
-            ],
-          ),
-        ),
-      ],
-    );
+  Widget _getRouteEditorPrototype(int routeEditorPrototype) {
+    switch (routeEditorPrototype) {
+      case 1:
+        return RouteEditor();
+      case 2:
+        return RouteEditor2();
+      case 3:
+        return RouteEditor3();
+    }
+  }
+
+  String _getRouteEditorTitle(int routeEditorPrototype) {
+    switch (routeEditorPrototype) {
+      case 1:
+        return "RouteEditor 1";
+      case 2:
+        return "RouteEditor 2";
+      case 3:
+        return "RouteEditor 3";
+    }
   }
 }
