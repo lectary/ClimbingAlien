@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
 import 'package:climbing_alien/views/drawer/app_drawer.dart';
-import 'package:climbing_alien/views/home/RenderView.dart';
+import 'package:climbing_alien/views/home/route_editor.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control/header_control.dart';
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              RenderView(),
+              RouteEditor(),
               Positioned(
                   right: 0,
                   bottom: 0,

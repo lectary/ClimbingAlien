@@ -6,12 +6,12 @@ import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class RenderView extends StatefulWidget {
+class RouteEditor extends StatefulWidget {
   @override
-  _RenderViewState createState() => _RenderViewState();
+  _RouteEditorState createState() => _RouteEditorState();
 }
 
-class _RenderViewState extends State<RenderView> {
+class _RouteEditorState extends State<RouteEditor> {
   ImageViewModel model;
   String backgroundImagePath;
   ClimaxViewModel climaxModel;
