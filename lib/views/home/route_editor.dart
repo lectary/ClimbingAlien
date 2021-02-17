@@ -25,45 +25,45 @@ class _RouteEditorState extends State<RouteEditor> {
     climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
   }
 
-
   @override
   Widget build(BuildContext context) {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
     final translateX = context.select((ClimaxViewModel model) => model.translateX);
-    backgroundWidget = Transform.translate(offset: Offset(translateX, 0) ,child: Transform.scale(scale: scaleBackground, child: image));
+    backgroundWidget = Transform.translate(
+        offset: Offset(translateX, 0), child: Transform.scale(scale: scaleBackground, child: image));
     return Stack(fit: StackFit.expand, children: [
       _buildBackgroundImage(),
-      Positioned.fill(
-        child: GestureDetector(
-            onPanUpdate: (DragUpdateDetails details) {
-              setState(() {
-                if (backgroundSelected) {
-                  climaxModel.scaleBackground += details.delta.dx / 100;
-                } else {
-                  climaxModel.scaleClimax += details.delta.dx / 100;
-                }
-              });
-            },
-            onHorizontalDragUpdate: (DragUpdateDetails details) {
-              setState(() {
-                if (backgroundSelected) {
-                  climaxModel.translateX += details.delta.dx;
-                }
-              });
-            },
-            onTapDown: (details) {
-              RenderBox box = context.findRenderObject();
-              final offset = box.localToGlobal(details.localPosition);
-              setState(() {
-                if (!backgroundSelected) {
-                  climaxModel.updateSelectedLimbPosition(offset);
-                }
-              });
-            },
-            child: Container(color: Colors.transparent, child: Climax())),
-      ),
+      GestureDetector(
+          onPanUpdate: (DragUpdateDetails details) {
+            setState(() {
+              if (backgroundSelected) {
+                climaxModel.scaleBackground += details.delta.dx / 100;
+              } else {
+                climaxModel.scaleClimax += details.delta.dx / 100;
+              }
+            });
+          },
+          onHorizontalDragUpdate: (DragUpdateDetails details) {
+            setState(() {
+              if (backgroundSelected) {
+                climaxModel.translateX += details.delta.dx;
+              }
+            });
+          },
+          onTapDown: (details) {
+            // RenderBox box = context.findRenderObject();
+            // print("Local Offset: ${details.localPosition}");
+            // final offset = box.localToGlobal(details.localPosition);
+            // print("Global Offset: $offset");
+            setState(() {
+              if (!backgroundSelected) {
+                climaxModel.updateSelectedLimbPosition(details.localPosition);
+              }
+            });
+          },
+          child: Container(color: Colors.transparent, child: Climax())),
     ]);
   }
 

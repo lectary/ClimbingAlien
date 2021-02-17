@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 import 'dart:math' as _math;
 
 import 'package:flutter/material.dart';
@@ -107,20 +108,22 @@ class ClimaxViewModel extends ChangeNotifier {
         break;
 
       // For arms and legs, calculate the new offset relative to the body
+      // Divide through scale parameter, to get the local, tapped position and not
+      // the scaled one.
       case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = newPosition - _climaxPosition;
+        _leftArmOffset = (newPosition - _climaxPosition) / scaleClimax;
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = newPosition - _climaxPosition;
+        _rightArmOffset = (newPosition - _climaxPosition) / scaleClimax;
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = newPosition - _climaxPosition;
+        _rightLegOffset = (newPosition - _climaxPosition) / scaleClimax;
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = newPosition - _climaxPosition;
+        _leftLegOffset = (newPosition - _climaxPosition) / scaleClimax;
         break;
     }
 
