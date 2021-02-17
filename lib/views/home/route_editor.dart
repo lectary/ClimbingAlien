@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/home/widgets/double_swipe_gesture_detector.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:flutter/gestures.dart';

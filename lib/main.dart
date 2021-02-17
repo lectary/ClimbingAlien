@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/camera/camera_screen.dart';
 import 'package:climbing_alien/views/home/home_screen.dart';
 import 'package:flutter/material.dart';

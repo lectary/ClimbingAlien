@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

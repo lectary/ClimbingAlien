@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/drawer/app_drawer.dart';
 import 'package:climbing_alien/views/home/route_editor.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
