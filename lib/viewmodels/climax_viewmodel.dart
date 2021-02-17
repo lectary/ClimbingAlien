@@ -51,10 +51,13 @@ class ClimaxViewModel extends ChangeNotifier {
 
   bool backgroundSelected = false;
 
+  double baseScaleClimax = 1.0;
   double scaleClimax = 1.0;
+
+  double baseScaleBackground = 1.0;
   double scaleBackground = 1.0;
-  double translateX = 1.0;
-  double translateY = 1.0;
+
+  Offset translate = Offset(1.0, 1.0);
 
   ClimaxViewModel() {
     resetClimax();
@@ -89,8 +92,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
     scaleClimax = 1.0;
     scaleBackground = 1.0;
-    translateX = 1.0;
-    translateY = 1.0;
+    translate = Offset(1.0, 1.0);
 
     _updateClimax();
   }

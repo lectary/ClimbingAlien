@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_view_model.dart';
+import 'package:climbing_alien/views/home/widgets/double_swipe_gesture_detector.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,40 +32,52 @@ class _RouteEditorState extends State<RouteEditor> {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
-    final translateX = context.select((ClimaxViewModel model) => model.translateX);
+    final Offset translate = context.select((ClimaxViewModel model) => model.translate);
     backgroundWidget = Transform.translate(
-        offset: Offset(translateX, 0), child: Transform.scale(scale: scaleBackground, child: image));
+        offset: translate, child: Transform.scale(scale: scaleBackground, child: image));
     return Stack(fit: StackFit.expand, children: [
       _buildBackgroundImage(),
-      GestureDetector(
-          onPanUpdate: (DragUpdateDetails details) {
-            setState(() {
+      DoubleSwipeGestureDetector(
+        onUpdate: (DragUpdateDetails details) {
+          // print("DoubleSwipe: $details");
+          if (backgroundSelected) {
+            climaxModel.translate += details.delta;
+          }
+        },
+        child: GestureDetector(
+            onScaleStart: (ScaleStartDetails details) {
+              print("BaseScale: ${climaxModel.baseScaleBackground}");
+              print("Scale: ${climaxModel.scaleClimax}");
               if (backgroundSelected) {
-                climaxModel.scaleBackground += details.delta.dx / 100;
+                climaxModel.baseScaleBackground = climaxModel.scaleBackground;
               } else {
-                climaxModel.scaleClimax += details.delta.dx / 100;
+                climaxModel.baseScaleClimax = climaxModel.scaleClimax;
               }
-            });
-          },
-          onHorizontalDragUpdate: (DragUpdateDetails details) {
-            setState(() {
-              if (backgroundSelected) {
-                climaxModel.translateX += details.delta.dx;
-              }
-            });
-          },
-          onTapDown: (details) {
-            // RenderBox box = context.findRenderObject();
-            // print("Local Offset: ${details.localPosition}");
-            // final offset = box.localToGlobal(details.localPosition);
-            // print("Global Offset: $offset");
-            setState(() {
-              if (!backgroundSelected) {
-                climaxModel.updateSelectedLimbPosition(details.localPosition);
-              }
-            });
-          },
-          child: Container(color: Colors.transparent, child: Climax())),
+            },
+            onScaleUpdate: (ScaleUpdateDetails details) {
+              setState(() {
+                // print("PanUpdate: ${details.scale}");
+                if (details.scale == 1) return;
+                if (backgroundSelected) {
+                  climaxModel.scaleBackground = climaxModel.baseScaleBackground * details.scale;
+                } else {
+                  climaxModel.scaleClimax = climaxModel.baseScaleClimax * details.scale;
+                }
+              });
+            },
+            // onTapDown: (details) {
+            //   // RenderBox box = context.findRenderObject();
+            //   // print("Local Offset: ${details.localPosition}");
+            //   // final offset = box.localToGlobal(details.localPosition);
+            //   // print("Global Offset: $offset");
+            //   setState(() {
+            //     if (!backgroundSelected) {
+            //       climaxModel.updateSelectedLimbPosition(details.localPosition);
+            //     }
+            //   });
+            // },
+            child: Container(color: Colors.transparent, child: Climax())),
+      ),
     ]);
   }
 
