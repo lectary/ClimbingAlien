@@ -329,7 +329,9 @@ class _RouteEditorState4 extends State<RouteEditor4> {
               climaxModel.deltaTranslateAll += climaxModel.lastTranslateAll - details.localFocalPoint;
               climaxModel.lastTranslateAll = details.localFocalPoint;
             } else {
-              climaxModel.deltaTranslate += climaxModel.lastTranslate - details.localFocalPoint;
+              // Use `1 / climaxModel.scaleAll` to have always the same speed of the translation, independent on the current scale
+              climaxModel.deltaTranslate +=
+                  (climaxModel.lastTranslate - details.localFocalPoint) * 1 / climaxModel.scaleAll;
               climaxModel.lastTranslate = details.localFocalPoint;
             }
           }
