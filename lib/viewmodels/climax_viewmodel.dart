@@ -59,6 +59,9 @@ class ClimaxViewModel extends ChangeNotifier {
 
   Offset translate = Offset(1.0, 1.0);
 
+  Offset lastTranslate = Offset(1.0, 1.0);
+  Offset deltaTranslate = Offset(1.0, 1.0);
+
   ClimaxViewModel() {
     resetClimax();
   }
@@ -93,6 +96,7 @@ class ClimaxViewModel extends ChangeNotifier {
     scaleClimax = 1.0;
     scaleBackground = 1.0;
     translate = Offset(1.0, 1.0);
+    deltaTranslate = Offset(1.0, 1.0);
 
     _updateClimax();
   }

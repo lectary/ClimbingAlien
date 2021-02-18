@@ -155,7 +155,8 @@ class _RouteEditorState2 extends State<RouteEditor2> {
 }
 
 
-/// TODO
+/// Use GestureDetector with up-2-date Flutter Master channel, for a new feature of gesture detector,
+/// where ScaleUpdateDetails now contains the pointerCount to differ between pan (one finger) and scale (two fingers)
 class RouteEditor3 extends StatefulWidget {
   @override
   _RouteEditorState3 createState() => _RouteEditorState3();
@@ -169,6 +170,9 @@ class _RouteEditorState3 extends State<RouteEditor3> {
   Widget backgroundWidget;
   Image image = Image.asset("assets/images/routes/route1.png");
 
+  bool isTranslate = false;
+  bool isScale = false;
+
   @override
   void initState() {
     super.initState();
@@ -180,41 +184,51 @@ class _RouteEditorState3 extends State<RouteEditor3> {
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
-    final Offset translate = context.select((ClimaxViewModel model) => model.translate);
+    final Offset deltaTranslate = context.select((ClimaxViewModel model) => model.deltaTranslate);
     backgroundWidget = Transform.translate(
-        offset: translate, child: Transform.scale(scale: scaleBackground, child: image));
+        offset: -deltaTranslate, child: Transform.scale(scale: scaleBackground, child: image));
     return Stack(fit: StackFit.expand, children: [
       _buildBackgroundImage(),
-      DoubleSwipeGestureDetector(
-        onUpdate: (DragUpdateDetails details) {
-          // print("DoubleSwipe: $details");
-          if (backgroundSelected) {
-            climaxModel.translate += details.delta;
-          }
-        },
-        child: GestureDetector(
-            onScaleStart: (ScaleStartDetails details) {
-              print("BaseScale: ${climaxModel.baseScaleBackground}");
-              print("Scale: ${climaxModel.scaleClimax}");
-              if (backgroundSelected) {
-                climaxModel.baseScaleBackground = climaxModel.scaleBackground;
-              } else {
-                climaxModel.baseScaleClimax = climaxModel.scaleClimax;
+      GestureDetector(
+          onScaleStart: (ScaleStartDetails details) {
+            setState(() {
+              isTranslate = details.pointerCount == 1 ? true : false;
+              isScale = details.pointerCount == 2 ? true : false;
+
+              if (isTranslate) {
+                climaxModel.lastTranslate = details.localFocalPoint;
               }
-            },
-            onScaleUpdate: (ScaleUpdateDetails details) {
-              setState(() {
-                // print("PanUpdate: ${details.scale}");
+
+              if (isScale) {
+                if (backgroundSelected) {
+                  climaxModel.baseScaleBackground = climaxModel.scaleBackground;
+                } else {
+                  climaxModel.baseScaleClimax = climaxModel.scaleClimax;
+                }
+              }
+            });
+          },
+          onScaleUpdate: (ScaleUpdateDetails details) {
+            setState(() {
+              isTranslate = details.pointerCount == 1 ? true : false;
+              isScale = details.pointerCount == 2 ? true : false;
+
+              if (isTranslate) {
+                climaxModel.deltaTranslate += climaxModel.lastTranslate - details.localFocalPoint;
+                climaxModel.lastTranslate = details.localFocalPoint;
+              }
+
+              if (isScale) {
                 if (details.scale == 1) return;
                 if (backgroundSelected) {
                   climaxModel.scaleBackground = climaxModel.baseScaleBackground * details.scale;
                 } else {
                   climaxModel.scaleClimax = climaxModel.baseScaleClimax * details.scale;
                 }
-              });
-            },
-            child: Container(color: Colors.transparent, child: Climax())),
-      ),
+              }
+            });
+          },
+          child: Container(color: Colors.transparent, child: Climax())),
     ]);
   }
 
