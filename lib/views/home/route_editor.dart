@@ -187,49 +187,50 @@ class _RouteEditorState3 extends State<RouteEditor3> {
     final Offset deltaTranslate = context.select((ClimaxViewModel model) => model.deltaTranslate);
     backgroundWidget = Transform.translate(
         offset: -deltaTranslate, child: Transform.scale(scale: scaleBackground, child: image));
-    return Stack(fit: StackFit.expand, children: [
-      _buildBackgroundImage(),
-      GestureDetector(
-          onScaleStart: (ScaleStartDetails details) {
-            setState(() {
-              isTranslate = details.pointerCount == 1 ? true : false;
-              isScale = details.pointerCount == 2 ? true : false;
+    return GestureDetector(
+      onScaleStart: (ScaleStartDetails details) {
+        setState(() {
+          isTranslate = details.pointerCount == 1 ? true : false;
+          isScale = details.pointerCount == 2 ? true : false;
 
-              if (isTranslate) {
-                climaxModel.lastTranslate = details.localFocalPoint;
-              }
+          if (isTranslate) {
+            climaxModel.lastTranslate = details.localFocalPoint;
+          }
 
-              if (isScale) {
-                if (backgroundSelected) {
-                  climaxModel.baseScaleBackground = climaxModel.scaleBackground;
-                } else {
-                  climaxModel.baseScaleClimax = climaxModel.scaleClimax;
-                }
-              }
-            });
-          },
-          onScaleUpdate: (ScaleUpdateDetails details) {
-            setState(() {
-              isTranslate = details.pointerCount == 1 ? true : false;
-              isScale = details.pointerCount == 2 ? true : false;
+          if (isScale) {
+            if (backgroundSelected) {
+              climaxModel.baseScaleBackground = climaxModel.scaleBackground;
+            } else {
+              climaxModel.baseScaleClimax = climaxModel.scaleClimax;
+            }
+          }
+        });
+      },
+      onScaleUpdate: (ScaleUpdateDetails details) {
+        setState(() {
+          isTranslate = details.pointerCount == 1 ? true : false;
+          isScale = details.pointerCount == 2 ? true : false;
 
-              if (isTranslate) {
-                climaxModel.deltaTranslate += climaxModel.lastTranslate - details.localFocalPoint;
-                climaxModel.lastTranslate = details.localFocalPoint;
-              }
+          if (isTranslate) {
+            climaxModel.deltaTranslate += climaxModel.lastTranslate - details.localFocalPoint;
+            climaxModel.lastTranslate = details.localFocalPoint;
+          }
 
-              if (isScale) {
-                if (details.scale == 1) return;
-                if (backgroundSelected) {
-                  climaxModel.scaleBackground = climaxModel.baseScaleBackground * details.scale;
-                } else {
-                  climaxModel.scaleClimax = climaxModel.baseScaleClimax * details.scale;
-                }
-              }
-            });
-          },
-          child: Container(color: Colors.transparent, child: Climax())),
-    ]);
+          if (isScale) {
+            if (details.scale == 1) return;
+            if (backgroundSelected) {
+              climaxModel.scaleBackground = climaxModel.baseScaleBackground * details.scale;
+            } else {
+              climaxModel.scaleClimax = climaxModel.baseScaleClimax * details.scale;
+            }
+          }
+        });
+      },
+      child: Stack(fit: StackFit.expand, children: [
+        _buildBackgroundImage(),
+        Container(color: Colors.transparent, child: Climax()),
+      ]),
+    );
   }
 
   Widget _buildBackgroundImage() {
