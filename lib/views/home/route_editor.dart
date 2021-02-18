@@ -74,7 +74,7 @@ class _RouteEditorState extends State<RouteEditor> {
               // print("Global Offset: $offset");
               setState(() {
                 if (!backgroundSelected) {
-                  climaxModel.updateSelectedLimbPosition(details.localPosition);
+                  climaxModel.updateSelectedLimbPositionWithScale(details.localPosition);
                 }
               });
             },
@@ -342,6 +342,9 @@ class _RouteEditorState4 extends State<RouteEditor4> {
           }
         });
       },
+        onTapDown: (details) {
+          climaxModel.updateSelectedLimbPosition(details.localPosition);
+        },
       child: Container(color: Colors.transparent, child: child),
     );
   }

@@ -117,7 +117,7 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   /// Updates the offset of the currently selected limb.
-  updateSelectedLimbPosition(Offset newPosition) {
+  updateSelectedLimbPositionWithScale(Offset newPosition) {
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
         _climaxPosition = newPosition;
@@ -145,6 +145,36 @@ class ClimaxViewModel extends ChangeNotifier {
 
     _updateClimax();
   }
+
+  updateSelectedLimbPosition(Offset newPosition) {
+    switch (this._selectedLimb) {
+      case ClimaxLimbEnum.BODY:
+        _climaxPosition = newPosition;
+        break;
+
+    // For arms and legs, calculate the new offset relative to the body
+    // Add translation offset to newPosition to get the local, tapped position and not the translated one.
+    // Divide through scale parameter, to get the local, tapped position and not the scaled one.
+      case ClimaxLimbEnum.LEFT_ARM:
+        _leftArmOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        break;
+
+      case ClimaxLimbEnum.RIGHT_ARM:
+        _rightArmOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        break;
+
+      case ClimaxLimbEnum.RIGHT_LEG:
+        _rightLegOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        break;
+
+      case ClimaxLimbEnum.LEFT_LEG:
+        _leftLegOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        break;
+    }
+
+    _updateClimax();
+  }
+
 
   selectNextLimb() {
     _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb.index + 1) % 5];
