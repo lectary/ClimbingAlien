@@ -252,6 +252,8 @@ class _RouteEditorState3 extends State<RouteEditor3> {
 
 
 /// Polished version of [RouteEditor3]. Uses one-finger translate (background&all(=background+climax)) and two-finger scale (background&all).
+///
+/// Re-added move-climax-limb-by-tap possibility but with [GestureDetector.onLongPressStart] to avoid conflicts with one-finger pan.
 class RouteEditor4 extends StatefulWidget {
   @override
   _RouteEditorState4 createState() => _RouteEditorState4();
@@ -342,7 +344,7 @@ class _RouteEditorState4 extends State<RouteEditor4> {
           }
         });
       },
-        onTapDown: (details) {
+        onLongPressStart: (details) {
           climaxModel.updateSelectedLimbPosition(details.localPosition);
         },
       child: Container(color: Colors.transparent, child: child),
