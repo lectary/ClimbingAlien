@@ -122,6 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return RouteEditor2();
       case 3:
         return RouteEditor3();
+      case 4:
+        return RouteEditor4();
     }
   }
 
@@ -133,6 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return "RouteEditor 2";
       case 3:
         return "RouteEditor 3";
+      case 4:
+        return "RouteEditor 4";
     }
   }
 }

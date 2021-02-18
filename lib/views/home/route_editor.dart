@@ -8,8 +8,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-/// Using double swipe is actually not the standard behaviour...(only in special use cases like google maps)...but normally
+/// Two-finger scale (background&climax) and two-finger translate (background) using nested GestureDetectors (standard and custom [DoubleSwipeGestureDetector]).
+///
+/// Using double swipe is actually not the standard behaviour...(only in special use cases with more zoom layers like in google maps)...but normally
 /// translation is done with one finger....and double swipe for translation conflicts with scaling, which is also done with two fingers....
 class RouteEditor extends StatefulWidget {
   @override
@@ -89,7 +90,9 @@ class _RouteEditorState extends State<RouteEditor> {
   }
 }
 
-/// Cannot really detect difference between panning and zooming in a usable way....take too long.
+/// One-finger translate (background) with two-finger scale (background & climax) using nested GestureDetector (because onPan cannot be used concurrently with onScale).
+///
+/// GestureDetector has difficulties to detect difference between panning and zooming....laggy/takes too long.
 class RouteEditor2 extends StatefulWidget {
   @override
   _RouteEditorState2 createState() => _RouteEditorState2();
@@ -155,8 +158,13 @@ class _RouteEditorState2 extends State<RouteEditor2> {
 }
 
 
-/// Use GestureDetector with up-2-date Flutter Master channel, for a new feature of gesture detector,
-/// where ScaleUpdateDetails now contains the pointerCount to differ between pan (one finger) and scale (two fingers)
+/// One-finger translate (background) and two-finger scale (background&climax) using a single GestureDetector with latest Flutter Master channel.
+///
+/// In the latest channel, GestureDetectors ScaleUpdateDetails got a new attribute `pointerCount`. This allows to differ between pan (one finger) and scale (two fingers).
+/// Panning is done via onScale by using its [localFocalPoint] attribute. Since there is no deltaX movement available, the difference between the last and current [localFocalPoint] is calculated
+/// to retrieve some kind of movement-delta which is used in [Transform.translate].
+/// OnScale behaviour is also not quite convenient. When releasing fingers, the scale value jumps back to 1. To avoid weird scale jumps, values of 1 are ignored.
+/// To persist the scaling between gestures, the last scaling value is saved and used as baseValue which gets then multiplied with the new current scale value.
 class RouteEditor3 extends StatefulWidget {
   @override
   _RouteEditorState3 createState() => _RouteEditorState3();
@@ -230,6 +238,111 @@ class _RouteEditorState3 extends State<RouteEditor3> {
         _buildBackgroundImage(),
         Container(color: Colors.transparent, child: Climax()),
       ]),
+    );
+  }
+
+
+
+  Widget _buildBackgroundImage() {
+    return backgroundImagePath == null
+        ? backgroundWidget
+        : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
+  }
+}
+
+
+/// Polished version of [RouteEditor3]. Uses one-finger translate (background&all(=background+climax)) and two-finger scale (background&all).
+class RouteEditor4 extends StatefulWidget {
+  @override
+  _RouteEditorState4 createState() => _RouteEditorState4();
+}
+
+class _RouteEditorState4 extends State<RouteEditor4> {
+  ImageViewModel model;
+  String backgroundImagePath;
+  ClimaxViewModel climaxModel;
+
+  Widget backgroundWidget;
+  Image image = Image.asset("assets/images/routes/route1.png");
+
+  bool isTranslate = false;
+  bool isScale = false;
+
+  @override
+  void initState() {
+    super.initState();
+    climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
+    final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
+    final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
+    final Offset deltaTranslate = context.select((ClimaxViewModel model) => model.deltaTranslate);
+    final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
+    final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
+    backgroundWidget =
+        Transform.translate(offset: -deltaTranslate, child: Transform.scale(scale: scaleBackground, child: image));
+    Widget child = Transform.translate(
+      offset: -deltaTranslateAll,
+      child: Transform.scale(
+        scale: scaleAll,
+        child: Stack(fit: StackFit.expand, children: [
+          _buildBackgroundImage(),
+          Container(color: Colors.transparent, child: Climax()),
+        ]),
+      ),
+    );
+    return GestureDetector(
+      onScaleStart: (ScaleStartDetails details) {
+        setState(() {
+          isTranslate = details.pointerCount == 1 ? true : false;
+          isScale = details.pointerCount == 2 ? true : false;
+
+          if (isTranslate) {
+            if (editAll) {
+              climaxModel.lastTranslateAll = details.localFocalPoint;
+            } else {
+              climaxModel.lastTranslate = details.localFocalPoint;
+            }
+          }
+
+          if (isScale) {
+            if (editAll) {
+              climaxModel.baseScaleAll = climaxModel.scaleAll;
+            } else {
+              climaxModel.baseScaleBackground = climaxModel.scaleBackground;
+            }
+          }
+        });
+      },
+      onScaleUpdate: (ScaleUpdateDetails details) {
+        setState(() {
+          isTranslate = details.pointerCount == 1 ? true : false;
+          isScale = details.pointerCount == 2 ? true : false;
+
+          if (isTranslate) {
+            if (editAll) {
+              climaxModel.deltaTranslateAll += climaxModel.lastTranslateAll - details.localFocalPoint;
+              climaxModel.lastTranslateAll = details.localFocalPoint;
+            } else {
+              climaxModel.deltaTranslate += climaxModel.lastTranslate - details.localFocalPoint;
+              climaxModel.lastTranslate = details.localFocalPoint;
+            }
+          }
+
+          if (isScale) {
+            if (details.scale == 1) return;
+            if (editAll) {
+              climaxModel.scaleAll = climaxModel.baseScaleAll * details.scale;
+            } else {
+              climaxModel.scaleBackground = climaxModel.baseScaleBackground * details.scale;
+            }
+          }
+        });
+      },
+      child: Container(color: Colors.transparent, child: child),
     );
   }
 

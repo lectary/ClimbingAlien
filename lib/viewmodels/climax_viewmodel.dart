@@ -62,6 +62,13 @@ class ClimaxViewModel extends ChangeNotifier {
   Offset lastTranslate = Offset(1.0, 1.0);
   Offset deltaTranslate = Offset(1.0, 1.0);
 
+  // RouteEditor 4
+  double baseScaleAll = 1.0;
+  double scaleAll = 1.0;
+
+  Offset lastTranslateAll = Offset(1.0, 1.0);
+  Offset deltaTranslateAll = Offset(1.0, 1.0);
+
   ClimaxViewModel() {
     resetClimax();
   }
@@ -97,6 +104,9 @@ class ClimaxViewModel extends ChangeNotifier {
     scaleBackground = 1.0;
     translate = Offset(1.0, 1.0);
     deltaTranslate = Offset(1.0, 1.0);
+
+    scaleAll = 1.0;
+    deltaTranslateAll = Offset(1.0, 1.0);
 
     _updateClimax();
   }
