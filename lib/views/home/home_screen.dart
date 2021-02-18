@@ -63,21 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final HomeScreenRouteArguments args = ModalRoute.of(context).settings.arguments;
 
     backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
-    final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getRouteEditorTitle(args?.routeEditorPrototype ?? 1)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
-            onPressed: () {
-              setState(() {
-                climaxModel.backgroundSelected = !backgroundSelected;
-              });
-            },
-          )
-        ],
         flexibleSpace: HeaderControl(
+          _getRouteEditorTitle(args?.routeEditorPrototype ?? 1),
           nextSelectionCallback: climaxModel.selectNextLimb,
           resetCallback: () => climaxModel.resetClimax(position: screenCenter),
         ),
