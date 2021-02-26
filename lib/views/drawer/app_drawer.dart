@@ -1,5 +1,5 @@
 import 'package:climbing_alien/views/camera/camera_screen.dart';
-import 'package:climbing_alien/views/home/home_screen.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -18,7 +18,7 @@ class AppDrawer extends StatelessWidget {
                     title: Text("Route editing"),
                     onTap: () {
                       Navigator.pop(context);
-                      return Navigator.pushNamed(context, HomeScreen.routeName);
+                      return Navigator.pushNamed(context, RouteEditorScreen.routeName);
                     }),
                 ListTile(
                     title: Text("Camera"),

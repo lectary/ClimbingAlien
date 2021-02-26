@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/drawer/app_drawer.dart';
-import 'package:climbing_alien/views/home/route_editor.dart';
+import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control/header_control.dart';
 import 'package:flutter/gestures.dart';
@@ -11,23 +9,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class RouteEditorScreen extends StatefulWidget {
   static const routeName = "/";
 
-  HomeScreen({Key key}) : super(key: key);
+  RouteEditorScreen({Key key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _RouteEditorScreenState createState() => _RouteEditorScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _RouteEditorScreenState extends State<RouteEditorScreen> {
   ImageViewModel model;
   String backgroundImagePath;
-  ClimaxViewModel climaxModel;
 
+  ClimaxViewModel climaxModel;
   Offset screenCenter;
-  Timer timer;
-  final int refreshTime = 60;
 
   @override
   void initState() {
@@ -39,14 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
       screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
       climaxModel.updateClimaxPosition(screenCenter);
     });
-    // Using timer for continuously drawing climax to enable continuous movement via joystick
-    timer = Timer.periodic(Duration(milliseconds: refreshTime), (Timer t) => climaxModel.updateLimbFree());
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   @override
