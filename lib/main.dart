@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/camera/camera_screen.dart';
-import 'package:climbing_alien/views/home/route_editor_screen.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
