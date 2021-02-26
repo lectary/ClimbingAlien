@@ -15,32 +15,10 @@ class AppDrawer extends StatelessWidget {
             child: ListView(
               children: [
                 ListTile(
-                    title: Text("Route editing 1"),
+                    title: Text("Route editing"),
                     onTap: () {
                       Navigator.pop(context);
-                      final args = HomeScreenRouteArguments(1);
-                      return Navigator.pushNamed(context, HomeScreen.routeName, arguments: args);
-                    }),
-                ListTile(
-                    title: Text("Route editing 2"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      final args = HomeScreenRouteArguments(2);
-                      return Navigator.pushNamed(context, HomeScreen.routeName, arguments: args);
-                    }),
-                ListTile(
-                    title: Text("Route editing 3"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      final args = HomeScreenRouteArguments(3);
-                      return Navigator.pushNamed(context, HomeScreen.routeName, arguments: args);
-                    }),
-                ListTile(
-                    title: Text("Route editing 4"),
-                    onTap: () {
-                      Navigator.pop(context);
-                      final args = HomeScreenRouteArguments(4);
-                      return Navigator.pushNamed(context, HomeScreen.routeName, arguments: args);
+                      return Navigator.pushNamed(context, HomeScreen.routeName);
                     }),
                 ListTile(
                     title: Text("Camera"),
