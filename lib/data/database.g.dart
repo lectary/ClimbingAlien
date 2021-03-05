@@ -82,7 +82,7 @@ class _$ClimbingDatabase extends ClimbingDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `image_path` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
@@ -165,10 +165,13 @@ class _$WallDao extends WallDao {
     return _queryAdapter.queryListStream('SELECT * FROM walls',
         queryableName: 'walls',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Wall(
-            row['id'] as int,
-            _dateTimeConverter.decode(row['modified_at'] as int),
-            _dateTimeConverter.decode(row['created_at'] as int)));
+        mapper: (Map<String, dynamic> row) => Wall(row['title'] as String,
+            description: row['description'] as String,
+            height: row['height'] as int,
+            imagePath: row['image_path'] as String,
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
   @override

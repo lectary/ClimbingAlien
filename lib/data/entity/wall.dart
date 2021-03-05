@@ -9,10 +9,11 @@ class Wall extends BaseObject {
 
   int height;
 
-  @ColumnInfo(name: 'image_path', nullable: false)
+  @ColumnInfo(name: 'image_path')
   String imagePath;
 
-  Wall(int id, DateTime modifiedAt, DateTime createdAt) : super(id, modifiedAt, createdAt);
+  Wall(this.title, {this.description, this.height, this.imagePath, int id, DateTime modifiedAt, DateTime createdAt})
+      : super(id, modifiedAt, createdAt);
 
   @override
   String toString() {
