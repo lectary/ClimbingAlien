@@ -15,6 +15,18 @@ class Wall extends BaseObject {
   Wall(this.title, {this.description, this.height, this.imagePath, int id, DateTime modifiedAt, DateTime createdAt})
       : super(id, modifiedAt, createdAt);
 
+  Map<String, dynamic> toMap() {
+    return {
+      "title": title,
+      "description": description,
+      "height": height,
+      "image_path": imagePath,
+      "id": id,
+      "modified_at": modifiedAt?.millisecondsSinceEpoch,
+      "created_at": createdAt.millisecondsSinceEpoch,
+    };
+  }
+
   @override
   String toString() {
     return 'Wall{title: $title, description: $description, height: $height, imagePath: $imagePath}';

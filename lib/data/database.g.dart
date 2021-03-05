@@ -249,8 +249,9 @@ class _$RouteDao extends RouteDao {
     return _queryAdapter.queryListStream('SELECT * FROM routes',
         queryableName: 'routes',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Route(row['title'] as String,
-            row['description'] as String, row['wall_id'] as int,
+        mapper: (Map<String, dynamic> row) => Route(
+            row['title'] as String, row['wall_id'] as int,
+            description: row['description'] as String,
             id: row['id'] as int,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));

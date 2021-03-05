@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:climbing_alien/data/dao/route_dao.dart';
 import 'package:climbing_alien/data/dao/wall_dao.dart';
@@ -40,7 +41,15 @@ class DatabaseProvider {
   }
 
   /// insert mock data
-  final callback = Callback(onOpen: (database) {
-    // -----
+  final callback = Callback(onCreate: (database, version) {
+    Wall wall1 = Wall('Wand1', description: 'Super wand 1000', id: 1);
+    Wall wall2 = Wall('Wand2', description: 'Schwierig', id: 2);
+    database.insert('walls', wall1.toMap());
+    database.insert('walls', wall2.toMap());
+
+    Route route1 = Route('Favo', 1, description: 'Blaue Schwierigkeit', id: 1);
+    Route route2 = Route('Black Route', 1, description: 'Anstrengend!', id: 2);
+    database.insert('routes', route1.toMap());
+    database.insert('routes', route2.toMap());
   });
 }

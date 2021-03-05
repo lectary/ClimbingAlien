@@ -13,8 +13,19 @@ class Route extends BaseObject {
   @ColumnInfo(name: 'wall_id', nullable: false)
   int wallId;
 
-  Route(this.title, this.description, this.wallId, {int id, DateTime modifiedAt, DateTime createdAt})
+  Route(this.title, this.wallId, {this.description, int id, DateTime modifiedAt, DateTime createdAt})
       : super(id, modifiedAt, createdAt);
+
+  Map<String, dynamic> toMap() {
+    return {
+      "title": title,
+      "description": description,
+      "wall_id": wallId,
+      "id": id,
+      "modified_at": modifiedAt?.millisecondsSinceEpoch,
+      "created_at": createdAt.millisecondsSinceEpoch,
+    };
+  }
 
   @override
   String toString() {
