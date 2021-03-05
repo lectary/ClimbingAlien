@@ -47,8 +47,9 @@ class ClimbingApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: RouteEditorScreen.routeName,
+      initialRoute: RouteManagementScreen.routeName,
       routes: {
+        RouteManagementScreen.routeName: (context) => RouteManagementScreen(),
         RouteEditorScreen.routeName: (context) => RouteEditorScreen(),
         CameraScreen.routeName: (context) => CameraScreen(),
       },
