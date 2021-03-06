@@ -1,5 +1,6 @@
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
+import 'package:climbing_alien/widgets/image_picker/asset_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -50,17 +51,21 @@ class _ImagePickerDialogState extends State<ImagePickerDialog> {
 
   Future getImage(ImageSource imageSource) async {
     final pickedFile = await picker.getImage(source: imageSource);
-
-    setState(() {
-      if (pickedFile != null) {
-        _imageViewModel.currentImagePath = pickedFile.path;
-      } else {
-        print('No image selected.');
-      }
-    });
+    if (pickedFile != null) {
+      _imageViewModel.currentImagePath = pickedFile.path;
+    } else {
+      print('No image selected.');
+    }
   }
 
-  Future getImageFromAssets() async {}
+  Future getImageFromAssets() async {
+    final pickedFilePath = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
+    if (pickedFilePath != null) {
+      _imageViewModel.currentImagePath = pickedFilePath;
+    } else {
+      print('No image selected.');
+    }
+  }
 
   _handleRadioChange(SelectedImageSource value) {
     setState(() {

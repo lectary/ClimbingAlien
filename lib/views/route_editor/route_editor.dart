@@ -25,7 +25,7 @@ class _RouteEditorState extends State<RouteEditor> {
   ClimaxViewModel climaxModel;
 
   Widget backgroundWidget;
-  Image image = Image.asset("assets/images/routes/no-name-route.png");
+  Image image = Image.asset("assets/images/routes/no-name-route.jpg");
 
   bool isTranslate = false;
   bool isScale = false;
