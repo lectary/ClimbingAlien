@@ -1,12 +1,12 @@
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
-import 'package:climbing_alien/views/drawer/app_drawer.dart';
+import 'package:climbing_alien/views/route_management/route_screen.dart';
 import 'package:climbing_alien/views/route_management/wall_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class RouteManagementScreen extends StatelessWidget {
-  static String routeName = '/routeManagement';
+class WallScreen extends StatelessWidget {
+  static String routeName = '/walls';
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,6 @@ class RouteManagementScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Climbing Walls"),
       ),
-      drawer: AppDrawer(),
       body: StreamBuilder<List<Wall>>(
         stream: wallModel.wallStream,
         builder: (context, snapshot) {
@@ -30,6 +29,8 @@ class RouteManagementScreen extends StatelessWidget {
                       return ListTile(
                         title: Text(wall.title),
                         subtitle: Text(wall.description),
+                        onTap: () =>
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RouteScreen(wall))),
                         onLongPress: () => WallForm.showWallFormDialog(context, wall: wall),
                       );
                     });

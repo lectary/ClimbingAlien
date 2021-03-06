@@ -1,6 +1,5 @@
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
-import 'package:climbing_alien/views/drawer/app_drawer.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control/header_control.dart';
@@ -10,9 +9,11 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class RouteEditorScreen extends StatefulWidget {
-  static const routeName = "/";
+  static const routeName = "/routeEditor";
 
-  RouteEditorScreen({Key key}) : super(key: key);
+  final Route route;
+
+  RouteEditorScreen({this.route, Key key}) : super(key: key);
 
   @override
   _RouteEditorScreenState createState() => _RouteEditorScreenState();
@@ -48,7 +49,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
           resetCallback: () => climaxModel.resetClimax(position: screenCenter),
         ),
       ),
-      drawer: AppDrawer(),
+      // drawer: AppDrawer(),
       body: Column(
         children: [
           Expanded(

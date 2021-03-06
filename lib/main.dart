@@ -7,7 +7,8 @@ import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/camera/camera_screen.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
-import 'package:climbing_alien/views/route_management/route_management_screen.dart';
+import 'package:climbing_alien/views/route_management/route_screen.dart';
+import 'package:climbing_alien/views/route_management/wall_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,9 +48,9 @@ class ClimbingApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: RouteManagementScreen.routeName,
+      initialRoute: WallScreen.routeName,
       routes: {
-        RouteManagementScreen.routeName: (context) => RouteManagementScreen(),
+        WallScreen.routeName: (context) => WallScreen(),
         RouteEditorScreen.routeName: (context) => RouteEditorScreen(),
         CameraScreen.routeName: (context) => CameraScreen(),
       },
