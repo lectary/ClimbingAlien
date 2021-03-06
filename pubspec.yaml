@@ -29,6 +29,7 @@ dependencies:
   path_provider:
   fluttertoast: ^7.1.6
   floor: ^0.19.1
+  image_picker: ^0.7.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -53,7 +54,7 @@ flutter:
   uses-material-design: true
 
   assets:
-     - assets/images/routes/route1.png
+     - assets/images/climbing_walls/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
