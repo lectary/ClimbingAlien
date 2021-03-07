@@ -10,7 +10,7 @@ enum SelectedImageSource { ASSET, CAMERA, GALLERY }
 extension SelectedImageSourceExtension on SelectedImageSource {
   String toValueString() {
     String string = this.toString().substring(this.runtimeType.toString().length + 1);
-    return string.substring(0, 1) +  string.substring(1).toLowerCase();
+    return string.substring(0, 1) + string.substring(1).toLowerCase();
   }
 }
 
@@ -22,9 +22,9 @@ class ImagePickerDialog extends StatefulWidget {
   @override
   _ImagePickerDialogState createState() => _ImagePickerDialogState();
 
-  static Future<bool> showImagePickerDialog(BuildContext context, {Wall wall}) async {
+  static Future<String> showImagePickerDialog(BuildContext context, {Wall wall}) async {
     final model = Provider.of<ImageViewModel>(context, listen: false);
-    return await showDialog<bool>(
+    return await showDialog<String>(
         context: context,
         barrierDismissible: false,
         builder: (context) => ChangeNotifierProvider.value(
@@ -52,16 +52,19 @@ class _ImagePickerDialogState extends State<ImagePickerDialog> {
   Future getImage(ImageSource imageSource) async {
     final pickedFile = await picker.getImage(source: imageSource);
     if (pickedFile != null) {
-      _imageViewModel.currentImagePath = pickedFile.path;
+      // _imageViewModel.currentImagePath = pickedFile.path;
+      Navigator.pop(context, pickedFile.path);
     } else {
       print('No image selected.');
     }
   }
 
   Future getImageFromAssets() async {
-    final pickedFilePath = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
+    final pickedFilePath =
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
     if (pickedFilePath != null) {
-      _imageViewModel.currentImagePath = pickedFilePath;
+      // _imageViewModel.currentImagePath = pickedFilePath;
+      Navigator.pop(context, pickedFilePath);
     } else {
       print('No image selected.');
     }
@@ -76,59 +79,61 @@ class _ImagePickerDialogState extends State<ImagePickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            "Choose the source of the image:",
-            style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+        child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Text(
+              "Choose the source of the image:",
+              style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+            ),
           ),
-        ),
-        RadioListTile(
-            title: Text(SelectedImageSource.ASSET.toValueString()),
-            value: SelectedImageSource.ASSET,
-            groupValue: _selectedSource,
-            onChanged: _handleRadioChange),
-        RadioListTile(
-            title: Text(SelectedImageSource.CAMERA.toValueString()),
-            value: SelectedImageSource.CAMERA,
-            groupValue: _selectedSource,
-            onChanged: _handleRadioChange),
-        RadioListTile(
-            title: Text(SelectedImageSource.GALLERY.toValueString()),
-            value: SelectedImageSource.GALLERY,
-            groupValue: _selectedSource,
-            onChanged: _handleRadioChange),
-        ButtonBar(
-          alignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-                child: Text('Cancel'),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).colorScheme.error,
-                ),
-                onPressed: () => Navigator.pop(context)),
-            ElevatedButton(
-                child: Text('Pick image'),
-                onPressed: () {
-                  switch (_selectedSource) {
-                    case SelectedImageSource.ASSET:
-                      getImageFromAssets();
-                      break;
-                    case SelectedImageSource.CAMERA:
-                      getImage(ImageSource.camera);
-                      break;
-                    case SelectedImageSource.GALLERY:
-                      getImage(ImageSource.gallery);
-                      break;
-                  }
-                })
-          ],
-        )
-      ],
+          RadioListTile(
+              title: Text(SelectedImageSource.ASSET.toValueString()),
+              value: SelectedImageSource.ASSET,
+              groupValue: _selectedSource,
+              onChanged: _handleRadioChange),
+          RadioListTile(
+              title: Text(SelectedImageSource.CAMERA.toValueString()),
+              value: SelectedImageSource.CAMERA,
+              groupValue: _selectedSource,
+              onChanged: _handleRadioChange),
+          RadioListTile(
+              title: Text(SelectedImageSource.GALLERY.toValueString()),
+              value: SelectedImageSource.GALLERY,
+              groupValue: _selectedSource,
+              onChanged: _handleRadioChange),
+          ButtonBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  child: Text('Cancel'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).colorScheme.error,
+                  ),
+                  onPressed: () => Navigator.pop(context)),
+              ElevatedButton(
+                  child: Text('Pick image'),
+                  onPressed: () {
+                    switch (_selectedSource) {
+                      case SelectedImageSource.ASSET:
+                        getImageFromAssets();
+                        break;
+                      case SelectedImageSource.CAMERA:
+                        getImage(ImageSource.camera);
+                        break;
+                      case SelectedImageSource.GALLERY:
+                        getImage(ImageSource.gallery);
+                        break;
+                    }
+                  })
+            ],
+          )
+        ],
+      ),
     ));
   }
 }

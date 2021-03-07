@@ -57,11 +57,12 @@ class WallScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
                               /// Wall image
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: wall.imagePath == null ? Text('No image') : Image.asset(wall.imagePath),
+                                child: Center(
+                                  child: wall.imagePath == null || wall.imagePath.isEmpty ? Text('No image') : Image.asset(wall.imagePath),
+                                ),
                               )
                             ]),
                             onTap: () =>
