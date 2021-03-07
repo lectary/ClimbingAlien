@@ -46,8 +46,7 @@ class _HeaderControlState extends State<HeaderControl> {
                             .headline6
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary)))),
             HeaderExtensionAnimation(children: [
-              FlatButton(
-                padding: EdgeInsets.zero,
+              TextButton(
                 onPressed: widget.resetCallback ?? () {},
                 child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
               )
@@ -77,9 +76,8 @@ class _HeaderControlState extends State<HeaderControl> {
             ),
             RotatedBox(
               quarterTurns: 1,
-              child: FlatButton(
-                padding: EdgeInsets.zero,
-                onPressed: widget.nextSelectionCallback ?? () {},
+              child: TextButton(
+                onPressed: widget.stepFinishedCallback ?? () {},
                 child: Text(
                   "Done",
                   style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
