@@ -21,7 +21,7 @@ class ImageDisplay extends StatelessWidget {
 
   ImageDisplay(this.imagePath, {this.emptyText, this.errorText = _errorTextDefault});
 
-  _errorBuilderFunction(BuildContext context, Object exception, StackTrace stackTrace) {
+  Widget _errorBuilderFunction(BuildContext context, Object exception, StackTrace stackTrace) {
     log(exception.toString());
     return Text(errorText);
   }
