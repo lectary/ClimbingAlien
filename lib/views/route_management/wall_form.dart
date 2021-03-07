@@ -4,7 +4,6 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_picker/image_picker_dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +23,7 @@ class WallForm extends StatefulWidget {
         builder: (context) => ChangeNotifierProvider.value(
               value: model,
               child: AlertDialog(
-                title: wall == null ? Text("Neue Wand") : Text("Bearbeite Wand"),
+                title: wall == null ? Text("New wall") : Text("Edit wall"),
                 content: WallForm(wall),
               ),
             ));
@@ -46,11 +45,12 @@ class _WallFormState extends State<WallForm> {
   void initState() {
     super.initState();
     wallViewModel = Provider.of<WallViewModel>(context, listen: false);
-    _focusNode.requestFocus();
+    // _focusNode.requestFocus();
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
     imagePath = widget.wall?.imagePath;
+    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(imagePath);
   }
 
   @override
@@ -64,7 +64,7 @@ class _WallFormState extends State<WallForm> {
             TextFormField(
               initialValue: title,
               focusNode: _focusNode,
-              decoration: InputDecoration(hintText: "Titel"),
+              decoration: InputDecoration(labelText: "Title"),
               validator: (value) {
                 if (value.isEmpty) {
                   return "Titel wird benötigt!";
@@ -75,18 +75,21 @@ class _WallFormState extends State<WallForm> {
             ),
             TextFormField(
               initialValue: description,
-              decoration: InputDecoration(hintText: "Beschreibung"),
+              minLines: 1,
+              maxLines: 5,
+              decoration: InputDecoration(labelText: "Description"),
               onSaved: (value) => description = value,
             ),
             TextFormField(
-              initialValue: Utils.getFilenameFromPath(imagePath),
-              decoration: InputDecoration(hintText: "Image"),
+              controller: _textEditingControllerImagePath,
+              decoration: InputDecoration(labelText: "Image - Click me"),
               readOnly: true,
               onTap: () async {
                 String newPath = await ImagePickerDialog.showImagePickerDialog(context);
                 if (newPath != null) {
                   setState(() {
                     imagePath = newPath;
+                    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(newPath);
                   });
                 }
               },
@@ -96,16 +99,16 @@ class _WallFormState extends State<WallForm> {
               child: getImageByPath(imagePath),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 32.0),
+              padding: const EdgeInsets.only(top: 24.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
-                      child: Text("Abbrechen"),
+                      child: Text("Cancel"),
                       style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.error),
                       onPressed: () => Navigator.pop(context)),
                   ElevatedButton(
-                      child: Text("Speichern"),
+                      child: Text("Save"),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
