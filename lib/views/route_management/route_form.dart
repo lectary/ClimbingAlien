@@ -21,7 +21,7 @@ class RouteForm extends StatefulWidget {
         builder: (context) => ChangeNotifierProvider.value(
               value: model,
               child: AlertDialog(
-                title: route == null ? Text("Neue Route") : Text("Bearbeite Route"),
+                title: route == null ? Text("New route") : Text("Edit route"),
                 content: RouteForm(route, wallId),
               ),
             ));
@@ -57,10 +57,10 @@ class _RouteFormState extends State<RouteForm> {
           TextFormField(
             initialValue: title,
             focusNode: _focusNode,
-            decoration: InputDecoration(hintText: "Titel"),
+            decoration: InputDecoration(hintText: "Title"),
             validator: (value) {
               if (value.isEmpty) {
-                return "Titel wird benötigt!";
+                return "Title is mandatory!";
               }
               return null;
             },
@@ -68,7 +68,7 @@ class _RouteFormState extends State<RouteForm> {
           ),
           TextFormField(
             initialValue: description,
-            decoration: InputDecoration(hintText: "Beschreibung"),
+            decoration: InputDecoration(hintText: "Description"),
             onSaved: (value) => description = value,
           ),
           Padding(
@@ -77,11 +77,11 @@ class _RouteFormState extends State<RouteForm> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                    child: Text("Abbrechen"),
+                    child: Text("Cancel"),
                     style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.error),
                     onPressed: () => Navigator.pop(context)),
                 ElevatedButton(
-                    child: Text("Speichern"),
+                    child: Text("Save"),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();

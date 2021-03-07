@@ -67,7 +67,7 @@ class _WallFormState extends State<WallForm> {
               decoration: InputDecoration(labelText: "Title"),
               validator: (value) {
                 if (value.isEmpty) {
-                  return "Titel wird benötigt!";
+                  return "Title is mandatory!";
                 }
                 return null;
               },

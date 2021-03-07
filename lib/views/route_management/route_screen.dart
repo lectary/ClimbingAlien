@@ -16,7 +16,7 @@ class RouteScreen extends StatelessWidget {
     final routeModel = Provider.of<RouteViewModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text("${wall.title} - Routen"),
+        title: Text("${wall.title} - Routes"),
       ),
       body: StreamBuilder<List<Route>>(
         stream: routeModel.routeStream,
@@ -24,7 +24,7 @@ class RouteScreen extends StatelessWidget {
           if (snapshot.hasData) {
             final routeList = snapshot.data;
             return routeList.isEmpty
-                ? Center(child: Text("Keine Routen vorhanden"))
+                ? Center(child: Text("No routes available"))
                 : ListView.builder(
                     itemCount: routeList.length,
                     itemBuilder: (context, index) {

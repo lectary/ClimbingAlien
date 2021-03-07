@@ -22,7 +22,7 @@ class WallScreen extends StatelessWidget {
           if (snapshot.hasData) {
             final wallList = snapshot.data;
             return wallList.isEmpty
-                ? Center(child: Text("Keine Wände vorhanden"))
+                ? Center(child: Text("No walls available"))
                 : ListView.builder(
                     itemCount: wallList.length,
                     itemBuilder: (context, index) {
