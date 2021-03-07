@@ -12,26 +12,26 @@ extension SelectedImageSourceExtension on SelectedImageSource {
   }
 }
 
-class ImagePickerDialog extends StatefulWidget {
+class RadioImagePicker extends StatefulWidget {
   final Wall wall;
 
-  ImagePickerDialog(this.wall);
+  RadioImagePicker(this.wall);
 
   @override
-  _ImagePickerDialogState createState() => _ImagePickerDialogState();
+  _RadioImagePickerState createState() => _RadioImagePickerState();
 
-  static Future<String> showImagePickerDialog(BuildContext context, {Wall wall}) async {
+  static Future<String> dialog(BuildContext context, {Wall wall}) async {
     return await showDialog<String>(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
               title: wall == null ? Text("New image") : Text("Edit image"),
-              content: ImagePickerDialog(wall),
+              content: RadioImagePicker(wall),
             ));
   }
 }
 
-class _ImagePickerDialogState extends State<ImagePickerDialog> {
+class _RadioImagePickerState extends State<RadioImagePicker> {
   final ImagePicker picker = ImagePicker();
 
   SelectedImageSource _selectedSource = SelectedImageSource.ASSET;

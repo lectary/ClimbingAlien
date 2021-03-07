@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
-import 'package:climbing_alien/widgets/image_picker/image_picker_dialog.dart';
+import 'package:climbing_alien/widgets/image_picker/simple_image_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -86,7 +84,7 @@ class _WallFormState extends State<WallForm> {
               decoration: InputDecoration(labelText: "Image - Click me"),
               readOnly: true,
               onTap: () async {
-                String newPath = await ImagePickerDialog.showImagePickerDialog(context);
+                String newPath = await SimpleImagePicker.dialog(context);
                 if (newPath != null) {
                   setState(() {
                     imagePath = newPath;
