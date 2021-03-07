@@ -44,9 +44,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: HeaderControl(
-          "Route Editor",
-          nextSelectionCallback: climaxModel.selectNextLimb,
-          resetCallback: () => climaxModel.resetClimax(position: screenCenter),
+        "Route Editor",
+        nextSelectionCallback: climaxModel.selectNextLimb,
+        resetCallback: () => climaxModel.resetClimax(position: screenCenter),
         ),
       ),
       // drawer: AppDrawer(),

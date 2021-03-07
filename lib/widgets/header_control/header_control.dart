@@ -33,63 +33,78 @@ class _HeaderControlState extends State<HeaderControl> {
       padding: EdgeInsets.only(top: statusBarHeight), // height of device system panel
       child: Container(
         height: kToolbarHeight, // default material height of toolbar
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            Expanded(
-                child: Center(
-                    child: Text(widget.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            .copyWith(color: Theme.of(context).colorScheme.onPrimary)))),
-            HeaderExtensionAnimation(children: [
-              TextButton(
-                onPressed: widget.resetCallback ?? () {},
-                child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-              )
-            ]),
-            InkWell(
-              onTap: widget.nextSelectionCallback ?? () {},
+            // AppBar title
+            Padding(
+              padding: const EdgeInsets.only(left: 72.0),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(widget.title,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(color: Theme.of(context).colorScheme.onPrimary))),
+            ),
+            // Control elements
+            Align(
+              alignment: Alignment.centerRight,
               child: Container(
-                width: kToolbarHeight,
-                child: Stack(
-                  alignment: Alignment.center,
+                color: Theme.of(context).colorScheme.primary,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Positioned.fill(
-                        child: FittedBox(
-                            fit: BoxFit.fill,
-                            child: Icon(
-                              Icons.repeat,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ))),
-                    Text("$taskCounter",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            .copyWith(color: Theme.of(context).colorScheme.onPrimary))
+                    HeaderExtensionAnimation(buttonColor: Theme.of(context).colorScheme.onPrimary, children: [
+                      TextButton(
+                        onPressed: widget.resetCallback ?? () {},
+                        child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                      )
+                    ]),
+                    InkWell(
+                      onTap: widget.nextSelectionCallback ?? () {},
+                      child: Container(
+                        width: kToolbarHeight,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Positioned.fill(
+                                child: FittedBox(
+                                    fit: BoxFit.fill,
+                                    child: Icon(
+                                      Icons.repeat,
+                                      color: Theme.of(context).colorScheme.onPrimary,
+                                    ))),
+                            Text("$taskCounter",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    .copyWith(color: Theme.of(context).colorScheme.onPrimary))
+                          ],
+                        ),
+                      ),
+                    ),
+                    RotatedBox(
+                      quarterTurns: 1,
+                      child: TextButton(
+                        onPressed: widget.stepFinishedCallback ?? () {},
+                        child: Text(
+                          "Done",
+                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
+                      onPressed: () {
+                        climaxModel.backgroundSelected = !backgroundSelected;
+                      },
+                    )
                   ],
                 ),
               ),
             ),
-            RotatedBox(
-              quarterTurns: 1,
-              child: TextButton(
-                onPressed: widget.stepFinishedCallback ?? () {},
-                child: Text(
-                  "Done",
-                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
-              onPressed: () {
-                climaxModel.backgroundSelected = !backgroundSelected;
-              },
-            )
           ],
         ),
       ),

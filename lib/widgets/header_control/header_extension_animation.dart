@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 /// Additional features can be displayed via an Slide in like Animation, done via [SizeTransition].
 class HeaderExtensionAnimation extends StatefulWidget {
   final List<Widget> children;
+  final Color buttonColor;
 
-  HeaderExtensionAnimation({this.children});
+  HeaderExtensionAnimation({this.children, this.buttonColor});
 
   @override
   _HeaderExtensionAnimationState createState() => _HeaderExtensionAnimationState();
@@ -15,14 +16,11 @@ class _HeaderExtensionAnimationState extends State<HeaderExtensionAnimation> wit
   AnimationController _animationController;
   Animation<double> _animation;
   bool _extensionEnabled = false;
-  
+
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 500)
-    );
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.fastOutSlowIn,
@@ -50,11 +48,10 @@ class _HeaderExtensionAnimationState extends State<HeaderExtensionAnimation> wit
                   iconSize: 32,
                   icon: _extensionEnabled
                       ? Icon(
-                    Icons.keyboard_arrow_right,
-                  )
-                      : Icon(
-                    Icons.keyboard_arrow_left,
-                  ),
+                          Icons.keyboard_arrow_right,
+                          color: widget.buttonColor,
+                        )
+                      : Icon(Icons.keyboard_arrow_left, color: widget.buttonColor),
                   onPressed: () {
                     setState(() {
                       if (_extensionEnabled) {
