@@ -51,7 +51,6 @@ class ClimbingApp extends StatelessWidget {
       initialRoute: WallScreen.routeName,
       routes: {
         WallScreen.routeName: (context) => WallScreen(),
-        RouteEditorScreen.routeName: (context) => RouteEditorScreen(),
         CameraScreen.routeName: (context) => CameraScreen(),
       },
     );

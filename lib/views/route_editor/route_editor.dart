@@ -1,9 +1,9 @@
-import 'dart:io';
-
+import 'package:climbing_alien/data/entity/route.dart';
+import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
-import 'package:flutter/material.dart';
+import 'package:climbing_alien/widgets/image_display.dart';
+import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
 /// One-finger translate (background&all(=background+climax)) and two-finger scale (background&all) using a single GestureDetector with latest flutter channel.
@@ -15,17 +15,19 @@ import 'package:provider/provider.dart';
 /// To persist the scaling between gestures, the last scaling value is saved and used as baseValue which gets then multiplied with the new current scale value.
 /// Re-added move-climax-limb-by-tap possibility but with [GestureDetector.onLongPressStart] to avoid conflicts with one-finger pan.
 class RouteEditor extends StatefulWidget {
+  final Wall wall;
+  final Route route;
+
+  RouteEditor(this.wall, this.route);
+
   @override
   _RouteEditorState createState() => _RouteEditorState();
 }
 
 class _RouteEditorState extends State<RouteEditor> {
-  ImageViewModel model;
-  String backgroundImagePath;
   ClimaxViewModel climaxModel;
 
   Widget backgroundWidget;
-  Image image = Image.asset("assets/images/routes/no-name-route.jpg");
 
   bool isTranslate = false;
   bool isScale = false;
@@ -38,20 +40,20 @@ class _RouteEditorState extends State<RouteEditor> {
 
   @override
   Widget build(BuildContext context) {
-    backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
     final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
     final Offset deltaTranslate = context.select((ClimaxViewModel model) => model.deltaTranslate);
     final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
-    backgroundWidget =
-        Transform.translate(offset: -deltaTranslate, child: Transform.scale(scale: scaleBackground, child: image));
+    backgroundWidget = Transform.translate(
+        offset: -deltaTranslate,
+        child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
     Widget child = Transform.translate(
       offset: -deltaTranslateAll,
       child: Transform.scale(
         scale: scaleAll,
         child: Stack(fit: StackFit.expand, children: [
-          _buildBackgroundImage(),
+          backgroundWidget,
           Container(color: Colors.transparent, child: Climax()),
         ]),
       ),
@@ -111,11 +113,5 @@ class _RouteEditorState extends State<RouteEditor> {
       },
       child: Container(color: Colors.transparent, child: child),
     );
-  }
-
-  Widget _buildBackgroundImage() {
-    return backgroundImagePath == null
-        ? backgroundWidget
-        : FittedBox(fit: BoxFit.fill, child: Image.file(File(backgroundImagePath)));
   }
 }

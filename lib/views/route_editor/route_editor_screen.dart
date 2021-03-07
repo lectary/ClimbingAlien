@@ -1,19 +1,21 @@
+import 'package:climbing_alien/data/entity/route.dart';
+import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:climbing_alien/widgets/header_control/header_control.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
 class RouteEditorScreen extends StatefulWidget {
   static const routeName = "/routeEditor";
 
+  final Wall wall;
   final Route route;
 
-  RouteEditorScreen({this.route, Key key}) : super(key: key);
+  RouteEditorScreen(this.wall, this.route, {Key key}) : super(key: key);
 
   @override
   _RouteEditorScreenState createState() => _RouteEditorScreenState();
@@ -21,7 +23,6 @@ class RouteEditorScreen extends StatefulWidget {
 
 class _RouteEditorScreenState extends State<RouteEditorScreen> {
   ImageViewModel model;
-  String backgroundImagePath;
 
   ClimaxViewModel climaxModel;
   Offset screenCenter;
@@ -40,7 +41,6 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    backgroundImagePath = context.select((ImageViewModel model) => model.currentImagePath);
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: HeaderControl(
@@ -56,7 +56,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                RouteEditor(),
+                RouteEditor(widget.wall, widget.route),
                 Positioned(
                     right: 0,
                     bottom: 0,

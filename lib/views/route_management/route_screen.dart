@@ -34,7 +34,7 @@ class RouteScreen extends StatelessWidget {
                         subtitle: Text(route.description),
                         trailing: IconButton(
                             icon: Icon(Icons.edit),
-                            onPressed: () => Navigator.pushNamed(context, RouteEditorScreen.routeName)),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route)))),
                         onLongPress: () => RouteForm.showRouteFormDialog(context, route: route, wallId: wall.id),
                       );
                     });
