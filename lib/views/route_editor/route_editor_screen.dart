@@ -42,6 +42,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
+    final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: HeaderControl(
@@ -92,7 +93,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(onPressed: () {}, child: Text('Tap')),
+                              child: ElevatedButton(style: ElevatedButton.styleFrom(primary:
+                              tapOn ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary),
+                                  onPressed: () => climaxModel.tapOn = !tapOn, child: Text('Tap')),
                             )
                           ],
                         ),

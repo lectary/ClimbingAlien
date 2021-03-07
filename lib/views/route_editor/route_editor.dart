@@ -58,6 +58,10 @@ class _RouteEditorState extends State<RouteEditor> {
     );
     return GestureDetector(
       onScaleStart: (ScaleStartDetails details) {
+        if (climaxModel.tapOn) {
+          return;
+        }
+
         setState(() {
           isTranslate = details.pointerCount == 1 ? true : false;
           isScale = details.pointerCount == 2 ? true : false;
@@ -80,6 +84,10 @@ class _RouteEditorState extends State<RouteEditor> {
         });
       },
       onScaleUpdate: (ScaleUpdateDetails details) {
+        if (climaxModel.tapOn) {
+          return;
+        }
+
         setState(() {
           isTranslate = details.pointerCount == 1 ? true : false;
           isScale = details.pointerCount == 2 ? true : false;
@@ -106,8 +114,11 @@ class _RouteEditorState extends State<RouteEditor> {
           }
         });
       },
-      onLongPressStart: (details) {
-        climaxModel.updateSelectedLimbPosition(details.localPosition);
+      onTapDown: (details) {
+        if (climaxModel.tapOn) {
+          climaxModel.updateSelectedLimbPosition(details.localPosition);
+          climaxModel.tapOn = !climaxModel.tapOn;
+        }
       },
       child: Container(color: Colors.transparent, child: child),
     );

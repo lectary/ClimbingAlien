@@ -64,6 +64,8 @@ class ClimaxViewModel extends ChangeNotifier {
   Offset lastTranslateAll = Offset(1.0, 1.0);
   Offset deltaTranslateAll = Offset(1.0, 1.0);
 
+  bool tapOn = false;
+
   ClimaxViewModel() {
     resetClimax();
   }
