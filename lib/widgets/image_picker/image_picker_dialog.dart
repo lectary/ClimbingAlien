@@ -1,9 +1,7 @@
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_picker/asset_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 enum SelectedImageSource { ASSET, CAMERA, GALLERY }
 
@@ -23,36 +21,24 @@ class ImagePickerDialog extends StatefulWidget {
   _ImagePickerDialogState createState() => _ImagePickerDialogState();
 
   static Future<String> showImagePickerDialog(BuildContext context, {Wall wall}) async {
-    final model = Provider.of<ImageViewModel>(context, listen: false);
     return await showDialog<String>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => ChangeNotifierProvider.value(
-              value: model,
-              child: AlertDialog(
-                title: wall == null ? Text("New image") : Text("Edit image"),
-                content: ImagePickerDialog(wall),
-              ),
+        builder: (context) => AlertDialog(
+              title: wall == null ? Text("New image") : Text("Edit image"),
+              content: ImagePickerDialog(wall),
             ));
   }
 }
 
 class _ImagePickerDialogState extends State<ImagePickerDialog> {
   final ImagePicker picker = ImagePicker();
-  ImageViewModel _imageViewModel;
 
   SelectedImageSource _selectedSource = SelectedImageSource.ASSET;
-
-  @override
-  void initState() {
-    super.initState();
-    _imageViewModel = Provider.of<ImageViewModel>(context, listen: false);
-  }
 
   Future getImage(ImageSource imageSource) async {
     final pickedFile = await picker.getImage(source: imageSource);
     if (pickedFile != null) {
-      // _imageViewModel.currentImagePath = pickedFile.path;
       Navigator.pop(context, pickedFile.path);
     } else {
       print('No image selected.');
@@ -63,7 +49,6 @@ class _ImagePickerDialogState extends State<ImagePickerDialog> {
     final pickedFilePath =
         await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
     if (pickedFilePath != null) {
-      // _imageViewModel.currentImagePath = pickedFilePath;
       Navigator.pop(context, pickedFilePath);
     } else {
       print('No image selected.');
