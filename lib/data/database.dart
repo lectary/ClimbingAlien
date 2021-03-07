@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:climbing_alien/data/dao/route_dao.dart';
 import 'package:climbing_alien/data/dao/wall_dao.dart';
@@ -42,7 +41,7 @@ class DatabaseProvider {
 
   /// insert mock data
   final callback = Callback(onCreate: (database, version) {
-    Wall wall1 = Wall('Wand1', description: 'Super wand 1000', id: 1);
+    Wall wall1 = Wall('Wand1', description: 'Super wand 1000', imagePath: 'assets/images/climbing_walls/no-name-route.png', id: 1);
     Wall wall2 = Wall('Wand2', description: 'Schwierig', id: 2);
     database.insert('walls', wall1.toMap());
     database.insert('walls', wall2.toMap());
