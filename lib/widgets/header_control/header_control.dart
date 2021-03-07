@@ -7,8 +7,9 @@ class HeaderControl extends StatefulWidget {
   final String title;
   final Function nextSelectionCallback;
   final Function resetCallback;
+  final Function stepFinishedCallback;
 
-  HeaderControl(this.title, {this.nextSelectionCallback, this.resetCallback});
+  HeaderControl(this.title, {this.nextSelectionCallback, this.resetCallback, this.stepFinishedCallback});
 
   @override
   _HeaderControlState createState() => _HeaderControlState();
@@ -37,12 +38,18 @@ class _HeaderControlState extends State<HeaderControl> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: Center(child: Text(widget.title, style: Theme.of(context).textTheme.headline6))),
+            Expanded(
+                child: Center(
+                    child: Text(widget.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary)))),
             HeaderExtensionAnimation(children: [
               FlatButton(
                 padding: EdgeInsets.zero,
                 onPressed: widget.resetCallback ?? () {},
-                child: Text("Reset"),
+                child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
               )
             ]),
             InkWell(
@@ -52,8 +59,18 @@ class _HeaderControlState extends State<HeaderControl> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Positioned.fill(child: FittedBox(fit: BoxFit.fill, child: Icon(Icons.repeat))),
-                    Text("$taskCounter", style: Theme.of(context).textTheme.headline6)
+                    Positioned.fill(
+                        child: FittedBox(
+                            fit: BoxFit.fill,
+                            child: Icon(
+                              Icons.repeat,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ))),
+                    Text("$taskCounter",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary))
                   ],
                 ),
               ),
@@ -62,12 +79,11 @@ class _HeaderControlState extends State<HeaderControl> {
               quarterTurns: 1,
               child: FlatButton(
                 padding: EdgeInsets.zero,
-                onPressed: () {
-                  setState(() {
-                    taskCounter++;
-                  });
-                },
-                child: Text("Done"),
+                onPressed: widget.nextSelectionCallback ?? () {},
+                child: Text(
+                  "Done",
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                ),
               ),
             ),
             IconButton(
