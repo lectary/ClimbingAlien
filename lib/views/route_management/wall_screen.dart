@@ -2,6 +2,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
 import 'package:climbing_alien/views/route_management/wall_form.dart';
+import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,9 +61,7 @@ class WallScreen extends StatelessWidget {
                               /// Wall image
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: wall.imagePath == null || wall.imagePath.isEmpty ? Text('No image') : Image.asset(wall.imagePath),
-                                ),
+                                child: Center(child: ImageDisplay(wall.imagePath, emptyText: 'No image',)),
                               )
                             ]),
                             onTap: () =>

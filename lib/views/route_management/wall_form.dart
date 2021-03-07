@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:climbing_alien/widgets/image_picker/image_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -96,7 +97,7 @@ class _WallFormState extends State<WallForm> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: getImageByPath(imagePath),
+              child: ImageDisplay(imagePath),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
@@ -131,16 +132,5 @@ class _WallFormState extends State<WallForm> {
         ),
       ),
     );
-  }
-
-  Widget getImageByPath(String path) {
-    if (path == null || path.isEmpty) {
-      return Container();
-    } else {
-      return Image.asset(path, errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-        log(exception.toString());
-        return Text('Failed to load image 😢');
-      });
-    }
   }
 }
