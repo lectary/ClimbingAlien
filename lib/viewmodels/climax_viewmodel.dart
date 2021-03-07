@@ -44,27 +44,22 @@ class ClimaxViewModel extends ChangeNotifier {
   ClimaxLimbEnum _selectedLimb = ClimaxLimbEnum.BODY;
   ClimaxLimbEnum get selectedLimb => _selectedLimb;
 
-
   double _degrees = 0.0; // direction, analogues to clock
   double _speed = _defaultSpeed;
   double _strength = 0.0;
 
   bool backgroundSelected = false;
 
-  double baseScaleClimax = 1.0;
-  double scaleClimax = 1.0;
-
+  // scale
   double baseScaleBackground = 1.0;
   double scaleBackground = 1.0;
 
-  Offset translate = Offset(1.0, 1.0);
-
-  Offset lastTranslate = Offset(1.0, 1.0);
-  Offset deltaTranslate = Offset(1.0, 1.0);
-
-  // RouteEditor 4
   double baseScaleAll = 1.0;
   double scaleAll = 1.0;
+
+  // translate
+  Offset lastTranslateBackground = Offset(1.0, 1.0);
+  Offset deltaTranslateBackground = Offset(1.0, 1.0);
 
   Offset lastTranslateAll = Offset(1.0, 1.0);
   Offset deltaTranslateAll = Offset(1.0, 1.0);
@@ -75,11 +70,11 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth * scaleClimax, height: bodyHeight * scaleClimax);
-    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset * scaleClimax, radius: radius * scaleClimax);
-    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset * scaleClimax, radius: radius * scaleClimax);
-    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset * scaleClimax, radius: radius * scaleClimax);
-    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset * scaleClimax, radius: radius * scaleClimax);
+    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth, height: bodyHeight);
+    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset, radius: radius);
+    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset, radius: radius);
+    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset, radius: radius);
+    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset, radius: radius);
 
     _climaxLimbs = HashMap.from({
       ClimaxLimbEnum.BODY: _bodyRect,
@@ -100,10 +95,8 @@ class ClimaxViewModel extends ChangeNotifier {
     _leftLegOffset = Offset(-50, 70);
     _rightLegOffset = Offset(50, 70);
 
-    scaleClimax = 1.0;
     scaleBackground = 1.0;
-    translate = Offset(1.0, 1.0);
-    deltaTranslate = Offset(1.0, 1.0);
+    deltaTranslateBackground = Offset(1.0, 1.0);
 
     scaleAll = 1.0;
     deltaTranslateAll = Offset(1.0, 1.0);
@@ -127,19 +120,19 @@ class ClimaxViewModel extends ChangeNotifier {
       // Divide through scale parameter, to get the local, tapped position and not
       // the scaled one.
       case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = (newPosition - _climaxPosition) / scaleClimax;
+        _leftArmOffset = (newPosition - _climaxPosition);
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = (newPosition - _climaxPosition) / scaleClimax;
+        _rightArmOffset = (newPosition - _climaxPosition);
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = (newPosition - _climaxPosition) / scaleClimax;
+        _rightLegOffset = (newPosition - _climaxPosition);
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = (newPosition - _climaxPosition) / scaleClimax;
+        _leftLegOffset = (newPosition - _climaxPosition);
         break;
     }
 

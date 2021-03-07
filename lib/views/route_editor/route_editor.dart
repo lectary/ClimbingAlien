@@ -27,8 +27,6 @@ class RouteEditor extends StatefulWidget {
 class _RouteEditorState extends State<RouteEditor> {
   ClimaxViewModel climaxModel;
 
-  Widget backgroundWidget;
-
   bool isTranslate = false;
   bool isScale = false;
 
@@ -42,11 +40,11 @@ class _RouteEditorState extends State<RouteEditor> {
   Widget build(BuildContext context) {
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
     final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
-    final Offset deltaTranslate = context.select((ClimaxViewModel model) => model.deltaTranslate);
+    final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
     final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
-    backgroundWidget = Transform.translate(
-        offset: -deltaTranslate,
+    Widget backgroundWidget = Transform.translate(
+        offset: -deltaTranslateBackground,
         child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
     Widget child = Transform.translate(
       offset: -deltaTranslateAll,
@@ -68,7 +66,7 @@ class _RouteEditorState extends State<RouteEditor> {
             if (editAll) {
               climaxModel.lastTranslateAll = details.localFocalPoint;
             } else {
-              climaxModel.lastTranslate = details.localFocalPoint;
+              climaxModel.lastTranslateBackground = details.localFocalPoint;
             }
           }
 
@@ -92,9 +90,9 @@ class _RouteEditorState extends State<RouteEditor> {
               climaxModel.lastTranslateAll = details.localFocalPoint;
             } else {
               // Use `1 / climaxModel.scaleAll` to have always the same speed of the translation, independent on the current scale
-              climaxModel.deltaTranslate +=
-                  (climaxModel.lastTranslate - details.localFocalPoint) * 1 / climaxModel.scaleAll;
-              climaxModel.lastTranslate = details.localFocalPoint;
+              climaxModel.deltaTranslateBackground +=
+                  (climaxModel.lastTranslateBackground - details.localFocalPoint) * 1 / climaxModel.scaleAll;
+              climaxModel.lastTranslateBackground = details.localFocalPoint;
             }
           }
 
