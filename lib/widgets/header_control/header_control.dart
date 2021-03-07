@@ -95,12 +95,6 @@ class _HeaderControlState extends State<HeaderControl> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.image, color: backgroundSelected ? Colors.red : Colors.white),
-                      onPressed: () {
-                        climaxModel.backgroundSelected = !backgroundSelected;
-                      },
-                    )
                   ],
                 ),
               ),

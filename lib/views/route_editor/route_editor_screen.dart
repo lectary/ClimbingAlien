@@ -41,12 +41,13 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: HeaderControl(
-        "Route Editor",
-        nextSelectionCallback: climaxModel.selectNextLimb,
-        resetCallback: () => climaxModel.resetClimax(position: screenCenter),
+          "Route Editor",
+          nextSelectionCallback: climaxModel.selectNextLimb,
+          resetCallback: () => climaxModel.resetClimax(position: screenCenter),
         ),
       ),
       // drawer: AppDrawer(),
@@ -57,22 +58,64 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               fit: StackFit.expand,
               children: [
                 RouteEditor(widget.wall, widget.route),
-                Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32.0),
-                      child: JoystickWithButtonAndSlider(
-                        onDirectionChanged: (degrees, distance) {
-                          climaxModel.moveLimbFree(degrees, distance);
-                        },
-                        onSliderChanged: (speed) => climaxModel.updateSpeed(speed),
-                        onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
-                        onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
-                        onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
-                        onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
-                      ),
-                    )),
+                !editAll
+                    ? Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Adjust the size and position of the background',
+                              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                  onPressed: () => climaxModel.backgroundSelected = !editAll, child: Text('Done')),
+                            )
+                          ],
+                        ),
+                      )
+                    : Container(),
+                editAll
+                    ? Positioned(
+                        left: 0,
+                        bottom: 0,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                  onPressed: () => climaxModel.backgroundSelected = !editAll,
+                                  child: Text('Edit background')),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(onPressed: () {}, child: Text('Tap')),
+                            )
+                          ],
+                        ),
+                      )
+                    : Container(),
+                editAll
+                    ? Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32.0),
+                          child: JoystickWithButtonAndSlider(
+                            onDirectionChanged: (degrees, distance) {
+                              climaxModel.moveLimbFree(degrees, distance);
+                            },
+                            onSliderChanged: (speed) => climaxModel.updateSpeed(speed),
+                            onClickedUp: () => climaxModel.moveLimbDirectional(Direction.UP),
+                            onClickedDown: () => climaxModel.moveLimbDirectional(Direction.DOWN),
+                            onClickedLeft: () => climaxModel.moveLimbDirectional(Direction.LEFT),
+                            onClickedRight: () => climaxModel.moveLimbDirectional(Direction.RIGHT),
+                          ),
+                        ))
+                    : Container(),
               ],
             ),
           ),
