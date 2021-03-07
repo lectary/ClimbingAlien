@@ -12,7 +12,10 @@ class Wall extends BaseObject {
   @ColumnInfo(name: 'image_path')
   String imagePath;
 
-  Wall(this.title, {this.description, this.height, this.imagePath, int id, DateTime modifiedAt, DateTime createdAt})
+  @ignore
+  String imagePathUpdated;
+
+  Wall(this.title, {this.description, this.height, this.imagePath, this.imagePathUpdated, int id, DateTime modifiedAt, DateTime createdAt})
       : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {

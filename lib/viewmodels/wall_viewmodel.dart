@@ -16,6 +16,9 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<void> updateWall(Wall wall) {
+    if (wall.imagePath != wall.imagePathUpdated) {
+      wall.imagePath = wall.imagePathUpdated;
+    }
     return _climbingRepository.updateWall(wall);
   }
 
