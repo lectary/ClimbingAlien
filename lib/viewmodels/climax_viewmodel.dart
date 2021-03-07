@@ -70,6 +70,10 @@ class ClimaxViewModel extends ChangeNotifier {
     resetClimax();
   }
 
+  saveCurrentPosition() {
+
+  }
+
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
     _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth, height: bodyHeight);

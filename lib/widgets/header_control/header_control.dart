@@ -28,7 +28,6 @@ class _HeaderControlState extends State<HeaderControl> {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
     return Padding(
       padding: EdgeInsets.only(top: statusBarHeight), // height of device system panel
       child: Container(
@@ -88,7 +87,12 @@ class _HeaderControlState extends State<HeaderControl> {
                     RotatedBox(
                       quarterTurns: 1,
                       child: TextButton(
-                        onPressed: widget.stepFinishedCallback ?? () {},
+                        onPressed: () {
+                          setState(() {
+                            taskCounter ++;
+                          });
+                          widget.stepFinishedCallback?.call();
+                        },
                         child: Text(
                           "Done",
                           style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
