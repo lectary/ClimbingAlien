@@ -61,35 +61,38 @@ class _HeaderControlState extends State<HeaderControl> {
                         child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                       )
                     ]),
-                    InkWell(
-                      onTap: widget.nextSelectionCallback ?? () {},
-                      child: Container(
-                        width: kToolbarHeight,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Positioned.fill(
-                                child: FittedBox(
-                                    fit: BoxFit.fill,
-                                    child: Icon(
-                                      Icons.repeat,
-                                      color: Theme.of(context).colorScheme.onPrimary,
-                                    ))),
-                            Text("$taskCounter",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    .copyWith(color: Theme.of(context).colorScheme.onPrimary))
-                          ],
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          onPressed: () => setState(() {
+                            if (taskCounter == 0) return;
+                            taskCounter--;
+                          }),
+                          visualDensity: VisualDensity.compact,
                         ),
-                      ),
+                        Text("$taskCounter",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6
+                                .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                        IconButton(
+                            icon: Icon(Icons.add),
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            onPressed: () => setState(() {
+                                  taskCounter++;
+                                }),
+                            visualDensity: VisualDensity.compact),
+                      ],
                     ),
                     RotatedBox(
                       quarterTurns: 1,
                       child: TextButton(
                         onPressed: () {
                           setState(() {
-                            taskCounter ++;
+                            taskCounter++;
                           });
                           widget.stepFinishedCallback?.call();
                         },
