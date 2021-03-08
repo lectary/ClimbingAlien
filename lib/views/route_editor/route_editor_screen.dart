@@ -49,7 +49,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
           "Route Editor",
           nextSelectionCallback: climaxModel.selectNextLimb,
           resetCallback: () => climaxModel.resetClimax(position: screenCenter),
-          stepFinishedCallback: () => climaxModel.saveCurrentPosition(),
+          stepFinishedCallback: () => climaxModel.saveCurrentPosition(widget.route.id),
         ),
       ),
       // drawer: AppDrawer(),

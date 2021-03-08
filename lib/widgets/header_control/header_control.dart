@@ -28,6 +28,7 @@ class _HeaderControlState extends State<HeaderControl> {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
+    int order = context.select((ClimaxViewModel model) => model.order);
     return Padding(
       padding: EdgeInsets.only(top: statusBarHeight), // height of device system panel
       child: Container(
@@ -65,15 +66,14 @@ class _HeaderControlState extends State<HeaderControl> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.remove),
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          onPressed: () => setState(() {
-                            if (taskCounter == 0) return;
-                            taskCounter--;
-                          }),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        Text("$taskCounter",
+                            icon: Icon(Icons.remove),
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            onPressed: () {
+                              if (order == 0) return;
+                              climaxModel.order--;
+                            },
+                            visualDensity: VisualDensity.compact),
+                        Text("$order",
                             style: Theme.of(context)
                                 .textTheme
                                 .headline6
@@ -81,9 +81,7 @@ class _HeaderControlState extends State<HeaderControl> {
                         IconButton(
                             icon: Icon(Icons.add),
                             color: Theme.of(context).colorScheme.onPrimary,
-                            onPressed: () => setState(() {
-                                  taskCounter++;
-                                }),
+                            onPressed: () => climaxModel.order++,
                             visualDensity: VisualDensity.compact),
                       ],
                     ),
@@ -92,7 +90,7 @@ class _HeaderControlState extends State<HeaderControl> {
                       child: TextButton(
                         onPressed: () {
                           setState(() {
-                            taskCounter++;
+                            climaxModel.order++;
                           });
                           widget.stepFinishedCallback?.call();
                         },

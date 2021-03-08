@@ -1,7 +1,8 @@
 import 'dart:collection';
-import 'dart:developer';
 import 'dart:math' as _math;
 
+import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:flutter/material.dart';
 
 enum ClimaxLimbEnum {
@@ -25,6 +26,8 @@ class ClimaxViewModel extends ChangeNotifier {
   final radius = 20.0;
   final bodyWidth = 50.0;
   final bodyHeight = 80.0;
+
+  final ClimbingRepository _climbingRepository;
 
   Offset _climaxPosition;
   Offset _leftArmOffset;
@@ -65,13 +68,63 @@ class ClimaxViewModel extends ChangeNotifier {
   Offset deltaTranslateAll = Offset(1.0, 1.0);
 
   bool tapOn = false;
+  int order = 0;
 
-  ClimaxViewModel() {
+  ClimaxViewModel({@required ClimbingRepository climbingRepository})
+      : assert(climbingRepository != null),
+        _climbingRepository = climbingRepository {
     resetClimax();
   }
 
-  saveCurrentPosition() {
+  List<Grasp> graspList = List.empty();
 
+  Future<Grasp> graspByRoute(int routeId, int order) async {
+    if (graspList.isEmpty) {
+      graspList = await _climbingRepository.findAllGraspsByRouteId(routeId);
+    }
+    return graspList[order];
+  }
+
+  Stream<List<Grasp>> get graspStream => _climbingRepository.watchAllGrasps();
+
+  void decrementOrder() {
+    order--;
+  }
+  void incrementOrder() {
+    order++;
+  }
+
+  saveCurrentPosition(int routeId) {
+    print("save step for route with id: $routeId");
+    Grasp newGrasp = Grasp(
+      order: order,
+      routeId: routeId,
+      scaleBackground: scaleBackground,
+      scaleAll: scaleAll,
+      translateBackground: deltaTranslateBackground,
+      translateAll: deltaTranslateAll,
+      climaxPosition: _climaxPosition,
+      leftArm: _leftArmOffset,
+      rightArm: _rightArmOffset,
+      leftLeg: _leftLegOffset,
+      rightLeg: _rightLegOffset,
+    );
+    _climbingRepository.insertGrasp(newGrasp);
+  }
+
+  setupByGrasp(Grasp grasp) {
+    // order = grasp.order;
+    scaleBackground = grasp.scaleBackground;
+    scaleAll = grasp.scaleAll;
+    deltaTranslateBackground = grasp.translateBackground;
+    deltaTranslateAll = grasp.translateAll;
+    _climaxPosition = grasp.climaxPosition;
+    _leftArmOffset = grasp.leftArm;
+    _rightArmOffset = grasp.rightArm;
+    _leftLegOffset = grasp.leftLeg;
+    _rightLegOffset = grasp.rightLeg;
+
+    // _updateClimax();
   }
 
   /// Updates climax' rectangles data for redrawing.
