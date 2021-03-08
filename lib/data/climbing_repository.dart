@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/database.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:flutter/foundation.dart';
@@ -42,5 +43,26 @@ class ClimbingRepository {
 
   Future<void> deleteRoute(Route route) {
     return _climbingDatabase.routeDao.deleteRoute(route);
+  }
+
+  /// Grasps
+  Stream<List<Grasp>> watchAllGrasps() {
+    return _climbingDatabase.graspDao.watchAllGrasps();
+  }
+
+  Future<List<Grasp>> findAllGraspsByRouteId(int routeId) {
+    return _climbingDatabase.graspDao.findAllByRouteId(routeId);
+  }
+
+  Future<void> insertGrasp(Grasp grasp) {
+    return _climbingDatabase.graspDao.insertGrasp(grasp);
+  }
+
+  Future<void> updateGrasp(Grasp grasp) {
+    return _climbingDatabase.graspDao.updateGrasp(grasp);
+  }
+
+  Future<void> deleteGrasp(Grasp grasp) {
+    return _climbingDatabase.graspDao.deleteGrasp(grasp);
   }
 }

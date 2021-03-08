@@ -64,6 +64,8 @@ class _$ClimbingDatabase extends ClimbingDatabase {
 
   RouteDao _routeDaoInstance;
 
+  GraspDao _graspDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -85,6 +87,8 @@ class _$ClimbingDatabase extends ClimbingDatabase {
             'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `scale_background` REAL NOT NULL, `scale_all` REAL NOT NULL, `translate_background` TEXT NOT NULL, `translate_all` TEXT NOT NULL, `climax_position` TEXT NOT NULL, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -100,6 +104,11 @@ class _$ClimbingDatabase extends ClimbingDatabase {
   @override
   RouteDao get routeDao {
     return _routeDaoInstance ??= _$RouteDao(database, changeListener);
+  }
+
+  @override
+  GraspDao get graspDao {
+    return _graspDaoInstance ??= _$GraspDao(database, changeListener);
   }
 }
 
@@ -273,5 +282,155 @@ class _$RouteDao extends RouteDao {
   }
 }
 
+class _$GraspDao extends GraspDao {
+  _$GraspDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _graspInsertionAdapter = InsertionAdapter(
+            database,
+            'grasps',
+            (Grasp item) => <String, dynamic>{
+                  'order': item.order,
+                  'route_id': item.routeId,
+                  'scale_background': item.scaleBackground,
+                  'scale_all': item.scaleAll,
+                  'translate_background':
+                      _offsetConverter.encode(item.translateBackground),
+                  'translate_all': _offsetConverter.encode(item.translateAll),
+                  'climax_position':
+                      _offsetConverter.encode(item.climaxPosition),
+                  'left_arm': _offsetConverter.encode(item.leftArm),
+                  'right_arm': _offsetConverter.encode(item.rightArm),
+                  'left_leg': _offsetConverter.encode(item.leftLeg),
+                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                },
+            changeListener),
+        _graspUpdateAdapter = UpdateAdapter(
+            database,
+            'grasps',
+            ['id'],
+            (Grasp item) => <String, dynamic>{
+                  'order': item.order,
+                  'route_id': item.routeId,
+                  'scale_background': item.scaleBackground,
+                  'scale_all': item.scaleAll,
+                  'translate_background':
+                      _offsetConverter.encode(item.translateBackground),
+                  'translate_all': _offsetConverter.encode(item.translateAll),
+                  'climax_position':
+                      _offsetConverter.encode(item.climaxPosition),
+                  'left_arm': _offsetConverter.encode(item.leftArm),
+                  'right_arm': _offsetConverter.encode(item.rightArm),
+                  'left_leg': _offsetConverter.encode(item.leftLeg),
+                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                },
+            changeListener),
+        _graspDeletionAdapter = DeletionAdapter(
+            database,
+            'grasps',
+            ['id'],
+            (Grasp item) => <String, dynamic>{
+                  'order': item.order,
+                  'route_id': item.routeId,
+                  'scale_background': item.scaleBackground,
+                  'scale_all': item.scaleAll,
+                  'translate_background':
+                      _offsetConverter.encode(item.translateBackground),
+                  'translate_all': _offsetConverter.encode(item.translateAll),
+                  'climax_position':
+                      _offsetConverter.encode(item.climaxPosition),
+                  'left_arm': _offsetConverter.encode(item.leftArm),
+                  'right_arm': _offsetConverter.encode(item.rightArm),
+                  'left_leg': _offsetConverter.encode(item.leftLeg),
+                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Grasp> _graspInsertionAdapter;
+
+  final UpdateAdapter<Grasp> _graspUpdateAdapter;
+
+  final DeletionAdapter<Grasp> _graspDeletionAdapter;
+
+  @override
+  Stream<List<Grasp>> watchAllGrasps() {
+    return _queryAdapter.queryListStream('SELECT * FROM grasps',
+        queryableName: 'grasps',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => Grasp(
+            order: row['order'] as int,
+            routeId: row['route_id'] as int,
+            scaleBackground: row['scale_background'] as double,
+            scaleAll: row['scale_all'] as double,
+            translateBackground:
+                _offsetConverter.decode(row['translate_background'] as String),
+            translateAll:
+                _offsetConverter.decode(row['translate_all'] as String),
+            climaxPosition:
+                _offsetConverter.decode(row['climax_position'] as String),
+            leftArm: _offsetConverter.decode(row['left_arm'] as String),
+            rightArm: _offsetConverter.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
+            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
+  Future<List<Grasp>> findAllByRouteId(int routeId) async {
+    return _queryAdapter.queryList('SELECT * FROM grasps WHERE route_id = ?',
+        arguments: <dynamic>[routeId],
+        mapper: (Map<String, dynamic> row) => Grasp(
+            order: row['order'] as int,
+            routeId: row['route_id'] as int,
+            scaleBackground: row['scale_background'] as double,
+            scaleAll: row['scale_all'] as double,
+            translateBackground:
+                _offsetConverter.decode(row['translate_background'] as String),
+            translateAll:
+                _offsetConverter.decode(row['translate_all'] as String),
+            climaxPosition:
+                _offsetConverter.decode(row['climax_position'] as String),
+            leftArm: _offsetConverter.decode(row['left_arm'] as String),
+            rightArm: _offsetConverter.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
+            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
+  Future<void> insertGrasp(Grasp grasp) async {
+    await _graspInsertionAdapter.insert(grasp, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateGrasp(Grasp grasp) async {
+    await _graspUpdateAdapter.update(grasp, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteGrasp(Grasp grasp) async {
+    await _graspDeletionAdapter.delete(grasp);
+  }
+}
+
 // ignore_for_file: unused_element
 final _dateTimeConverter = DateTimeConverter();
+final _offsetConverter = OffsetConverter();

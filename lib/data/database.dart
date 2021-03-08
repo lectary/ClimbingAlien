@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:climbing_alien/data/dao/grasp_dao.dart';
 import 'package:climbing_alien/data/dao/route_dao.dart';
 import 'package:climbing_alien/data/dao/wall_dao.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/data/type_converters.dart';
@@ -10,12 +12,14 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 
 part 'database.g.dart'; // the generated code will be there
 
-@TypeConverters([DateTimeConverter])
-@Database(version: 1, entities: [Wall, Route])
+@TypeConverters([DateTimeConverter, OffsetConverter])
+@Database(version: 1, entities: [Wall, Route, Grasp])
 abstract class ClimbingDatabase extends FloorDatabase {
   WallDao get wallDao;
 
   RouteDao get routeDao;
+
+  GraspDao get graspDao;
 }
 
 class DatabaseProvider {
@@ -41,7 +45,8 @@ class DatabaseProvider {
 
   /// insert mock data
   final callback = Callback(onCreate: (database, version) {
-    Wall wall1 = Wall('Wand1', description: 'Super wand 1000', imagePath: 'assets/images/climbing_walls/no-name-route.png', id: 1);
+    Wall wall1 = Wall('Wand1',
+        description: 'Super wand 1000', imagePath: 'assets/images/climbing_walls/no-name-route.png', id: 1);
     Wall wall2 = Wall('Wand2', description: 'Schwierig', id: 2);
     database.insert('walls', wall1.toMap());
     database.insert('walls', wall2.toMap());
