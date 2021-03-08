@@ -3,6 +3,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
+import 'package:climbing_alien/views/route_viewer/route_viewer.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ class RouteScreen extends StatelessWidget {
                             icon: Icon(Icons.edit),
                             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route)))),
                         onLongPress: () => RouteForm.showRouteFormDialog(context, route: route, wallId: wall.id),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteViewer(wall, route))),
                       );
                     });
           } else {
