@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:flutter/foundation.dart';
 
@@ -9,7 +10,14 @@ class RouteViewModel extends ChangeNotifier {
       : assert(climbingRepository != null),
         _climbingRepository = climbingRepository;
 
-  Stream<List<Route>> get routeStream => _climbingRepository.watchAllRoutes();
+  List<Route> routeList = List.empty();
+
+  Stream<List<Route>> get routeStream =>
+      _climbingRepository.watchAllRoutes().asyncMap((routeList) => Future.wait(routeList.map((route) async {
+            route.graspList = await _climbingRepository.findAllGraspsByRouteId(route.id);
+            return route;
+          }).toList()));
+
 
   Future<void> insertRoute(Route route) {
     return _climbingRepository.insertRoute(route);

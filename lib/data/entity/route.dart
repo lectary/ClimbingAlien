@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/entity/base_object.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:floor/floor.dart';
 
@@ -12,6 +13,9 @@ class Route extends BaseObject {
 
   @ColumnInfo(name: 'wall_id', nullable: false)
   int wallId;
+
+  @ignore
+  List<Grasp> graspList;
 
   Route(this.title, this.wallId, {this.description, int id, DateTime modifiedAt, DateTime createdAt})
       : super(id, modifiedAt, createdAt);
