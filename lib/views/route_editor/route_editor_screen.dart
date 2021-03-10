@@ -1,3 +1,4 @@
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -27,12 +28,33 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   ClimaxViewModel climaxModel;
   Offset screenCenter;
 
+  bool init = false;
+
   @override
   void initState() {
     super.initState();
     climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-    // Updating climax default position after finishing widget build
+    widget.route.graspList.sort((Grasp g1, Grasp g2) => g1.order - g2.order);
+    if (widget.route.graspList.isEmpty) {
+      init = true;
+      _defaultClimaxPosition();
+    } else {
+      _setClimaxPositionByGraspList(widget.route.graspList);
+    }
+  }
+
+  /// Updating climax position based on graspList
+  _setClimaxPositionByGraspList(List<Grasp> graspList) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      climaxModel.resetClimax();
+      climaxModel.setupByGrasp(graspList[graspList.length - 1]);
+    });
+  }
+
+  /// Updating climax default position after finishing widget build
+  _defaultClimaxPosition() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      climaxModel.resetClimax();
       final size = MediaQuery.of(context).size;
       screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
       climaxModel.updateClimaxPosition(screenCenter);
@@ -41,7 +63,11 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
+    bool backgroundSelected = context.select((ClimaxViewModel model) => model.backgroundSelected);
+    if (init) {
+      backgroundSelected = true;
+      init = false;
+    }
     final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +86,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
               fit: StackFit.expand,
               children: [
                 RouteEditor(widget.wall, widget.route),
-                !editAll
+                backgroundSelected
                     ? Positioned(
                         left: 0,
                         right: 0,
@@ -74,13 +100,14 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                  onPressed: () => climaxModel.backgroundSelected = !editAll, child: Text('Done')),
+                                  onPressed: () => climaxModel.backgroundSelected = !climaxModel.backgroundSelected,
+                                  child: Text('Done')),
                             )
                           ],
                         ),
                       )
                     : Container(),
-                editAll
+                !backgroundSelected
                     ? Positioned(
                         left: 0,
                         bottom: 0,
@@ -89,20 +116,24 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                  onPressed: () => climaxModel.backgroundSelected = !editAll,
+                                  onPressed: () => climaxModel.backgroundSelected = !backgroundSelected,
                                   child: Text('Edit background')),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(style: ElevatedButton.styleFrom(primary:
-                              tapOn ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary),
-                                  onPressed: () => climaxModel.tapOn = !tapOn, child: Text('Tap')),
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: tapOn
+                                          ? Theme.of(context).colorScheme.error
+                                          : Theme.of(context).colorScheme.primary),
+                                  onPressed: () => climaxModel.tapOn = !tapOn,
+                                  child: Text('Tap')),
                             )
                           ],
                         ),
                       )
                     : Container(),
-                editAll
+                !backgroundSelected
                     ? Positioned(
                         right: 0,
                         bottom: 0,

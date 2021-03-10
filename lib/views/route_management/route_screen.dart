@@ -32,12 +32,12 @@ class RouteScreen extends StatelessWidget {
                       final route = routeList[index];
                       return ListTile(
                         title: Text(route.title),
-                        subtitle: Text(route.description),
+                        subtitle: Text("${route.description} - ${route.graspList.length} Grasps"),
                         trailing: IconButton(
                             icon: Icon(Icons.edit),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route)))),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
                         onLongPress: () => RouteForm.showRouteFormDialog(context, route: route, wallId: wall.id),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteViewer(wall, route))),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteViewer(wall, route, key: UniqueKey()))),
                       );
                     });
           } else {

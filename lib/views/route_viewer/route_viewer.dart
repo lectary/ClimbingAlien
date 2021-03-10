@@ -1,4 +1,3 @@
-import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -13,7 +12,7 @@ class RouteViewer extends StatefulWidget {
   final Wall wall;
   final Route route;
 
-  RouteViewer(this.wall, this.route);
+  RouteViewer(this.wall, this.route, {Key key}) : super(key: key);
 
   @override
   _RouteViewerState createState() => _RouteViewerState();
@@ -43,76 +42,65 @@ class _RouteViewerState extends State<RouteViewer> {
               ))
         ],
       ),
-      body: StreamBuilder<List<Grasp>>(
-          stream: climaxModel.graspStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final graspList = snapshot.data;
-
-              return graspList.isEmpty
-                  ? Center(child: Text('No grasps available'))
-                  : Column(
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: Builder(
-                                  builder: (context) {
-                                    final int order = context.select((ClimaxViewModel model) => model.order);
-                                    climaxModel.setupByGrasp(graspList[order]);
-                                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                                      appBarTitleNotifier.value = '${order + 1} of ${graspList.length}';
-                                    });
-                                    return Builder(
-                                      builder: (context) {
-                                        final scaleBackground =
-                                            context.select((ClimaxViewModel model) => model.scaleBackground);
-                                        final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
-                                        final Offset deltaTranslateBackground =
-                                            context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
-                                        final Offset deltaTranslateAll =
-                                            context.select((ClimaxViewModel model) => model.deltaTranslateAll);
-                                        Widget backgroundWidget = Transform.translate(
-                                            offset: -deltaTranslateBackground,
-                                            child: Transform.scale(
-                                                scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
-                                        return Transform.translate(
-                                          offset: -deltaTranslateAll,
-                                          child: Transform.scale(
-                                            scale: scaleAll,
-                                            child: Stack(fit: StackFit.expand, children: [
-                                              backgroundWidget,
-                                              Container(color: Colors.transparent, child: Climax()),
-                                            ]),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                              Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  child: ButtonBar(
-                                    alignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      ElevatedButton(
-                                          onPressed: () => climaxModel.decrementOrder(), child: Text("Previous")),
-                                      ElevatedButton(onPressed: () => climaxModel.incrementOrder(), child: Text("Next"))
-                                    ],
-                                  ))
-                            ],
-                          ),
+      body: widget.route.graspList.isEmpty
+          ? Center(child: Text('No grasps available'))
+          : Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Builder(
+                          builder: (context) {
+                            final int order = context.select((ClimaxViewModel model) => model.order);
+                            climaxModel.setupByGrasp(widget.route.graspList[order]);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              appBarTitleNotifier.value = 'Grasp ${order + 1} of ${widget.route.graspList.length}';
+                            });
+                            return Builder(
+                              builder: (context) {
+                                final scaleBackground =
+                                    context.select((ClimaxViewModel model) => model.scaleBackground);
+                                final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
+                                final Offset deltaTranslateBackground =
+                                    context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+                                final Offset deltaTranslateAll =
+                                    context.select((ClimaxViewModel model) => model.deltaTranslateAll);
+                                Widget backgroundWidget = Transform.translate(
+                                    offset: -deltaTranslateBackground,
+                                    child: Transform.scale(
+                                        scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
+                                return Transform.translate(
+                                  offset: -deltaTranslateAll,
+                                  child: Transform.scale(
+                                    scale: scaleAll,
+                                    child: Stack(fit: StackFit.expand, children: [
+                                      backgroundWidget,
+                                      Container(color: Colors.transparent, child: Climax()),
+                                    ]),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                      ],
-                    );
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          }),
+                      ),
+                      Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: ButtonBar(
+                            alignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton(onPressed: () => climaxModel.decrementOrder(), child: Text("Previous")),
+                              ElevatedButton(onPressed: () => climaxModel.incrementOrder(), child: Text("Next"))
+                            ],
+                          ))
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
