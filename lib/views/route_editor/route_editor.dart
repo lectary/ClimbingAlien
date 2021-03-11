@@ -43,25 +43,27 @@ class _RouteEditorState extends State<RouteEditor> {
     final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
     final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
-    Widget backgroundWidget = Transform.translate(
-        offset: -deltaTranslateBackground,
-        child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
-    Widget child = Transform.translate(
-      offset: -deltaTranslateAll,
-      child: Transform.scale(
-        scale: scaleAll,
-        child: Stack(fit: StackFit.expand, children: [
-          backgroundWidget,
-          Container(color: Colors.transparent, child: Climax()),
-        ]),
-      ),
-    );
+    return _buildGestureDetector(editAll,
+        child: Transform.translate(
+          offset: -deltaTranslateAll,
+          child: Transform.scale(
+            scale: scaleAll,
+            child: Stack(fit: StackFit.expand, children: [
+              Transform.translate(
+                  offset: -deltaTranslateBackground,
+                  child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath))),
+              Container(color: Colors.transparent, child: Climax()),
+            ]),
+          ),
+        ));
+  }
+
+  GestureDetector _buildGestureDetector(bool editAll, {Widget child}) {
     return GestureDetector(
       onScaleStart: (ScaleStartDetails details) {
         if (climaxModel.tapOn) {
           return;
         }
-
         setState(() {
           isTranslate = details.pointerCount == 1 ? true : false;
           isScale = details.pointerCount == 2 ? true : false;
@@ -87,7 +89,6 @@ class _RouteEditorState extends State<RouteEditor> {
         if (climaxModel.tapOn) {
           return;
         }
-
         setState(() {
           isTranslate = details.pointerCount == 1 ? true : false;
           isScale = details.pointerCount == 2 ? true : false;
