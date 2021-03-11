@@ -31,10 +31,9 @@ class ClimbingProviderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final ClimbingRepository climbingRepository = ClimbingRepository(climbingDatabase: climbingDatabase);
     return MultiProvider(providers: [
+      Provider.value(value: climbingRepository),
       ChangeNotifierProvider(create: (context) => ImageViewModel()),
-      ChangeNotifierProvider(create: (context) => ClimaxViewModel(climbingRepository: climbingRepository)),
       ChangeNotifierProvider(create: (context) => WallViewModel(climbingRepository: climbingRepository)),
-      ChangeNotifierProvider(create: (context) => RouteViewModel(climbingRepository: climbingRepository)),
     ], child: ClimbingApp());
   }
 }

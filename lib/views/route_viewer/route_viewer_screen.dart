@@ -1,3 +1,4 @@
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -19,30 +20,26 @@ class RouteViewerScreen extends StatefulWidget {
 }
 
 class _RouteViewerScreenState extends State<RouteViewerScreen> {
-  ValueNotifier<String> appBarTitleNotifier = ValueNotifier('');
+  List<Grasp> _graspList = List.empty();
+  Grasp _currentGrasp;
+  int index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _graspList = widget.route.graspList;
+    _graspList.sort((g1, g2) => g1.order - g2.order);
+    _currentGrasp = _graspList.isNotEmpty ? _graspList?.first : null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-    final statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       appBar: AppBar(
         title: Text('Route Viewer'),
-        actions: [
-          Padding(
-              padding: EdgeInsets.only(right: 32.0, top: statusBarHeight),
-              child: ValueListenableBuilder<String>(
-                valueListenable: appBarTitleNotifier,
-                builder: (context, value, child) {
-                  return Text(
-                    value,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                  );
-                },
-              ))
-        ],
       ),
-      body: widget.route.graspList.isEmpty
+      body: _graspList.isEmpty
           ? Center(child: Text('No grasps available'))
           : Column(
               children: [
@@ -50,40 +47,29 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                   child: Stack(
                     children: [
                       Positioned.fill(
-                        child: Builder(
-                          builder: (context) {
-                            final int order = context.select((ClimaxViewModel model) => model.order);
-                            climaxModel.setupByGrasp(widget.route.graspList[order]);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              appBarTitleNotifier.value = 'Grasp ${order + 1} of ${widget.route.graspList.length}';
-                            });
-                            return Builder(
-                              builder: (context) {
-                                final scaleBackground =
-                                    context.select((ClimaxViewModel model) => model.scaleBackground);
-                                final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
-                                final Offset deltaTranslateBackground =
-                                    context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
-                                final Offset deltaTranslateAll =
-                                    context.select((ClimaxViewModel model) => model.deltaTranslateAll);
-                                Widget backgroundWidget = Transform.translate(
+                        child: Builder(builder: (context) {
+                          climaxModel.setupByGrasp(_currentGrasp);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {});
+                          final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
+                          final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
+                          final Offset deltaTranslateBackground =
+                              context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+                          final Offset deltaTranslateAll =
+                              context.select((ClimaxViewModel model) => model.deltaTranslateAll);
+                          return Transform.translate(
+                            offset: -deltaTranslateAll,
+                            child: Transform.scale(
+                              scale: scaleAll,
+                              child: Stack(fit: StackFit.expand, children: [
+                                Transform.translate(
                                     offset: -deltaTranslateBackground,
                                     child: Transform.scale(
-                                        scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath)));
-                                return Transform.translate(
-                                  offset: -deltaTranslateAll,
-                                  child: Transform.scale(
-                                    scale: scaleAll,
-                                    child: Stack(fit: StackFit.expand, children: [
-                                      backgroundWidget,
-                                      Container(color: Colors.transparent, child: Climax()),
-                                    ]),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+                                        scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath))),
+                                Container(color: Colors.transparent, child: Climax()),
+                              ]),
+                            ),
+                          );
+                        }),
                       ),
                       Positioned(
                           left: 0,
@@ -92,8 +78,32 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                           child: ButtonBar(
                             alignment: MainAxisAlignment.spaceAround,
                             children: [
-                              ElevatedButton(onPressed: () => climaxModel.decrementOrder(), child: Text("Previous")),
-                              ElevatedButton(onPressed: () => climaxModel.incrementOrder(), child: Text("Next"))
+                              ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (index > 0) {
+                                        _currentGrasp = _graspList[index--];
+                                      }
+                                    });
+                                  },
+                                  child: Text("-")),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                ),
+                                onPressed: () {},
+                                child: Text('Grasp ${index + 1} of ${_graspList.length}',
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (index < _graspList.length - 1) {
+                                        _currentGrasp = _graspList[index++];
+                                      }
+                                    });
+                                  },
+                                  child: Text("+"))
                             ],
                           ))
                     ],
