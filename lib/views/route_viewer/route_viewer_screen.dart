@@ -49,7 +49,6 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                       Positioned.fill(
                         child: Builder(builder: (context) {
                           climaxModel.setupByGrasp(_currentGrasp);
-                          WidgetsBinding.instance.addPostFrameCallback((_) {});
                           final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
                           final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
                           final Offset deltaTranslateBackground =
