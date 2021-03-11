@@ -6,19 +6,19 @@ import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
-class RouteViewer extends StatefulWidget {
+class RouteViewerScreen extends StatefulWidget {
   static const String routeName = "/routeViewer";
 
   final Wall wall;
   final Route route;
 
-  RouteViewer(this.wall, this.route, {Key key}) : super(key: key);
+  RouteViewerScreen(this.wall, this.route, {Key key}) : super(key: key);
 
   @override
-  _RouteViewerState createState() => _RouteViewerState();
+  _RouteViewerScreenState createState() => _RouteViewerScreenState();
 }
 
-class _RouteViewerState extends State<RouteViewer> {
+class _RouteViewerScreenState extends State<RouteViewerScreen> {
   ValueNotifier<String> appBarTitleNotifier = ValueNotifier('');
 
   @override
