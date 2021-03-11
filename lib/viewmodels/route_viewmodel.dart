@@ -26,8 +26,8 @@ class RouteViewModel extends ChangeNotifier {
     graspListener.cancel();
   }
 
-  StreamController<List<Route>> routeStreamController = StreamController<List<Route>>();
-  Stream<List<Route>> get routeStream => routeStreamController.stream.asBroadcastStream();
+  StreamController<List<Route>> routeStreamController = StreamController<List<Route>>.broadcast();
+  Stream<List<Route>> get routeStream => routeStreamController.stream;
 
   void getRoutesWithGraspByRouteList(List<Route> routeList) async {
     List<Route> routesWithGrasps = await Future.wait(routeList.map((route) async {
