@@ -33,6 +33,11 @@ class ClimbingRepository {
     return _climbingDatabase.routeDao.watchAllRoutes();
   }
 
+  Future<List<Route>> findAllRoutes() {
+    return _climbingDatabase.routeDao.findAllRoutes();
+  }
+
+
   Future<void> insertRoute(Route route) {
     return _climbingDatabase.routeDao.insertRoute(route);
   }

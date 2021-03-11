@@ -3,7 +3,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
-import 'package:climbing_alien/views/route_viewer/route_viewer.dart';
+import 'package:climbing_alien/views/route_viewer/route_viewer_screen.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
@@ -35,9 +35,13 @@ class RouteScreen extends StatelessWidget {
                         subtitle: Text("${route.description} - ${route.graspList.length} Grasps"),
                         trailing: IconButton(
                             icon: Icon(Icons.edit),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
                         onLongPress: () => RouteForm.showRouteFormDialog(context, route: route, wallId: wall.id),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteViewer(wall, route, key: UniqueKey()))),
+                        onTap: () => Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => RouteViewerScreen(wall, route, key: UniqueKey()))),
                       );
                     });
           } else {

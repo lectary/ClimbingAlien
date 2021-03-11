@@ -6,6 +6,9 @@ abstract class RouteDao {
   @Query('SELECT * FROM routes')
   Stream<List<Route>> watchAllRoutes();
 
+  @Query('SELECT * FROM routes')
+  Future<List<Route>> findAllRoutes();
+
   @insert
   Future<void> insertRoute(Route route);
 
