@@ -79,13 +79,9 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                             alignment: MainAxisAlignment.spaceAround,
                             children: [
                               ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      if (index > 0) {
-                                        _currentGrasp = _graspList[index--];
-                                      }
-                                    });
-                                  },
+                                  onPressed: (index > 0)
+                                      ? () => setState(() => _currentGrasp = _graspList[index--])
+                                      : null,
                                   child: Text("-")),
                               TextButton(
                                 style: TextButton.styleFrom(
@@ -96,13 +92,9 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                                     style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                               ),
                               ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      if (index < _graspList.length - 1) {
-                                        _currentGrasp = _graspList[index++];
-                                      }
-                                    });
-                                  },
+                                  onPressed: (index < _graspList.length - 1)
+                                      ? () => setState(() => _currentGrasp = _graspList[index++])
+                                      : null,
                                   child: Text("+"))
                             ],
                           ))
