@@ -49,7 +49,7 @@ class ClimaxViewModel extends ChangeNotifier {
   double _speed = _defaultSpeed;
   double _strength = 0.0;
 
-  bool backgroundSelected = false;
+  bool transformAll = false;
 
   // scale
   double baseScaleBackground = 1.0;
