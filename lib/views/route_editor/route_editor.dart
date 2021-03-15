@@ -18,7 +18,7 @@ class RouteEditor extends StatefulWidget {
   final Wall wall;
   final Route route;
 
-  RouteEditor(this.wall, this.route);
+  RouteEditor(this.wall, this.route, {Key key}) : super(key: key);
 
   @override
   _RouteEditorState createState() => _RouteEditorState();
@@ -42,8 +42,8 @@ class _RouteEditorState extends State<RouteEditor> {
     final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
     final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
     final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
-    final editAll = context.select((ClimaxViewModel model) => model.backgroundSelected);
-    return _buildGestureDetector(editAll,
+    final transformAll = context.select((ClimaxViewModel model) => model.transformAll);
+    return _buildGestureDetector(transformAll,
         child: Transform.translate(
           offset: -deltaTranslateAll,
           child: Transform.scale(
