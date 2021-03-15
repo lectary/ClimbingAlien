@@ -8,42 +8,13 @@ import 'package:flutter/foundation.dart';
 class RouteViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  StreamSubscription<List<Route>> routeListener;
-  StreamSubscription<List<Grasp>> graspListener;
-
   RouteViewModel({@required ClimbingRepository climbingRepository})
       : assert(climbingRepository != null),
-        _climbingRepository = climbingRepository {
-    routeListener = _climbingRepository.watchAllRoutes().listen(getRoutesWithGraspByRouteList);
-    graspListener = _climbingRepository.watchAllGrasps().listen(getRoutesWithGraspByGraspList);
-  }
+        _climbingRepository = climbingRepository;
 
-  @override
-  void dispose() {
-    super.dispose();
-    routeStreamController.close();
-    routeListener.cancel();
-    graspListener.cancel();
-  }
 
-  StreamController<List<Route>> routeStreamController = StreamController<List<Route>>.broadcast();
-  Stream<List<Route>> get routeStream => routeStreamController.stream;
-
-  void getRoutesWithGraspByRouteList(List<Route> routeList) async {
-    List<Route> routesWithGrasps = await Future.wait(routeList.map((route) async {
-      route.graspList = await _climbingRepository.findAllGraspsByRouteId(route.id);
-      return route;
-    }).toList());
-    routeStreamController.sink.add(routesWithGrasps);
-  }
-
-  void getRoutesWithGraspByGraspList(List<Grasp> graspList) async {
-    List<Route> routesWithGrasps = await _climbingRepository.findAllRoutes().then((routeList) => routeList.map((route) {
-      route.graspList = graspList.where((element) => element.routeId == route.id).toList();
-      return route;
-    }).toList());
-    routeStreamController.sink.add(routesWithGrasps);
-  }
+  /// Routes
+  Stream<List<Route>> getRouteStreamByWallId(int wallId) => _climbingRepository.watchAllRoutesByWallId(wallId);
 
   Future<void> insertRoute(Route route) {
     return _climbingRepository.insertRoute(route);
@@ -55,5 +26,21 @@ class RouteViewModel extends ChangeNotifier {
 
   Future<void> deleteRoute(Route route) {
     return _climbingRepository.deleteRoute(route);
+  }
+
+
+  /// Grasps
+  Stream<List<Grasp>> getGraspStreamByRouteId(int routeId) => _climbingRepository.watchAllGraspsByRouteId(routeId);
+
+  Future<void> insertGrasp(Grasp grasp) {
+    return _climbingRepository.insertGrasp(grasp);
+  }
+
+  Future<void> updateGrasp(Grasp grasp) {
+    return _climbingRepository.updateGrasp(grasp);
+  }
+
+  Future<void> deleteGrasp(Grasp grasp) {
+    return _climbingRepository.deleteGrasp(grasp);
   }
 }
