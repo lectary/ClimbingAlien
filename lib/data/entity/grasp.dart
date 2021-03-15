@@ -56,4 +56,35 @@ class Grasp extends BaseObject {
   String toString() {
     return 'Grasp{order: $order, routeId: $routeId, scaleBackground: $scaleBackground, scaleAll: $scaleAll, deltaTranslateBackground: $translateBackground, deltaTranslateAll: $translateAll, climaxPosition: $climaxPosition, leftArmOffset: $leftArm, rightArmOffset: $rightArm, leftLegOffset: $leftLeg, rightLegOffset: $rightLeg}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Grasp &&
+          runtimeType == other.runtimeType &&
+          order == other.order &&
+          routeId == other.routeId &&
+          scaleBackground == other.scaleBackground &&
+          scaleAll == other.scaleAll &&
+          translateBackground == other.translateBackground &&
+          translateAll == other.translateAll &&
+          climaxPosition == other.climaxPosition &&
+          leftArm == other.leftArm &&
+          rightArm == other.rightArm &&
+          leftLeg == other.leftLeg &&
+          rightLeg == other.rightLeg;
+
+  @override
+  int get hashCode =>
+      order.hashCode ^
+      routeId.hashCode ^
+      scaleBackground.hashCode ^
+      scaleAll.hashCode ^
+      translateBackground.hashCode ^
+      translateAll.hashCode ^
+      climaxPosition.hashCode ^
+      leftArm.hashCode ^
+      rightArm.hashCode ^
+      leftLeg.hashCode ^
+      rightLeg.hashCode;
 }
