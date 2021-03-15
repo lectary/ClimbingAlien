@@ -267,6 +267,21 @@ class _$RouteDao extends RouteDao {
   }
 
   @override
+  Stream<List<Route>> watchAllRoutesByWallId(int wallId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM routes WHERE wall_id = ?',
+        arguments: <dynamic>[wallId],
+        queryableName: 'routes',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => Route(
+            row['title'] as String, row['wall_id'] as int,
+            description: row['description'] as String,
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
   Future<List<Route>> findAllRoutes() async {
     return _queryAdapter.queryList('SELECT * FROM routes',
         mapper: (Map<String, dynamic> row) => Route(
@@ -380,6 +395,33 @@ class _$GraspDao extends GraspDao {
   @override
   Stream<List<Grasp>> watchAllGrasps() {
     return _queryAdapter.queryListStream('SELECT * FROM grasps',
+        queryableName: 'grasps',
+        isView: false,
+        mapper: (Map<String, dynamic> row) => Grasp(
+            order: row['order'] as int,
+            routeId: row['route_id'] as int,
+            scaleBackground: row['scale_background'] as double,
+            scaleAll: row['scale_all'] as double,
+            translateBackground:
+                _offsetConverter.decode(row['translate_background'] as String),
+            translateAll:
+                _offsetConverter.decode(row['translate_all'] as String),
+            climaxPosition:
+                _offsetConverter.decode(row['climax_position'] as String),
+            leftArm: _offsetConverter.decode(row['left_arm'] as String),
+            rightArm: _offsetConverter.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
+            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
+  Stream<List<Grasp>> watchAllGraspsByRouteId(int routeId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM grasps WHERE route_id = ?',
+        arguments: <dynamic>[routeId],
         queryableName: 'grasps',
         isView: false,
         mapper: (Map<String, dynamic> row) => Grasp(

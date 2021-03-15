@@ -7,6 +7,9 @@ abstract class GraspDao {
   Stream<List<Grasp>> watchAllGrasps();
 
   @Query('SELECT * FROM grasps WHERE route_id = :routeId')
+  Stream<List<Grasp>> watchAllGraspsByRouteId(int routeId);
+
+  @Query('SELECT * FROM grasps WHERE route_id = :routeId')
   Future<List<Grasp>> findAllByRouteId(int routeId);
 
   @insert

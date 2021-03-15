@@ -33,6 +33,10 @@ class ClimbingRepository {
     return _climbingDatabase.routeDao.watchAllRoutes();
   }
 
+  Stream<List<Route>> watchAllRoutesByWallId(int wallId) {
+    return _climbingDatabase.routeDao.watchAllRoutesByWallId(wallId);
+  }
+
   Future<List<Route>> findAllRoutes() {
     return _climbingDatabase.routeDao.findAllRoutes();
   }
@@ -53,6 +57,10 @@ class ClimbingRepository {
   /// Grasps
   Stream<List<Grasp>> watchAllGrasps() {
     return _climbingDatabase.graspDao.watchAllGrasps();
+  }
+
+  Stream<List<Grasp>> watchAllGraspsByRouteId(int routeId) {
+    return _climbingDatabase.graspDao.watchAllGraspsByRouteId(routeId);
   }
 
   Future<List<Grasp>> findAllGraspsByRouteId(int routeId) {
