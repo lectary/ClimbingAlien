@@ -108,6 +108,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                         _currentGrasp = graspList[step - 2];
                         climaxModel.setupByGrasp(_currentGrasp);
                       }
+                      if (graspList.isNotEmpty && !transformAll) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) => climaxModel.transformAll = !transformAll);
+                      }
                       return Column(
                         children: [
                           Expanded(
@@ -130,7 +133,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                                               child: Text("-"),
                                               onPressed: (step - 1 > 0)
                                                   ? () => setState(() {
-                                                        step++;
+                                                        step--;
                                                       })
                                                   : null,
                                             ),
