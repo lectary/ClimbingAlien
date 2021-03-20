@@ -1,8 +1,7 @@
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/widgets/climax/climax.dart';
-import 'package:climbing_alien/widgets/image_display.dart';
+import 'package:climbing_alien/widgets/climax/climax_transformer.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
@@ -38,24 +37,8 @@ class _RouteEditorState extends State<RouteEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
-    final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
-    final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
-    final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     final transformAll = context.select((ClimaxViewModel model) => model.transformAll);
-    return _buildGestureDetector(transformAll,
-        child: Transform.translate(
-          offset: -deltaTranslateAll,
-          child: Transform.scale(
-            scale: scaleAll,
-            child: Stack(fit: StackFit.expand, children: [
-              Transform.translate(
-                  offset: -deltaTranslateBackground,
-                  child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.wall.imagePath))),
-              Container(color: Colors.transparent, child: Climax()),
-            ]),
-          ),
-        ));
+    return _buildGestureDetector(transformAll, child: ClimaxTransformer(imagePath: widget.wall.imagePath));
   }
 
   GestureDetector _buildGestureDetector(bool editAll, {Widget child}) {

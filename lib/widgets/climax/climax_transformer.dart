@@ -14,23 +14,21 @@ class ClimaxTransformer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
-      final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
-      final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
-      final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
-      return Transform.translate(
-        offset: -deltaTranslateAll,
-        child: Transform.scale(
-          scale: scaleAll,
-          child: Stack(fit: StackFit.expand, children: [
-            Transform.translate(
-                offset: -deltaTranslateBackground,
-                child: Transform.scale(scale: scaleBackground, child: ImageDisplay(imagePath))),
-            Container(color: Colors.transparent, child: Climax()),
-          ]),
-        ),
-      );
-    });
+    final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
+    final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
+    final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+    final Offset deltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
+    return Transform.translate(
+      offset: -deltaTranslateAll,
+      child: Transform.scale(
+        scale: scaleAll,
+        child: Stack(fit: StackFit.expand, children: [
+          Transform.translate(
+              offset: -deltaTranslateBackground,
+              child: Transform.scale(scale: scaleBackground, child: ImageDisplay(imagePath))),
+          Container(color: Colors.transparent, child: Climax()),
+        ]),
+      ),
+    );
   }
 }
