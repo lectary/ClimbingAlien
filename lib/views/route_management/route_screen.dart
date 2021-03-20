@@ -23,9 +23,8 @@ class RouteScreen extends StatelessWidget {
       ),
       body: ChangeNotifierProvider(
         create: (context) => RouteViewModel(climbingRepository: climbingRepository),
-        child: Builder(
-          builder: (context) {
-            final routeModel = Provider.of<RouteViewModel>(context, listen: false);
+        child: Consumer<RouteViewModel>(
+          builder: (context, routeModel, child) {
             return StreamBuilder<List<Route>>(
               stream: routeModel.getRouteStreamByWallId(wall.id),
               builder: (context, snapshot) {
