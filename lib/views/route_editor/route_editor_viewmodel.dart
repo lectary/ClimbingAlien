@@ -60,11 +60,11 @@ class RouteEditorViewModel extends ChangeNotifier {
       }
     });
     // TODO remove - for test purpose only
-    await Future.delayed(Duration(seconds: 1));
+    // await Future.delayed(Duration(seconds: 1));
+    state = ModelState.IDLE;
+
     // Keep watching db stream of grasps
     _graspStreamSubscription = _climbingRepository.watchAllGraspsByRouteId(routeId).listen(_graspListener);
-
-    state = ModelState.IDLE;
   }
 
   void _graspListener(List<Grasp> _graspList) {
@@ -97,7 +97,8 @@ class RouteEditorViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Represents the current grasp to edit/display.
+  /// Represents the current number of grasp to edit/display.
+  /// This is NOT the index of the array, but rather `x of y Grasps`.
   int _step = 1;
   int get step => _step;
   set step(int step) {
@@ -110,7 +111,6 @@ class RouteEditorViewModel extends ChangeNotifier {
     climaxViewModel.updateClimaxPosition(screenCenter);
   }
 
-
   previousGrasp() {
     --step;
     _setupGrasp();
@@ -121,9 +121,11 @@ class RouteEditorViewModel extends ChangeNotifier {
     ++step;
     if (step == graspList.length + 1) {
       print('Creating new grasp');
+      climaxViewModel.climaxMoved = false;
       notifyListeners(); // for step
     } else if (step > graspList.length) {
       print('Saving new grasp');
+      climaxViewModel.climaxMoved = false;
       _saveNewGrasp();
     } else {
       _setupGrasp();

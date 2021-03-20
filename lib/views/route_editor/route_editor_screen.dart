@@ -92,7 +92,7 @@ class RouteEditorScreen extends StatelessWidget {
         final step = context.select((RouteEditorViewModel model) => model.step);
         final graspList = context.select((RouteEditorViewModel model) => model.graspList);
         final routeEditorModel = Provider.of<RouteEditorViewModel>(context, listen: false);
-        final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+        final climaxMoved = context.select((ClimaxViewModel model) => model.climaxMoved);
         if (initMode) {
           return Container();
         } else {
@@ -124,7 +124,7 @@ class RouteEditorScreen extends StatelessWidget {
                       // Disable button when
                       // 1. no next grasp is available
                       // 2. a new grasp for editing is created, but climax was not moved yet (to avoid redundant copies)
-                      onPressed: (step > graspList.length && !climaxModel.climaxMoved)
+                      onPressed: (step > graspList.length && !climaxMoved)
                           ? null
                           : () {
                               routeEditorModel.nextGrasp();

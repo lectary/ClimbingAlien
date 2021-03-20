@@ -67,7 +67,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
   bool tapOn = false;
   // TODO update
-  bool climaxMoved = true;
+  bool climaxMoved = false;
   int order = 0;
 
   ClimaxViewModel() {
@@ -143,35 +143,6 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   /// Updates the offset of the currently selected limb.
-  updateSelectedLimbPositionWithScale(Offset newPosition) {
-    switch (this._selectedLimb) {
-      case ClimaxLimbEnum.BODY:
-        _climaxPosition = newPosition;
-        break;
-
-      // For arms and legs, calculate the new offset relative to the body
-      // Divide through scale parameter, to get the local, tapped position and not
-      // the scaled one.
-      case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = (newPosition - _climaxPosition);
-        break;
-
-      case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = (newPosition - _climaxPosition);
-        break;
-
-      case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = (newPosition - _climaxPosition);
-        break;
-
-      case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = (newPosition - _climaxPosition);
-        break;
-    }
-
-    _updateClimax();
-  }
-
   updateSelectedLimbPosition(Offset newPosition) {
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
@@ -197,6 +168,8 @@ class ClimaxViewModel extends ChangeNotifier {
         _leftLegOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
         break;
     }
+
+    climaxMoved = true;
 
     _updateClimax();
   }
@@ -268,6 +241,8 @@ class ClimaxViewModel extends ChangeNotifier {
         break;
     }
 
+    climaxMoved = true;
+
     _updateClimax();
   }
 
@@ -275,13 +250,18 @@ class ClimaxViewModel extends ChangeNotifier {
   /// Uses [degrees] to calculate the direction and [strength] to determine
   /// how hard the joystick is pulled to the outer border, which influences the speed. Asserts that [strength] is
   /// between 0 and 1.
+  /// Works together with [updateLimbFree], which is called continuously by the climax widget, and
+  /// moves climax based on the parameter passed to this function [moveLimbFree].
   moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb}) {
     if (limb != null) this._selectedLimb = limb;
     this._degrees = degrees;
     this._strength = strength;
+
+    climaxMoved = true;
   }
 
   /// Calculates the position of Climax' limbs based on the current movement values, set by [moveLimbFree].
+  /// This function is called
   updateLimbFree() {
     double moveX = 0;
     double moveY = 0;
