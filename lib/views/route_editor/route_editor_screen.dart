@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -69,6 +70,17 @@ class RouteEditorScreen extends StatelessWidget {
                         final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
                         return !initMode ? _buildOptionHeader(context, tapOn) : Container();
                       }),
+                      Builder(
+                        builder: (context) {
+                          final step = context.select((RouteEditorViewModel model) => model.step);
+                          final graspList = context.select((RouteEditorViewModel model) => model.graspList);
+                          return !initMode
+                            ? IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: (step <= graspList.length) ? () => routeEditorModel.deleteCurrentGrasp() : null)
+                            : Container();
+                        },
+                      ),
                     ],
                   ),
                   body: Builder(builder: (context) {
@@ -86,7 +98,8 @@ class RouteEditorScreen extends StatelessWidget {
                                   : Container(),
                               Builder(builder: (context) {
                                 final step = context.select((RouteEditorViewModel model) => model.step);
-                                return !initMode ? _buildBottomBar(context, routeEditorModel, step) : Container();
+                                final graspList = context.select((RouteEditorViewModel model) => model.graspList);
+                                return !initMode ? _buildBottomBar(context, step, graspList) : Container();
                               })
                             ],
                           ),
@@ -103,7 +116,9 @@ class RouteEditorScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, RouteEditorViewModel routeEditorModel, int step) {
+  Widget _buildBottomBar(BuildContext context, int step, List<Grasp> graspList) {
+    final routeEditorModel = Provider.of<RouteEditorViewModel>(context, listen: false);
+    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
     return Positioned(
         left: 0,
         right: 0,
@@ -124,12 +139,12 @@ class RouteEditorScreen extends StatelessWidget {
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               onPressed: () {},
-              child: Text('Grasp $step of ${routeEditorModel.graspList.length}',
+              child: Text('Grasp $step of ${graspList.length}',
                   style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
             ),
             ElevatedButton(
                 child: Text("+"),
-                onPressed: (step > routeEditorModel.graspList.length)
+                onPressed: (step > graspList.length && !climaxModel.climaxMoved)
                     ? null
                     : () {
                         routeEditorModel.nextGrasp();

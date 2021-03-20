@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -23,12 +25,20 @@ class RouteEditorViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  StreamSubscription _graspStreamSubscription;
+
   RouteEditorViewModel(
       {@required this.routeId, @required this.size, @required ClimbingRepository climbingRepository, @required this.climaxViewModel})
       : assert(climbingRepository != null && climaxViewModel != null),
         _climbingRepository = climbingRepository {
     print('RouteEditorViewModel created');
     _startWatchingGrasps(routeId);
+  }
+
+  @override
+  void dispose() {
+    _graspStreamSubscription.cancel();
+    super.dispose();
   }
 
   void _startWatchingGrasps(int routeId) async {
@@ -42,13 +52,17 @@ class RouteEditorViewModel extends ChangeNotifier {
       if (initMode) {
         resetClimax(size);
       } else {
-        climaxViewModel.setupByGrasp(graspList[step-1]);
+        if (graspList.isNotEmpty) {
+          climaxViewModel.setupByGrasp(graspList[step-1]);
+        } else {
+          resetClimax(size); // test
+        }
       }
     });
     // TODO remove - for test purpose only
     await Future.delayed(Duration(seconds: 1));
     // Keep watching db stream of grasps
-    _climbingRepository.watchAllGraspsByRouteId(routeId).listen(_graspListener);
+    _graspStreamSubscription = _climbingRepository.watchAllGraspsByRouteId(routeId).listen(_graspListener);
 
     state = ModelState.IDLE;
   }
@@ -66,7 +80,8 @@ class RouteEditorViewModel extends ChangeNotifier {
 
   /// Init mode allows transforming only the background image independently from climax.
   /// Normally, climax and background are transformed together.
-  bool _initMode = true;
+  /// TODO change to true for production
+  bool _initMode = false;
   bool get initMode => _initMode;
   set initMode(bool initMode) {
     _initMode = initMode;
@@ -87,7 +102,6 @@ class RouteEditorViewModel extends ChangeNotifier {
   int get step => _step;
   set step(int step) {
     _step = step;
-    notifyListeners();
   }
 
   resetClimax(Size size) {
@@ -99,36 +113,52 @@ class RouteEditorViewModel extends ChangeNotifier {
 
   previousGrasp() {
     --step;
-    final currentGrasp = graspList[step-1];
-    climaxViewModel.setupByGrasp(currentGrasp);
+    _setupGrasp();
+    notifyListeners(); // for step
   }
 
   nextGrasp() {
     ++step;
-    if (step > graspList.length) {
+    if (step == graspList.length + 1) {
+      print('Creating new grasp');
+      notifyListeners(); // for step
+    } else if (step > graspList.length) {
       print('Saving new grasp');
+      _saveNewGrasp();
     } else {
-      final currentGrasp = graspList[step-1];
-      climaxViewModel.setupByGrasp(currentGrasp);
+      _setupGrasp();
+      notifyListeners(); // for step
     }
   }
 
-  _saveGrasp() {
+  deleteCurrentGrasp() {
+    final currentGrasp = graspList[step-1];
+    _deleteGrasp(currentGrasp);
+    --step;
+    _setupGrasp();
+  }
+
+  _setupGrasp() {
+    final currentGrasp = graspList[step - 1];
+    climaxViewModel.setupByGrasp(currentGrasp);
+  }
+
+  _saveNewGrasp() {
     Grasp newGrasp = climaxViewModel.getCurrentPosition();
     newGrasp.order = step;
     newGrasp.routeId = routeId;
+    _insertGrasp(newGrasp);
   }
 
-  Future<void> insertGrasp(Grasp grasp) {
+  Future<void> _insertGrasp(Grasp grasp) {
     return _climbingRepository.insertGrasp(grasp);
   }
 
-// Future<void> updateGrasp(Grasp grasp) {
-//   step--;
-//   return _climbingRepository.updateGrasp(grasp);
-// }
-//
-// Future<void> deleteGrasp(Grasp grasp) {
-//   return _climbingRepository.deleteGrasp(grasp);
-// }
+Future<void> _updateGrasp(Grasp grasp) {
+  return _climbingRepository.updateGrasp(grasp);
+}
+
+Future<void> _deleteGrasp(Grasp grasp) {
+  return _climbingRepository.deleteGrasp(grasp);
+}
 }

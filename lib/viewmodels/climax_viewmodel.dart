@@ -66,6 +66,8 @@ class ClimaxViewModel extends ChangeNotifier {
   Offset deltaTranslateAll = Offset(1.0, 1.0);
 
   bool tapOn = false;
+  // TODO update
+  bool climaxMoved = true;
   int order = 0;
 
   ClimaxViewModel() {
