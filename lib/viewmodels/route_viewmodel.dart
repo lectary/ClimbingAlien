@@ -12,7 +12,6 @@ class RouteViewModel extends ChangeNotifier {
       : assert(climbingRepository != null),
         _climbingRepository = climbingRepository;
 
-
   /// Routes
   Stream<List<Route>> getRouteStreamByWallId(int wallId) => _climbingRepository.watchAllRoutesByWallId(wallId);
 
@@ -28,19 +27,6 @@ class RouteViewModel extends ChangeNotifier {
     return _climbingRepository.deleteRoute(route);
   }
 
-
   /// Grasps
   Stream<List<Grasp>> getGraspStreamByRouteId(int routeId) => _climbingRepository.watchAllGraspsByRouteId(routeId);
-
-  Future<void> insertGrasp(Grasp grasp) {
-    return _climbingRepository.insertGrasp(grasp);
-  }
-
-  Future<void> updateGrasp(Grasp grasp) {
-    return _climbingRepository.updateGrasp(grasp);
-  }
-
-  Future<void> deleteGrasp(Grasp grasp) {
-    return _climbingRepository.deleteGrasp(grasp);
-  }
 }

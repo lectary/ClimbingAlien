@@ -3,15 +3,13 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
-class RouteEditorScreen extends StatefulWidget {
+class RouteEditorScreen extends StatelessWidget {
   static const routeName = "/routeEditor";
 
   final Wall wall;
@@ -20,73 +18,36 @@ class RouteEditorScreen extends StatefulWidget {
   RouteEditorScreen(this.wall, this.route, {Key key}) : super(key: key);
 
   @override
-  _RouteEditorScreenState createState() => _RouteEditorScreenState();
-}
-
-class _RouteEditorScreenState extends State<RouteEditorScreen> {
-  ImageViewModel model;
-
-  Offset screenCenter;
-
-  int step = 1;
-
-  bool _noChangesYet = false;
-
-  Grasp _currentGrasp;
-
-  @override
-  void initState() {
-    super.initState();
-    // climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-    //
-    // // _graspList = widget.route.graspList;
-    // // _graspList.sort((g1, g2) => g1.order - g2.order);
-    // // _currentGrasp = _graspList.isNotEmpty ? _graspList?.last : null;
-    // index = _graspList.length + 1;
-    //
-    // if (_graspList.isEmpty) {
-    //   climaxModel.transformAll = false;
-    //   _defaultClimaxPosition();
-    // } else {
-    //   climaxModel.transformAll = true;
-    //   climaxModel.setupByGrasp(_currentGrasp);
-    // }
-  }
-
-  /// Updating climax default position after finishing widget build
-  _defaultClimaxPosition(ClimaxViewModel climaxModel) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      climaxModel.resetClimax();
-      final size = MediaQuery.of(context).size;
-      screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
-      climaxModel.updateClimaxPosition(screenCenter);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => RouteViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
+      create: (context) => ClimaxViewModel(),
       child: ChangeNotifierProvider(
-        create: (context) => ClimaxViewModel(),
-        child: Builder(
-          builder: (context) {
-            bool transformAll = context.select((ClimaxViewModel model) => model.transformAll);
-            final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
+        create: (context) => RouteEditorViewModel(
+            climbingRepository: Provider.of<ClimbingRepository>(context, listen: false),
+            climaxViewModel: Provider.of<ClimaxViewModel>(context, listen: false)),
+        child: Consumer<RouteEditorViewModel>(
+          builder: (context, routeEditorModel, child) {
+            // final currentGrasp = context.select((RouteViewModel model) => model.currentGrasp);
+            // climaxModel.setupByGrasp(currentGrasp);
             final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
             return Scaffold(
               appBar: AppBar(
                 actions: [
-                  IconButton(icon: Icon(Icons.gamepad), onPressed: () {}),
-                  _buildOptionHeader(context, tapOn),
-                  IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        // Provider.of<RouteViewModel>(context, listen: false).deleteGrasp(_currentGrasp);
-                        // setState(() {
-                        //   _graspList.removeAt(_currentGrasp.order);
-                        // });
-                      }),
+                  !routeEditorModel.initMode
+                      ? IconButton(
+                          icon: Icon(Icons.gamepad),
+                          color: routeEditorModel.joystickOn ? Colors.red : Colors.white,
+                          onPressed: () => routeEditorModel.joystickOn = !routeEditorModel.joystickOn)
+                      : Container(),
+                  Builder(builder: (context) {
+                    final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
+                    return !routeEditorModel.initMode ? _buildOptionHeader(context, tapOn) : Container();
+                  }),
+                  // IconButton(
+                  //     icon: Icon(Icons.delete),
+                  //     onPressed: () {
+                  //       // routeModel.deleteCurrentGrasp();
+                  //     }),
                 ],
                 // flexibleSpace: HeaderControl(
                 //   "Route Editor",
@@ -95,33 +56,36 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                 // ),
               ),
               body: StreamBuilder<List<Grasp>>(
-                  stream: Provider.of<RouteViewModel>(context, listen: false).getGraspStreamByRouteId(widget.route.id),
+                  stream: routeEditorModel.getGraspStreamByRouteId(route.id),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       final graspList = snapshot.data;
-                      if (!transformAll) {
-                        step = graspList.length + 1;
+                      final initMode = context.select((RouteEditorViewModel model) => model.initMode);
+
+                      /// If initMode and graspList is empty, reset climax to default position
+                      if (initMode && graspList.isEmpty) {
+                        final size = MediaQuery.of(context).size;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          // return routeEditorModel.resetClimax(size);
+                          climaxModel.resetClimax();
+                          Offset screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
+                          climaxModel.updateClimaxPosition(screenCenter);
+                        });
                       }
-                      if (graspList.isEmpty && !transformAll) {
-                        _defaultClimaxPosition(climaxModel);
-                      } else if (graspList.isNotEmpty && (step - 2) < graspList.length) {
-                        _currentGrasp = graspList[step - 2];
-                        climaxModel.setupByGrasp(_currentGrasp);
+                      if (graspList.isNotEmpty) {
+                        climaxModel.setupByGrasp(graspList[routeEditorModel.step-1]);
                       }
-                      if (graspList.isNotEmpty && !transformAll) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) => climaxModel.transformAll = !transformAll);
-                      }
+                      final joystickOn = context.select((RouteEditorViewModel model) => model.joystickOn);
                       return Column(
                         children: [
                           Expanded(
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                RouteEditor(widget.wall, widget.route, key: UniqueKey()),
-                                !transformAll ? _buildInitModeBar(context) : Container(),
-                                // transformAll ? _buildOptionBar(context, transformAll, tapOn) : Container(),
-                                transformAll ? _buildJoystick(climaxModel) : Container(),
-                                transformAll
+                                RouteEditor(wall, route, key: UniqueKey()),
+                                initMode ? _buildInitModeBar(context) : Container(),
+                                (!initMode && joystickOn) ? _buildJoystick(routeEditorModel.climaxViewModel) : Container(),
+                                !initMode
                                     ? Positioned(
                                         left: 0,
                                         right: 0,
@@ -129,20 +93,19 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                                         child: ButtonBar(
                                           alignment: MainAxisAlignment.spaceAround,
                                           children: [
-                                            ElevatedButton(
-                                              child: Text("-"),
-                                              onPressed: (step - 1 > 0)
-                                                  ? () => setState(() {
-                                                        step--;
-                                                      })
-                                                  : null,
-                                            ),
+                                            ElevatedButton(child: Text("-"), onPressed: () {}
+                                                // (routeModel.step - 1 > 0)
+                                                //     ? () => setState(() {
+                                                //   routeModel.previousGrasp(climaxModel);
+                                                //         })
+                                                //     : null,
+                                                ),
                                             TextButton(
                                               style: TextButton.styleFrom(
                                                 backgroundColor: Theme.of(context).colorScheme.primary,
                                               ),
                                               onPressed: () {},
-                                              child: Text('Grasp $step of ${graspList.length}',
+                                              child: Text('Grasp ${routeEditorModel.step} of ${graspList.length}',
                                                   style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                                             ),
                                             ElevatedButton(
@@ -153,20 +116,20 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
                                                     //     :
                                                     () {
                                                   Grasp newGrasp = climaxModel.getCurrentPosition();
-                                                  newGrasp.order = _currentGrasp?.order ?? step;
-                                                  newGrasp.routeId = _currentGrasp?.routeId ?? widget.route.id;
-                                                  if (newGrasp != _currentGrasp) {
-                                                    print('Saving new grasp');
-                                                    Provider.of<RouteViewModel>(context, listen: false)
-                                                        .insertGrasp(newGrasp);
-                                                  }
-                                                  setState(() {
-                                                    // if (_graspList.length - 1 <= index) {
-                                                    //   index++;
-                                                    // } else {
-                                                    step++;
-                                                    // }
-                                                  });
+                                                  newGrasp.order = routeEditorModel.step;
+                                                  newGrasp.routeId = route.id;
+                                                  routeEditorModel.insertGrasp(newGrasp);
+
+                                                  // if (newGrasp != routeModel.currentGrasp) {
+                                                  //   print('Saving new grasp');
+                                                  // }
+                                                  // setState(() {
+                                                  //   // if (_graspList.length - 1 <= index) {
+                                                  //   //   index++;
+                                                  //   // } else {
+                                                  //   routeModel.nextGrasp(climaxModel);
+                                                  //   // }
+                                                  // });
                                                 })
                                           ],
                                         ))
@@ -187,7 +150,9 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     );
   }
 
-  Widget _buildInitModeBar(BuildContext context, ) {
+  Widget _buildInitModeBar(
+    BuildContext context,
+  ) {
     return Positioned(
       left: 0,
       right: 0,
@@ -201,7 +166,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-                onPressed: () => Provider.of<ClimaxViewModel>(context, listen: false).transformAll = true,
+                onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).initMode = false,
                 child: Text('Done')),
           )
         ],
@@ -218,9 +183,8 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
           onPressed: () => Provider.of<ClimaxViewModel>(context, listen: false).tapOn = !tapOn),
       TextButton(
           child: Text('BACK'),
-          style: TextButton.styleFrom(
-              primary: Theme.of(context).colorScheme.onPrimary),
-          onPressed: () => Provider.of<ClimaxViewModel>(context, listen: false).transformAll = false),
+          style: TextButton.styleFrom(primary: Theme.of(context).colorScheme.onPrimary),
+          onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).initMode = true),
     ]);
   }
 
