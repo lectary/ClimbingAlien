@@ -37,10 +37,8 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
       create: (context) => RouteViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
       child: ChangeNotifierProvider(
         create: (context) => ClimaxViewModel(),
-        child: Builder(
-          builder: (context) {
-            routeModel = Provider.of<RouteViewModel>(context, listen: false);
-            climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+        child: Consumer2<RouteViewModel, ClimaxViewModel>(
+          builder: (context, routeModel, climaxModel, child) {
             return Scaffold(
               appBar: AppBar(
                 title: Text('Route Viewer'),
