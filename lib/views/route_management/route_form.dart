@@ -1,3 +1,4 @@
+import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:flutter/material.dart' hide Route;
@@ -14,12 +15,12 @@ class RouteForm extends StatefulWidget {
 
   static Future<bool> showRouteFormDialog(BuildContext context, {Route route, int wallId}) async {
     assert(route != null ? wallId != null : true);
-    final model = Provider.of<RouteViewModel>(context, listen: false);
+    final model = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => ChangeNotifierProvider.value(
-              value: model,
+        builder: (context) => ChangeNotifierProvider(
+              create: (context) => RouteViewModel(climbingRepository: model),
               child: AlertDialog(
                 title: route == null ? Text("New route") : Text("Edit route"),
                 content: RouteForm(route, wallId),
