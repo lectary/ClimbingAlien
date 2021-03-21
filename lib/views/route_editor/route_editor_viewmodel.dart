@@ -17,7 +17,6 @@ class RouteEditorViewModel extends ChangeNotifier {
   final Size size;
 
   ModelState _state = ModelState.LOADING;
-
   ModelState get state => _state;
 
   set state(ModelState state) {
@@ -41,14 +40,21 @@ class RouteEditorViewModel extends ChangeNotifier {
     super.dispose();
   }
 
+  void _graspListener(List<Grasp> _graspList) {
+    graspList = List.from(_graspList);
+  }
+
   void _startWatchingGrasps(int routeId) async {
     state = ModelState.LOADING;
 
+    // query all grasps, and save them locally
     await _climbingRepository.findAllGraspsByRouteId(routeId).then((event) {
       _graspList = List.from(event);
+      // Checks whether initMode should be activated or not.
       if (_graspList.isNotEmpty && initMode) {
-        _initMode = false;
+        initMode = false;
       }
+      // If initMode or empty, reset climax to default position, otherwise setup by grasp
       if (initMode) {
         resetClimax(size);
       } else {
@@ -59,29 +65,27 @@ class RouteEditorViewModel extends ChangeNotifier {
         }
       }
     });
-    // TODO remove - for test purpose only
-    // await Future.delayed(Duration(seconds: 1));
     state = ModelState.IDLE;
-
     // Keep watching db stream of grasps
     _graspStreamSubscription = _climbingRepository.watchAllGraspsByRouteId(routeId).listen(_graspListener);
-  }
-
-  void _graspListener(List<Grasp> _graspList) {
-    graspList = List.from(_graspList);
   }
 
   List<Grasp> _graspList = [];
   List<Grasp> get graspList => _graspList;
   set graspList(List<Grasp> graspList) {
     _graspList = graspList;
+    /// When no grasp available, permit to save without explicit movement, since the first position
+    /// should be valid anyway due to initMode.
+    if (_graspList.isEmpty) {
+      climaxViewModel.climaxMoved = true;
+    }
     notifyListeners();
   }
 
   /// Init mode allows transforming only the background image independently from climax.
   /// Normally, climax and background are transformed together.
-  /// TODO change to true for production
-  bool _initMode = false;
+  /// Depends on being [climaxViewModel.transformAll] false by default.
+  bool _initMode = true;
   bool get initMode => _initMode;
   set initMode(bool initMode) {
     _initMode = initMode;
@@ -133,11 +137,18 @@ class RouteEditorViewModel extends ChangeNotifier {
     }
   }
 
-  deleteCurrentGrasp() {
-    final currentGrasp = graspList[step-1];
+  deleteCurrentGrasp() async {
+    final currentGrasp = graspList.removeAt(step - 1);
     _deleteGrasp(currentGrasp);
-    --step;
-    _setupGrasp();
+    if (graspList.length == 0) {
+      resetClimax(size);
+    } else {
+      if (step > 1) {
+        --step;
+      }
+      _setupGrasp();
+    }
+    notifyListeners();
   }
 
   _setupGrasp() {
@@ -149,6 +160,8 @@ class RouteEditorViewModel extends ChangeNotifier {
     Grasp newGrasp = climaxViewModel.getCurrentPosition();
     newGrasp.order = step;
     newGrasp.routeId = routeId;
+    // TODO review - necessary? just rely on db stream propagation?
+    graspList.add(newGrasp);
     _insertGrasp(newGrasp);
   }
 
@@ -160,7 +173,7 @@ Future<void> _updateGrasp(Grasp grasp) {
   return _climbingRepository.updateGrasp(grasp);
 }
 
-Future<void> _deleteGrasp(Grasp grasp) {
-  return _climbingRepository.deleteGrasp(grasp);
+Future<void> _deleteGrasp(Grasp grasp) async {
+  return await _climbingRepository.deleteGrasp(grasp);
 }
 }
