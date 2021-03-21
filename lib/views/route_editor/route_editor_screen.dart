@@ -8,6 +8,10 @@ import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
+enum MenuOption {
+  DELETE, BACK_TO_INIT, TOGGLE_JOYSTICK,
+}
+
 /// Screen for creating and editing grasps for a route.
 class RouteEditorScreen extends StatelessWidget {
   static const routeName = "/routeEditor";
@@ -56,9 +60,11 @@ class RouteEditorScreen extends StatelessWidget {
                 appBar: AppBar(
                   title: Text("Edit ${route.title}"),
                   actions: [
-                    _buildJoystickToggleAction(context, initMode, joystickOn),
-                    _buildOptionHeaderAction(context, initMode),
-                    _buildDeleteGraspAction(context, initMode),
+                    _buildTapAction(context, initMode),
+                    _buildMoreOptionsAction(context, initMode, joystickOn),
+                    // _buildJoystickToggleAction(context, initMode, joystickOn),
+                    // _buildOptionHeaderAction(context, initMode),
+                    // _buildDeleteGraspAction(context, initMode),
                   ],
                 ),
                 body: Builder(builder: (context) {
@@ -190,12 +196,98 @@ class RouteEditorScreen extends StatelessWidget {
   }
 
   /// AppBar actions
+  Widget _buildTapAction(BuildContext context, bool initMode) {
+    return Builder(builder: (context) {
+      final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
+      if (initMode) {
+        return Container();
+      } else {
+        return TextButton(
+            child: Text('TAP'),
+            style: TextButton.styleFrom(
+                primary: tapOn ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onPrimary),
+            onPressed: () => Provider.of<ClimaxViewModel>(context, listen: false).tapOn = !tapOn);
+      }
+    });
+  }
+
+  Widget _buildMoreOptionsAction(BuildContext context, bool initMode, bool joystickOn) {
+    if (initMode) {
+      return Container();
+    } else {
+      return Builder(
+        builder: (context) {
+          final step = context.select((RouteEditorViewModel model) => model.step);
+          final graspList = context.select((RouteEditorViewModel model) => model.graspList);
+          return PopupMenuButton(
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: MenuOption.BACK_TO_INIT,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Icon(Icons.app_settings_alt, color: Theme.of(context).colorScheme.primary),
+                          ),
+                          Text('Back to initMode'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                        enabled: (step <= graspList.length),
+                        value: MenuOption.DELETE,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(Icons.delete, color: Theme.of(context).colorScheme.primary),
+                            ),
+                            Text('Delete'),
+                          ],
+                        )),
+                    PopupMenuItem(
+                        textStyle: TextStyle(
+                            color: joystickOn
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.onSurface),
+                        value: MenuOption.TOGGLE_JOYSTICK,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(Icons.gamepad,
+                                  color: joystickOn
+                                      ? Theme.of(context).colorScheme.error
+                                      : Theme.of(context).colorScheme.primary),
+                            ),
+                            Text('Toggle Joystick'),
+                          ],
+                        ))
+                  ],
+              onSelected: (MenuOption option) {
+                switch (option) {
+                  case MenuOption.DELETE:
+                    Provider.of<RouteEditorViewModel>(context, listen: false).deleteCurrentGrasp();
+                    break;
+                  case MenuOption.BACK_TO_INIT:
+                    Provider.of<RouteEditorViewModel>(context, listen: false).initMode = true;
+                    break;
+                  case MenuOption.TOGGLE_JOYSTICK:
+                    Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn;
+                    break;
+                }
+              });
+        },
+      );
+    }
+  }
+
   Widget _buildJoystickToggleAction(BuildContext context, bool initMode, bool joystickOn) {
     return !initMode
         ? IconButton(
-            icon: Icon(Icons.gamepad),
-            color: joystickOn ? Colors.red : Colors.white,
-            onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn)
+        icon: Icon(Icons.gamepad),
+        color: joystickOn ? Colors.red : Colors.white,
+        onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn)
         : Container();
   }
 
