@@ -297,6 +297,18 @@ class _$RouteDao extends RouteDao {
   }
 
   @override
+  Future<List<Route>> findAllRoutesByWallId(int wallId) async {
+    return _queryAdapter.queryList('SELECT * FROM routes WHERE wall_id = ?',
+        arguments: <dynamic>[wallId],
+        mapper: (Map<String, dynamic> row) => Route(
+            row['title'] as String, row['wall_id'] as int,
+            description: row['description'] as String,
+            id: row['id'] as int,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
   Future<void> insertRoute(Route route) async {
     await _routeInsertionAdapter.insert(route, OnConflictStrategy.abort);
   }

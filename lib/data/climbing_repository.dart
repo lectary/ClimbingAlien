@@ -41,6 +41,9 @@ class ClimbingRepository {
     return _climbingDatabase.routeDao.findAllRoutes();
   }
 
+  Future<List<Route>> findAllRoutesByWallId(int wallId) {
+    return _climbingDatabase.routeDao.findAllRoutesByWallId(wallId);
+  }
 
   Future<void> insertRoute(Route route) {
     return _climbingDatabase.routeDao.insertRoute(route);

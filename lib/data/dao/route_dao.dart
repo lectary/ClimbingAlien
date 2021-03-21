@@ -12,6 +12,9 @@ abstract class RouteDao {
   @Query('SELECT * FROM routes')
   Future<List<Route>> findAllRoutes();
 
+  @Query('SELECT * FROM routes WHERE wall_id = :wallId')
+  Future<List<Route>> findAllRoutesByWallId(int wallId);
+
   @insert
   Future<void> insertRoute(Route route);
 
