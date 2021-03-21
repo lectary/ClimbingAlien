@@ -38,7 +38,7 @@ class _WallFormState extends State<WallForm> {
 
   String title;
   String description;
-  String imagePath;
+  String file;
 
   @override
   void initState() {
@@ -48,8 +48,8 @@ class _WallFormState extends State<WallForm> {
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
-    imagePath = widget.wall?.file;
-    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(imagePath);
+    file = widget.wall?.file;
+    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(file);
   }
 
   @override
@@ -87,7 +87,7 @@ class _WallFormState extends State<WallForm> {
                 String newPath = await SimpleImagePicker.dialog(context);
                 if (newPath != null) {
                   setState(() {
-                    imagePath = newPath;
+                    file = newPath;
                     _textEditingControllerImagePath.text = Utils.getFilenameFromPath(newPath);
                   });
                 }
@@ -95,7 +95,7 @@ class _WallFormState extends State<WallForm> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: ImageDisplay(imagePath),
+              child: ImageDisplay(file),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
@@ -114,10 +114,10 @@ class _WallFormState extends State<WallForm> {
                           if (edit) {
                             widget.wall.title = title;
                             widget.wall.description = description;
-                            widget.wall.fileUpdated = imagePath;
+                            widget.wall.fileUpdated = file;
                             wallViewModel.updateWall(widget.wall);
                           } else {
-                            Wall wall = Wall(title, description: description, file: imagePath);
+                            Wall wall = Wall(title, description: description, file: file);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);
