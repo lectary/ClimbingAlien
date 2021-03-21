@@ -38,6 +38,7 @@ class _WallFormState extends State<WallForm> {
 
   String title;
   String description;
+  String location;
   String file;
 
   @override
@@ -48,6 +49,7 @@ class _WallFormState extends State<WallForm> {
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
+    location = widget.wall?.location;
     file = widget.wall?.file;
     _textEditingControllerImagePath.text = Utils.getFilenameFromPath(file);
   }
@@ -78,6 +80,11 @@ class _WallFormState extends State<WallForm> {
               maxLines: 5,
               decoration: InputDecoration(labelText: "Description"),
               onSaved: (value) => description = value,
+            ),
+            TextFormField(
+              initialValue: location,
+              decoration: InputDecoration(labelText: "Location"),
+              onSaved: (value) => location = value,
             ),
             TextFormField(
               controller: _textEditingControllerImagePath,
@@ -114,10 +121,11 @@ class _WallFormState extends State<WallForm> {
                           if (edit) {
                             widget.wall.title = title;
                             widget.wall.description = description;
+                            widget.wall.location = location;
                             widget.wall.fileUpdated = file;
                             wallViewModel.updateWall(widget.wall);
                           } else {
-                            Wall wall = Wall(title, description: description, file: file);
+                            Wall wall = Wall(title, description: description, location: location, file: file);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);
