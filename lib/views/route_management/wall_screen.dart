@@ -33,7 +33,7 @@ class _WallScreenState extends State<WallScreen> {
             final locations = snapshot.data;
             return locations.isEmpty
                 ? Center(child: Text("No walls available"))
-                : _buildLocationsAsExpansionTiles(context, locations);
+                : _buildLocationsAsExpansionPanelList(context, locations);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -46,9 +46,28 @@ class _WallScreenState extends State<WallScreen> {
     );
   }
 
+  _buildLocationsAsExpansionPanelList(BuildContext context, List<Location> locations) {
+    return SingleChildScrollView(
+      child: ExpansionPanelList.radio(
+        children: locations.map<ExpansionPanelRadio>((Location location) {
+          return ExpansionPanelRadio(
+              value: location.name ?? "<no-name>",
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return ListTile(
+                  title: Text(location.name ?? "<no-name>"),
+                );
+              },
+              body: Column(
+                children: location.walls.map((Wall wall) => _buildWall(context, wall)).toList(),
+              ));
+        }).toList(),
+      ),
+    );
+  }
+
+  @deprecated
   _buildLocationsAsExpansionTiles(BuildContext context, List<Location> locations) {
     return ListView.builder(
-      key: Key('Key'),
         itemCount: locations.length,
         itemBuilder: (context, index) {
           final location = locations[index];
@@ -107,7 +126,7 @@ class _WallScreenState extends State<WallScreen> {
                                     await Dialogs.showAlertDialog(
                                         context: context,
                                         title:
-                                        'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
+                                            'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
                                         submitText: 'Löschen',
                                         submitFunc: () => wallModel.deleteWall(wall, cascade: true));
                                   }
