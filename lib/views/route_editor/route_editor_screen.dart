@@ -37,6 +37,7 @@ class RouteEditorScreen extends StatelessWidget {
               // Scaffold with loading indicators
               return Scaffold(
                 appBar: AppBar(
+                  title: Text("Edit ${route.title}"),
                   actions: [
                     Padding(
                       padding: const EdgeInsets.only(right: 32.0),
@@ -53,6 +54,7 @@ class RouteEditorScreen extends StatelessWidget {
               final joystickOn = context.select((RouteEditorViewModel model) => model.joystickOn);
               return Scaffold(
                 appBar: AppBar(
+                  title: Text("Edit ${route.title}"),
                   actions: [
                     _buildJoystickToggleAction(context, initMode, joystickOn),
                     _buildOptionHeaderAction(context, initMode),
