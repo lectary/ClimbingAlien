@@ -16,27 +16,27 @@ class WallViewModel extends ChangeNotifier {
   Stream<List<Wall>> get wallStream => _climbingRepository.watchAllWalls();
 
   Future<void> insertWall(Wall wall) async {
-    if (wall.imagePath != null && !wall.imagePath.startsWith('assets')) {
-      String newPath = await _saveImageToDevice(wall.imagePath);
-      wall.imagePath = newPath;
+    if (wall.file != null && !wall.file.startsWith('assets')) {
+      String newPath = await _saveImageToDevice(wall.file);
+      wall.file = newPath;
     }
     return _climbingRepository.insertWall(wall);
   }
 
   Future<void> updateWall(Wall wall) async {
-    if (wall.imagePath != wall.imagePathUpdated) {
-      wall.imagePath = wall.imagePathUpdated;
-      if (!wall.imagePath.startsWith('assets')) {
-        String newPath = await _saveImageToDevice(wall.imagePath);
-        wall.imagePath = newPath;
+    if (wall.file != wall.fileUpdated) {
+      wall.file = wall.fileUpdated;
+      if (!wall.file.startsWith('assets')) {
+        String newPath = await _saveImageToDevice(wall.file);
+        wall.file = newPath;
       }
     }
     return _climbingRepository.updateWall(wall);
   }
 
   Future<void> deleteWall(Wall wall) {
-    if (!wall.imagePath.startsWith('assets')) {
-      _deleteImageFromDevice(wall.imagePath);
+    if (!wall.file.startsWith('assets')) {
+      _deleteImageFromDevice(wall.file);
     }
     return _climbingRepository.deleteWall(wall);
   }

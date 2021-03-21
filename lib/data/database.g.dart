@@ -84,7 +84,7 @@ class _$ClimbingDatabase extends ClimbingDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `location` TEXT, `file` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -122,7 +122,8 @@ class _$WallDao extends WallDao {
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
-                  'image_path': item.imagePath,
+                  'location': item.location,
+                  'file': item.file,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverter.encode(item.createdAt)
@@ -136,7 +137,8 @@ class _$WallDao extends WallDao {
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
-                  'image_path': item.imagePath,
+                  'location': item.location,
+                  'file': item.file,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverter.encode(item.createdAt)
@@ -150,7 +152,8 @@ class _$WallDao extends WallDao {
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
-                  'image_path': item.imagePath,
+                  'location': item.location,
+                  'file': item.file,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverter.encode(item.createdAt)
@@ -177,7 +180,8 @@ class _$WallDao extends WallDao {
         mapper: (Map<String, dynamic> row) => Wall(row['title'] as String,
             description: row['description'] as String,
             height: row['height'] as int,
-            imagePath: row['image_path'] as String,
+            location: row['location'] as String,
+            file: row['file'] as String,
             id: row['id'] as int,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));

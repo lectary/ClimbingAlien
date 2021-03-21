@@ -61,7 +61,7 @@ class WallScreen extends StatelessWidget {
                               /// Wall image
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Center(child: ImageDisplay(wall.imagePath, emptyText: 'No image',)),
+                                child: Center(child: ImageDisplay(wall.file, emptyText: 'No image',)),
                               )
                             ]),
                             onTap: () =>

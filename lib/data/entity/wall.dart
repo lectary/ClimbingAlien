@@ -9,13 +9,22 @@ class Wall extends BaseObject {
 
   int height;
 
-  @ColumnInfo(name: 'image_path')
-  String imagePath;
+  String location;
+
+  String file;
 
   @ignore
-  String imagePathUpdated;
+  String fileUpdated;
 
-  Wall(this.title, {this.description, this.height, this.imagePath, this.imagePathUpdated, int id, DateTime modifiedAt, DateTime createdAt})
+  Wall(this.title,
+      {this.description,
+      this.height,
+      this.location,
+      this.file,
+      this.fileUpdated,
+      int id,
+      DateTime modifiedAt,
+      DateTime createdAt})
       : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {
@@ -23,15 +32,23 @@ class Wall extends BaseObject {
       "title": title,
       "description": description,
       "height": height,
-      "image_path": imagePath,
+      "image_path": file,
       "id": id,
       "modified_at": modifiedAt?.millisecondsSinceEpoch,
       "created_at": createdAt.millisecondsSinceEpoch,
     };
   }
 
+  factory Wall.fromJson(Map<String, dynamic> json) {
+    return Wall(
+      json['wall'],
+      location: json['location'],
+      file: json['file'],
+    );
+  }
+
   @override
   String toString() {
-    return 'Wall{title: $title, description: $description, height: $height, imagePath: $imagePath}';
+    return 'Wall{title: $title, description: $description, height: $height, imagePath: $file}';
   }
 }

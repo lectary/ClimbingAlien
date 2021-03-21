@@ -48,7 +48,7 @@ class _WallFormState extends State<WallForm> {
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
-    imagePath = widget.wall?.imagePath;
+    imagePath = widget.wall?.file;
     _textEditingControllerImagePath.text = Utils.getFilenameFromPath(imagePath);
   }
 
@@ -114,10 +114,10 @@ class _WallFormState extends State<WallForm> {
                           if (edit) {
                             widget.wall.title = title;
                             widget.wall.description = description;
-                            widget.wall.imagePathUpdated = imagePath;
+                            widget.wall.fileUpdated = imagePath;
                             wallViewModel.updateWall(widget.wall);
                           } else {
-                            Wall wall = Wall(title, description: description, imagePath: imagePath);
+                            Wall wall = Wall(title, description: description, file: imagePath);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);

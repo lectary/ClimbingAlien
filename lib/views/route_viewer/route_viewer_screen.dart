@@ -59,7 +59,7 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                               child: Stack(
                                 children: [
                                   Positioned.fill(
-                                    child: ClimaxTransformer(imagePath: widget.wall.imagePath),
+                                    child: ClimaxTransformer(imagePath: widget.wall.file),
                                   ),
                                   Positioned(
                                       left: 0,
