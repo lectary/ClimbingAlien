@@ -32,6 +32,21 @@ class RouteEditorViewModel extends ChangeNotifier {
         _climbingRepository = climbingRepository {
     print('RouteEditorViewModel created');
     _startWatchingGrasps(routeId);
+    // Callback executed by climaxViewModel whenever a current grasp is updated
+    climaxViewModel.updateCallback = _updateCallback;
+  }
+
+  /// Used for automatically updating the current grasp when the joystick is released, joystick button clicked,
+  /// or a tap is executed.
+  void _updateCallback() {
+    if (step <= graspList.length) {
+      print("Updating!");
+      Grasp graspToUpdate = climaxViewModel.getCurrentPosition()
+        ..id = graspList[step - 1].id
+        ..order = graspList[step - 1].order
+        ..routeId = graspList[step - 1].routeId;
+      _updateGrasp(graspToUpdate);
+    }
   }
 
   @override

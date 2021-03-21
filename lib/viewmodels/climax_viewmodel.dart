@@ -66,8 +66,9 @@ class ClimaxViewModel extends ChangeNotifier {
   Offset deltaTranslateAll = Offset(1.0, 1.0);
 
   bool tapOn = false;
-  // TODO update
   bool climaxMoved = false;
+  Function updateCallback;
+  // TODO remove?
   int order = 0;
 
   ClimaxViewModel() {
@@ -170,6 +171,8 @@ class ClimaxViewModel extends ChangeNotifier {
     }
 
     climaxMoved = true;
+    // Update grasp
+    updateCallback?.call();
 
     _updateClimax();
   }
@@ -242,6 +245,8 @@ class ClimaxViewModel extends ChangeNotifier {
     }
 
     climaxMoved = true;
+    // Update grasp
+    updateCallback?.call();
 
     _updateClimax();
   }
@@ -258,6 +263,11 @@ class ClimaxViewModel extends ChangeNotifier {
     this._strength = strength;
 
     climaxMoved = true;
+
+    // When climax was moved but strength is zero, indicating the joystick was left, update grasp
+    if (climaxMoved && strength == 0) {
+      updateCallback?.call();
+    }
   }
 
   /// Calculates the position of Climax' limbs based on the current movement values, set by [moveLimbFree].
