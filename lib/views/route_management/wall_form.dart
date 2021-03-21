@@ -1,6 +1,8 @@
+import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/views/route_management/wall_form_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:climbing_alien/widgets/image_picker/simple_image_picker_dialog.dart';
 import 'package:flutter/material.dart';
@@ -16,16 +18,20 @@ class WallForm extends StatefulWidget {
 
   static Future<bool> showWallFormDialog(BuildContext context, {Wall wall}) async {
     final model = Provider.of<WallViewModel>(context, listen: false);
+    final repo = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => ChangeNotifierProvider.value(
-              value: model,
-              child: AlertDialog(
-                title: wall == null ? Text("New wall") : Text("Edit wall"),
-                content: WallForm(wall),
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => WallFormViewModel(climbingRepository: repo),
+          child: ChangeNotifierProvider.value(
+                value: model,
+                child: AlertDialog(
+                  title: wall == null ? Text("New wall") : Text("Edit wall"),
+                  content: WallForm(wall),
+                ),
               ),
-            ));
+        ));
   }
 }
 
@@ -33,6 +39,13 @@ class _WallFormState extends State<WallForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _textEditingControllerImagePath = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+
+  final TextEditingController _locationTextEditingController = TextEditingController();
+  final FocusNode _locationFocusNode = FocusNode();
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry _overlayEntry;
+  List<String> _suggestions = List.empty();
+
   WallViewModel wallViewModel;
   bool edit;
 
@@ -45,17 +58,71 @@ class _WallFormState extends State<WallForm> {
   void initState() {
     super.initState();
     wallViewModel = Provider.of<WallViewModel>(context, listen: false);
-    // _focusNode.requestFocus();
+    _focusNode.requestFocus();
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
-    location = widget.wall?.location;
+    _locationTextEditingController.text = widget.wall?.location;
     file = widget.wall?.file;
     _textEditingControllerImagePath.text = Utils.getFilenameFromPath(file);
+
+    _locationFocusNode.addListener(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_locationFocusNode.hasFocus) {
+          final practiseModel = Provider.of<WallFormViewModel>(context, listen: false);
+          _overlayEntry = _buildSuggestionOverlay(practiseModel);
+          Overlay.of(context).insert(_overlayEntry);
+        } else {
+          _overlayEntry.remove();
+        }
+      });
+    });
+  }
+
+  OverlayEntry _buildSuggestionOverlay(WallFormViewModel wallFormViewModel) {
+    RenderBox renderBox = context.findRenderObject();
+    var size = renderBox.size;
+    return OverlayEntry(builder: (context) {
+      return ChangeNotifierProvider.value(
+        value: wallFormViewModel,
+        child: Builder(
+          builder: (context) {
+            _suggestions = context.select((WallFormViewModel model) => model.suggestions);
+            return Positioned(
+                width: size.width,
+                child: CompositedTransformFollower(
+                  link: _layerLink,
+                  showWhenUnlinked: false,
+                  offset: Offset(0, 48 + 5.0),
+                  child: Material(
+                    elevation: 4.0,
+                    child: _suggestions.isEmpty
+                        ? Center(child: Text("No suggestions"))
+                        : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: _suggestions.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(_suggestions[index]),
+                                onTap: () {
+                                  _locationTextEditingController.text = _suggestions[index];
+                                  _locationFocusNode.unfocus();
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ));
+          },
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final wallFormViewModel = Provider.of<WallFormViewModel>(context, listen: false);
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -81,10 +148,15 @@ class _WallFormState extends State<WallForm> {
               decoration: InputDecoration(labelText: "Description"),
               onSaved: (value) => description = value,
             ),
-            TextFormField(
-              initialValue: location,
-              decoration: InputDecoration(labelText: "Location"),
-              onSaved: (value) => location = value,
+            CompositedTransformTarget(
+              link: _layerLink,
+              child: TextFormField(
+                controller: _locationTextEditingController,
+                focusNode: _locationFocusNode,
+                onChanged: (value) => wallFormViewModel.getSuggestionsByString(value),
+                decoration: InputDecoration(labelText: "Location"),
+                onSaved: (value) => location = value,
+              ),
             ),
             TextFormField(
               controller: _textEditingControllerImagePath,
