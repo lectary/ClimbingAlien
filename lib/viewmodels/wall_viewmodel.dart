@@ -1,8 +1,12 @@
 import 'dart:io';
 
 import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
+import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:flutter/material.dart';
+import 'package:climbing_alien/model/location.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart' hide Route;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,7 +17,11 @@ class WallViewModel extends ChangeNotifier {
       : assert(climbingRepository != null),
         _climbingRepository = climbingRepository;
 
-  Stream<List<Wall>> get wallStream => _climbingRepository.watchAllWalls();
+  Stream<List<Location>> get locationStream =>
+      _climbingRepository.watchAllWalls().map((wallList) => groupBy(wallList, (Wall wall) => wall.location)
+          .entries
+          .map((MapEntry<String, List<Wall>> entry) => Location(entry.key, entry.value))
+          .toList());
 
   Future<void> insertWall(Wall wall) async {
     if (wall.file != null && !wall.file.startsWith('assets')) {
@@ -34,11 +42,26 @@ class WallViewModel extends ChangeNotifier {
     return _climbingRepository.updateWall(wall);
   }
 
-  Future<void> deleteWall(Wall wall) {
-    if (!wall.file.startsWith('assets')) {
+  Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
+    if (!(wall.file?.startsWith('assets') ?? true)) {
       _deleteImageFromDevice(wall.file);
     }
-    return _climbingRepository.deleteWall(wall);
+    List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(wall.id);
+    if (routesOfWall.isNotEmpty) {
+      if (cascade) {
+        await Future.forEach(routesOfWall, (Route route) async {
+          await _climbingRepository.findAllGraspsByRouteId(route.id)
+              .then((List<Grasp> graspList) async =>
+          await Future.forEach(graspList, (Grasp grasp) => _climbingRepository.deleteGrasp(grasp)));
+          await _climbingRepository.deleteRoute(route);
+        });
+        return true;
+      } else {
+        return false;
+      }
+    }
+    await _climbingRepository.deleteWall(wall);
+    return true;
   }
 
   Future<String> _saveImageToDevice(String imagePath) async {
