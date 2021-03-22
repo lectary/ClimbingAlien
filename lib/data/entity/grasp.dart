@@ -24,8 +24,6 @@ class Grasp extends BaseObject {
   @ColumnInfo(name: 'translate_all', nullable: false)
   Offset translateAll;
 
-  @ColumnInfo(name: 'climax_position', nullable: false)
-  Offset climaxPosition;
   @ColumnInfo(name: 'left_arm', nullable: false)
   Offset leftArm;
   @ColumnInfo(name: 'right_arm', nullable: false)
@@ -42,7 +40,6 @@ class Grasp extends BaseObject {
       this.scaleAll,
       this.translateBackground,
       this.translateAll,
-      this.climaxPosition,
       this.leftArm,
       this.rightArm,
       this.leftLeg,
@@ -54,7 +51,7 @@ class Grasp extends BaseObject {
 
   @override
   String toString() {
-    return 'Grasp{order: $order, routeId: $routeId, scaleBackground: $scaleBackground, scaleAll: $scaleAll, deltaTranslateBackground: $translateBackground, deltaTranslateAll: $translateAll, climaxPosition: $climaxPosition, leftArmOffset: $leftArm, rightArmOffset: $rightArm, leftLegOffset: $leftLeg, rightLegOffset: $rightLeg}';
+    return 'Grasp{order: $order, routeId: $routeId, scaleBackground: $scaleBackground, scaleAll: $scaleAll, translateBackground: $translateBackground, translateAll: $translateAll, leftArm: $leftArm, rightArm: $rightArm, leftLeg: $leftLeg, rightLeg: $rightLeg}';
   }
 
   @override
@@ -68,7 +65,6 @@ class Grasp extends BaseObject {
           scaleAll == other.scaleAll &&
           translateBackground == other.translateBackground &&
           translateAll == other.translateAll &&
-          climaxPosition == other.climaxPosition &&
           leftArm == other.leftArm &&
           rightArm == other.rightArm &&
           leftLeg == other.leftLeg &&
@@ -82,7 +78,6 @@ class Grasp extends BaseObject {
       scaleAll.hashCode ^
       translateBackground.hashCode ^
       translateAll.hashCode ^
-      climaxPosition.hashCode ^
       leftArm.hashCode ^
       rightArm.hashCode ^
       leftLeg.hashCode ^

@@ -79,7 +79,6 @@ class ClimaxViewModel extends ChangeNotifier {
       scaleAll: scaleAll,
       translateBackground: deltaTranslateBackground,
       translateAll: deltaTranslateAll,
-      climaxPosition: Offset.zero,
       leftArm: _leftArmOffset,
       rightArm: _rightArmOffset,
       leftLeg: _leftLegOffset,
