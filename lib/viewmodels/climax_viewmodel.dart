@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as _math;
 
-import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +26,6 @@ class ClimaxViewModel extends ChangeNotifier {
   final bodyWidth = 50.0;
   final bodyHeight = 80.0;
 
-  Offset _climaxPosition;
   Offset _leftArmOffset;
   Offset _rightArmOffset;
   Offset _leftLegOffset;
@@ -81,7 +79,7 @@ class ClimaxViewModel extends ChangeNotifier {
       scaleAll: scaleAll,
       translateBackground: deltaTranslateBackground,
       translateAll: deltaTranslateAll,
-      climaxPosition: _climaxPosition,
+      climaxPosition: Offset.zero,
       leftArm: _leftArmOffset,
       rightArm: _rightArmOffset,
       leftLeg: _leftLegOffset,
@@ -95,20 +93,40 @@ class ClimaxViewModel extends ChangeNotifier {
     scaleAll = grasp.scaleAll;
     deltaTranslateBackground = grasp.translateBackground;
     deltaTranslateAll = grasp.translateAll;
-    _climaxPosition = grasp.climaxPosition;
     _leftArmOffset = grasp.leftArm;
     _rightArmOffset = grasp.rightArm;
     _leftLegOffset = grasp.leftLeg;
     _rightLegOffset = grasp.rightLeg;
   }
 
+  /// Computing the four sides/points of the AABB (axis aligned bounding box) of climax
+  _computeClimaxCenter() {
+    double minXArm = _math.min(_leftArmOffset.dx, _rightArmOffset.dx);
+    double minXLeg = _math.min(_leftLegOffset.dx, _rightLegOffset.dx);
+    double minX = _math.min(minXArm, minXLeg);
+
+    double minYArm = _math.min(_leftArmOffset.dy, _rightArmOffset.dy);
+    double minYLeg = _math.min(_leftLegOffset.dy, _rightLegOffset.dy);
+    double minY = _math.min(minYArm, minYLeg);
+
+    double maxXArm = _math.max(_leftArmOffset.dx, _rightArmOffset.dx);
+    double maxXLeg = _math.max(_leftLegOffset.dx, _rightLegOffset.dx);
+    double maxX = _math.max(maxXArm, maxXLeg);
+
+    double maxYArm = _math.max(_leftArmOffset.dy, _rightArmOffset.dy);
+    double maxYLeg = _math.max(_leftLegOffset.dy, _rightLegOffset.dy);
+    double maxY = _math.max(maxYArm, maxYLeg);
+
+    return Rect.fromLTRB(minX, minY, maxX, maxY).center;
+  }
+
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    _bodyRect = Rect.fromCenter(center: _climaxPosition, width: bodyWidth, height: bodyHeight);
-    _leftArmRect = Rect.fromCircle(center: _climaxPosition + _leftArmOffset, radius: radius);
-    _rightArmRect = Rect.fromCircle(center: _climaxPosition + _rightArmOffset, radius: radius);
-    _leftLegRect = Rect.fromCircle(center: _climaxPosition + _leftLegOffset, radius: radius);
-    _rightLegRect = Rect.fromCircle(center: _climaxPosition + _rightLegOffset, radius: radius);
+    _bodyRect = Rect.fromCenter(center: _computeClimaxCenter(), width: bodyWidth, height: bodyHeight);
+    _leftArmRect = Rect.fromCircle(center: _leftArmOffset, radius: radius);
+    _rightArmRect = Rect.fromCircle(center: _rightArmOffset, radius: radius);
+    _leftLegRect = Rect.fromCircle(center: _leftLegOffset, radius: radius);
+    _rightLegRect = Rect.fromCircle(center: _rightLegOffset, radius: radius);
 
     _climaxLimbs = HashMap.from({
       ClimaxLimbEnum.BODY: _bodyRect,
@@ -123,11 +141,10 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Resets the position of climax to an optional offset. Default is [Offset.zero], i.e. left-top screen dorner.
   resetClimax({Offset position = Offset.zero}) {
-    _climaxPosition = position;
-    _leftArmOffset = Offset(-50, -70);
-    _rightArmOffset = Offset(50, -70);
-    _leftLegOffset = Offset(-50, 70);
-    _rightLegOffset = Offset(50, 70);
+    _leftArmOffset = position + Offset(50, 50);
+    _rightArmOffset = position + Offset(150, 50);
+    _leftLegOffset = position + Offset(50, 250);
+    _rightLegOffset = position + Offset(150, 250);
 
     scaleBackground = 1.0;
     deltaTranslateBackground = Offset(1.0, 1.0);
@@ -139,7 +156,6 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   updateClimaxPosition(Offset newPosition) {
-    _climaxPosition = newPosition;
     _updateClimax();
   }
 
@@ -147,26 +163,30 @@ class ClimaxViewModel extends ChangeNotifier {
   updateSelectedLimbPosition(Offset newPosition) {
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
-        _climaxPosition = newPosition;
+        Offset diff = _computeClimaxCenter() - newPosition;
+        _leftArmOffset = _leftArmOffset - diff;
+        _rightArmOffset = _rightArmOffset - diff;
+        _leftLegOffset = _leftLegOffset - diff;
+        _rightLegOffset = _rightLegOffset - diff;
         break;
 
-    // For arms and legs, calculate the new offset relative to the body
-    // Add translation offset to newPosition to get the local, tapped position and not the translated one.
-    // Divide through scale parameter, to get the local, tapped position and not the scaled one.
+      // For arms and legs, calculate the new offset relative to the body
+      // Add translation offset to newPosition to get the local, tapped position and not the translated one.
+      // Divide through scale parameter, to get the local, tapped position and not the scaled one.
       case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        _leftArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        _rightArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        _rightLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = (newPosition - _climaxPosition + deltaTranslateAll) / scaleAll;
+        _leftLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
         break;
     }
 
@@ -176,7 +196,6 @@ class ClimaxViewModel extends ChangeNotifier {
 
     _updateClimax();
   }
-
 
   selectNextLimb() {
     _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb.index + 1) % 5];
@@ -224,7 +243,10 @@ class ClimaxViewModel extends ChangeNotifier {
 
     switch (limb) {
       case ClimaxLimbEnum.BODY:
-        _climaxPosition = _climaxPosition + Offset(moveX, moveY);
+        _leftArmOffset = _leftArmOffset + Offset(moveX, moveY);
+        _rightArmOffset = _rightArmOffset + Offset(moveX, moveY);
+        _leftLegOffset = _leftLegOffset + Offset(moveX, moveY);
+        _rightLegOffset = _rightLegOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_ARM:
@@ -285,7 +307,10 @@ class ClimaxViewModel extends ChangeNotifier {
 
     switch (this.selectedLimb) {
       case ClimaxLimbEnum.BODY:
-        _climaxPosition = _climaxPosition + Offset(moveX, moveY);
+        _leftArmOffset = _leftArmOffset + Offset(moveX, moveY);
+        _rightArmOffset = _rightArmOffset + Offset(moveX, moveY);
+        _leftLegOffset = _leftLegOffset + Offset(moveX, moveY);
+        _rightLegOffset = _rightLegOffset + Offset(moveX, moveY);
         break;
 
       case ClimaxLimbEnum.LEFT_ARM:
