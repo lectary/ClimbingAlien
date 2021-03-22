@@ -125,9 +125,8 @@ class RouteEditorViewModel extends ChangeNotifier {
   }
 
   resetClimax(Size size) {
-    climaxViewModel.resetClimax();
     Offset screenCenter = Offset(size.width / 2.0, size.height / 2.0 - kToolbarHeight);
-    climaxViewModel.updateClimaxPosition(screenCenter);
+    climaxViewModel.resetClimax(position: screenCenter);
   }
 
   previousGrasp() {

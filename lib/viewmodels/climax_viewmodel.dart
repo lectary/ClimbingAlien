@@ -140,11 +140,11 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   /// Resets the position of climax to an optional offset. Default is [Offset.zero], i.e. left-top screen dorner.
-  resetClimax({Offset position = Offset.zero}) {
-    _leftArmOffset = position + Offset(50, 50);
-    _rightArmOffset = position + Offset(150, 50);
-    _leftLegOffset = position + Offset(50, 250);
-    _rightLegOffset = position + Offset(150, 250);
+  resetClimax({Offset position = const Offset(75,100)}) {
+    _leftArmOffset = position + Offset(-50, -75);
+    _rightArmOffset = position + Offset(50, -75);
+    _leftLegOffset = position + Offset(-50, 75);
+    _rightLegOffset = position + Offset(50, 75);
 
     scaleBackground = 1.0;
     deltaTranslateBackground = Offset(1.0, 1.0);
@@ -152,10 +152,6 @@ class ClimaxViewModel extends ChangeNotifier {
     scaleAll = 1.0;
     deltaTranslateAll = Offset(1.0, 1.0);
 
-    _updateClimax();
-  }
-
-  updateClimaxPosition(Offset newPosition) {
     _updateClimax();
   }
 
