@@ -7,7 +7,7 @@ class BaseObject {
   @ColumnInfo(name: 'modified_at')
   DateTime modifiedAt;
 
-  @ColumnInfo(name: 'created_at', nullable: false)
+  @ColumnInfo(name: 'created_at')
   DateTime createdAt;
 
   BaseObject(this.id, this.modifiedAt, DateTime createdAt) : this.createdAt = createdAt ?? DateTime.now();

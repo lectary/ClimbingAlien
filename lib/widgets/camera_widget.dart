@@ -33,11 +33,12 @@ class _CameraWidgetState extends State<CameraWidget> {
 
   void _takePicture(BuildContext context) async {
     if (!controller.value.isInitialized) return;
+    // TODO migrate
     String path =
         join((await getTemporaryDirectory()).path, "${DateTime.now()}.png");
-    await controller.takePicture(path);
+    XFile file = await controller.takePicture();
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => DisplayImageScreen(path)));
+        MaterialPageRoute(builder: (context) => DisplayImageScreen(file.path)));
   }
 
   @override

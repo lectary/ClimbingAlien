@@ -88,7 +88,7 @@ class _$ClimbingDatabase extends ClimbingDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `scale_background` REAL NOT NULL, `scale_all` REAL NOT NULL, `translate_background` TEXT NOT NULL, `translate_all` TEXT NOT NULL, `climax_position` TEXT NOT NULL, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `scale_background` REAL NOT NULL, `scale_all` REAL NOT NULL, `translate_background` TEXT NOT NULL, `translate_all` TEXT NOT NULL, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -338,8 +338,6 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'climax_position':
-                      _offsetConverter.encode(item.climaxPosition),
                   'left_arm': _offsetConverter.encode(item.leftArm),
                   'right_arm': _offsetConverter.encode(item.rightArm),
                   'left_leg': _offsetConverter.encode(item.leftLeg),
@@ -361,8 +359,6 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'climax_position':
-                      _offsetConverter.encode(item.climaxPosition),
                   'left_arm': _offsetConverter.encode(item.leftArm),
                   'right_arm': _offsetConverter.encode(item.rightArm),
                   'left_leg': _offsetConverter.encode(item.leftLeg),
@@ -384,8 +380,6 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'climax_position':
-                      _offsetConverter.encode(item.climaxPosition),
                   'left_arm': _offsetConverter.encode(item.leftArm),
                   'right_arm': _offsetConverter.encode(item.rightArm),
                   'left_leg': _offsetConverter.encode(item.leftLeg),
@@ -422,8 +416,6 @@ class _$GraspDao extends GraspDao {
                 _offsetConverter.decode(row['translate_background'] as String),
             translateAll:
                 _offsetConverter.decode(row['translate_all'] as String),
-            climaxPosition:
-                _offsetConverter.decode(row['climax_position'] as String),
             leftArm: _offsetConverter.decode(row['left_arm'] as String),
             rightArm: _offsetConverter.decode(row['right_arm'] as String),
             leftLeg: _offsetConverter.decode(row['left_leg'] as String),
@@ -449,8 +441,6 @@ class _$GraspDao extends GraspDao {
                 _offsetConverter.decode(row['translate_background'] as String),
             translateAll:
                 _offsetConverter.decode(row['translate_all'] as String),
-            climaxPosition:
-                _offsetConverter.decode(row['climax_position'] as String),
             leftArm: _offsetConverter.decode(row['left_arm'] as String),
             rightArm: _offsetConverter.decode(row['right_arm'] as String),
             leftLeg: _offsetConverter.decode(row['left_leg'] as String),
@@ -473,8 +463,6 @@ class _$GraspDao extends GraspDao {
                 _offsetConverter.decode(row['translate_background'] as String),
             translateAll:
                 _offsetConverter.decode(row['translate_all'] as String),
-            climaxPosition:
-                _offsetConverter.decode(row['climax_position'] as String),
             leftArm: _offsetConverter.decode(row['left_arm'] as String),
             rightArm: _offsetConverter.decode(row['right_arm'] as String),
             leftLeg: _offsetConverter.decode(row['left_leg'] as String),

@@ -11,7 +11,7 @@ class Route extends BaseObject {
 
   String description;
 
-  @ColumnInfo(name: 'wall_id', nullable: false)
+  @ColumnInfo(name: 'wall_id')
   int wallId;
 
   @ignore
