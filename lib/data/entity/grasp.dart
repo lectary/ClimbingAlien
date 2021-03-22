@@ -8,29 +8,29 @@ import 'package:flutter/material.dart' hide Route;
 ],)
 class Grasp extends BaseObject {
   /// Used to indicate the sequence of grasps per route
-  @ColumnInfo(name: 'order', nullable: false)
+  @ColumnInfo(name: 'order')
   int order;
 
-  @ColumnInfo(name: 'route_id', nullable: false)
+  @ColumnInfo(name: 'route_id')
   int routeId;
 
-  @ColumnInfo(name: 'scale_background', nullable: false)
+  @ColumnInfo(name: 'scale_background')
   double scaleBackground;
-  @ColumnInfo(name: 'scale_all', nullable: false)
+  @ColumnInfo(name: 'scale_all')
   double scaleAll;
 
-  @ColumnInfo(name: 'translate_background', nullable: false)
+  @ColumnInfo(name: 'translate_background')
   Offset translateBackground;
-  @ColumnInfo(name: 'translate_all', nullable: false)
+  @ColumnInfo(name: 'translate_all')
   Offset translateAll;
 
-  @ColumnInfo(name: 'left_arm', nullable: false)
+  @ColumnInfo(name: 'left_arm')
   Offset leftArm;
-  @ColumnInfo(name: 'right_arm', nullable: false)
+  @ColumnInfo(name: 'right_arm')
   Offset rightArm;
-  @ColumnInfo(name: 'left_leg', nullable: false)
+  @ColumnInfo(name: 'left_leg')
   Offset leftLeg;
-  @ColumnInfo(name: 'right_leg', nullable: false)
+  @ColumnInfo(name: 'right_leg')
   Offset rightLeg;
 
   Grasp(
