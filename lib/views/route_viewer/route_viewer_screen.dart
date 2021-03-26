@@ -14,15 +14,15 @@ class RouteViewerScreen extends StatefulWidget {
   final Wall wall;
   final Route route;
 
-  RouteViewerScreen(this.wall, this.route, {Key key}) : super(key: key);
+  RouteViewerScreen(this.wall, this.route, {Key? key}) : super(key: key);
 
   @override
   _RouteViewerScreenState createState() => _RouteViewerScreenState();
 }
 
 class _RouteViewerScreenState extends State<RouteViewerScreen> {
-  RouteViewModel routeModel;
-  ClimaxViewModel climaxModel;
+  RouteViewModel? routeModel;
+  ClimaxViewModel? climaxModel;
 
   int index = 0;
 
@@ -44,14 +44,14 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                 title: Text('Route Viewer'),
               ),
               body: StreamBuilder<List<Grasp>>(
-                  stream: routeModel.getGraspStreamByRouteId(widget.route.id),
+                  stream: routeModel.getGraspStreamByRouteId(widget.route.id!),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final _graspList = snapshot.data;
+                      final _graspList = snapshot.data!;
                       if (_graspList.isEmpty) {
                         return Center(child: Text('No grasps available'));
                       } else {
-                        _graspList.sort((g1, g2) => g1.order - g2.order);
+                        _graspList.sort((g1, g2) => g1.order! - g2.order!);
                         climaxModel.setupByGrasp(_graspList[index]);
                         return Column(
                           children: [

@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 class RouteViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  RouteViewModel({@required ClimbingRepository climbingRepository})
+  RouteViewModel({required ClimbingRepository climbingRepository})
       : assert(climbingRepository != null),
         _climbingRepository = climbingRepository;
 

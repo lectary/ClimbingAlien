@@ -9,15 +9,15 @@ import 'package:floor/floor.dart';
 class Route extends BaseObject {
   String title;
 
-  String description;
+  String? description;
 
   @ColumnInfo(name: 'wall_id')
   int wallId;
 
   @ignore
-  List<Grasp> graspList;
+  List<Grasp>? graspList;
 
-  Route(this.title, this.wallId, {this.description, int id, DateTime modifiedAt, DateTime createdAt})
+  Route(this.title, this.wallId, {this.description, int? id, DateTime? modifiedAt, DateTime? createdAt})
       : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {

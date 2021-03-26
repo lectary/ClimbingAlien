@@ -9,15 +9,15 @@ import 'package:path_provider/path_provider.dart';
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  WallViewModel({@required ClimbingRepository climbingRepository})
+  WallViewModel({required ClimbingRepository climbingRepository})
       : assert(climbingRepository != null),
         _climbingRepository = climbingRepository;
 
   Stream<List<Wall>> get wallStream => _climbingRepository.watchAllWalls();
 
   Future<void> insertWall(Wall wall) async {
-    if (wall.imagePath != null && !wall.imagePath.startsWith('assets')) {
-      String newPath = await _saveImageToDevice(wall.imagePath);
+    if (wall.imagePath != null && !wall.imagePath!.startsWith('assets')) {
+      String? newPath = await _saveImageToDevice(wall.imagePath!);
       wall.imagePath = newPath;
     }
     return _climbingRepository.insertWall(wall);
@@ -26,8 +26,8 @@ class WallViewModel extends ChangeNotifier {
   Future<void> updateWall(Wall wall) async {
     if (wall.imagePath != wall.imagePathUpdated) {
       wall.imagePath = wall.imagePathUpdated;
-      if (!wall.imagePath.startsWith('assets')) {
-        String newPath = await _saveImageToDevice(wall.imagePath);
+      if (!wall.imagePath!.startsWith('assets')) {
+        String? newPath = await _saveImageToDevice(wall.imagePath!);
         wall.imagePath = newPath;
       }
     }
@@ -35,13 +35,13 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteWall(Wall wall) {
-    if (!wall.imagePath.startsWith('assets')) {
-      _deleteImageFromDevice(wall.imagePath);
+    if (!wall.imagePath!.startsWith('assets')) {
+      _deleteImageFromDevice(wall.imagePath!);
     }
     return _climbingRepository.deleteWall(wall);
   }
 
-  Future<String> _saveImageToDevice(String imagePath) async {
+  Future<String?> _saveImageToDevice(String imagePath) async {
     if (imagePath.contains('assets')) return null;
     File tmpFile = File(imagePath);
     final String filename = basename(imagePath); // Filename without extension

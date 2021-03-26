@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 /// Custom Gesture Detector using [RawGestureDetector] and custom [DoubleSwipeGestureRecognizer] for
 /// allowing double-finger swipe gestures.
 class DoubleSwipeGestureDetector extends StatelessWidget {
-  final OnUpdate onUpdate;
-  final Widget child;
+  final OnUpdate? onUpdate;
+  final Widget? child;
 
   DoubleSwipeGestureDetector({this.onUpdate, this.child});
 

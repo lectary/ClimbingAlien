@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 class ClimbingRepository {
   final ClimbingDatabase _climbingDatabase;
 
-  ClimbingRepository({@required ClimbingDatabase climbingDatabase})
+  ClimbingRepository({required ClimbingDatabase climbingDatabase})
       : assert(climbingDatabase != null),
         _climbingDatabase = climbingDatabase;
 

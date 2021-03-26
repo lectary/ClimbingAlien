@@ -26,10 +26,10 @@ class RouteScreen extends StatelessWidget {
         child: Consumer<RouteViewModel>(
           builder: (context, routeModel, child) {
             return StreamBuilder<List<Route>>(
-              stream: routeModel.getRouteStreamByWallId(wall.id),
+              stream: routeModel.getRouteStreamByWallId(wall.id!),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final routeList = snapshot.data;
+                  final routeList = snapshot.data!;
                   return routeList.isEmpty
                       ? Center(child: Text("No routes available"))
                       : ListView.builder(
@@ -39,10 +39,10 @@ class RouteScreen extends StatelessWidget {
                             return ListTile(
                               title: Text(route.title),
                               subtitle: StreamBuilder<List<Grasp>>(
-                                  stream: routeModel.getGraspStreamByRouteId(route.id),
+                                  stream: routeModel.getGraspStreamByRouteId(route.id!),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
-                                      final graspList = snapshot.data;
+                                      final graspList = snapshot.data!;
                                       return Text("${route.description} - ${graspList.length} Grasps");
                                     } else {
                                       return Center(child: CircularProgressIndicator());

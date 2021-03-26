@@ -12,7 +12,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 
 part 'database.g.dart'; // the generated code will be there
 
-@TypeConverters([DateTimeConverter, OffsetConverter])
+@TypeConverters([DateTimeConverter, DateTimeConverterNonNull, OffsetConverter, OffsetConverterNonNull])
 @Database(version: 1, entities: [Wall, Route, Grasp])
 abstract class ClimbingDatabase extends FloorDatabase {
   WallDao get wallDao;
@@ -28,18 +28,18 @@ class DatabaseProvider {
 
   DatabaseProvider._internal();
 
-  static ClimbingDatabase _db;
+  static ClimbingDatabase? _db;
 
   Future<ClimbingDatabase> get db async {
     if (_db == null) {
       _db = await $FloorClimbingDatabase.databaseBuilder('climbing.db').addCallback(callback).build();
     }
-    return _db;
+    return _db!;
   }
 
   Future<void> closeDB() async {
     if (_db != null) {
-      _db.close();
+      _db!.close();
     }
   }
 

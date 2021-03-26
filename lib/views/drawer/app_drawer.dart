@@ -15,18 +15,19 @@ class AppDrawer extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                ListTile(title: Text("Route management"), onTap: () => Navigator.pushNamed(context, WallScreen.routeName)),
+                ListTile(
+                    title: Text("Route management"), onTap: () => Navigator.pushNamed(context, WallScreen.routeName)),
                 ListTile(
                     title: Text("Route editing"),
                     onTap: () {
                       Navigator.pop(context);
-                      return Navigator.pushNamed(context, RouteEditorScreen.routeName);
+                      Navigator.pushNamed(context, RouteEditorScreen.routeName);
                     }),
                 ListTile(
                     title: Text("Camera"),
                     onTap: () {
                       Navigator.pop(context);
-                      return Navigator.pushNamed(context, CameraScreen.routeName);
+                      Navigator.pushNamed(context, CameraScreen.routeName);
                     }),
                 ListTile(title: Text("Image management"), onTap: () => Fluttertoast.showToast(msg: "Coming soon!")),
               ],

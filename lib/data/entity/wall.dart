@@ -5,17 +5,17 @@ import 'package:floor/floor.dart';
 class Wall extends BaseObject {
   String title;
 
-  String description;
+  String? description;
 
-  int height;
+  int? height;
 
   @ColumnInfo(name: 'image_path')
-  String imagePath;
+  String? imagePath;
 
   @ignore
-  String imagePathUpdated;
+  String? imagePathUpdated;
 
-  Wall(this.title, {this.description, this.height, this.imagePath, this.imagePathUpdated, int id, DateTime modifiedAt, DateTime createdAt})
+  Wall(this.title, {this.description, this.height, this.imagePath, this.imagePathUpdated, int? id, DateTime? modifiedAt, DateTime? createdAt})
       : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {

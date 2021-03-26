@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 class DoubleSwipeGestureRecognizer extends MultiDragGestureRecognizer {
   final List<PointerDownEvent> events = [];
 
+  DoubleSwipeGestureRecognizer({Object? debugOwner}) : super(debugOwner: debugOwner);
+
   @override
   MultiDragPointerState createNewPointerState(PointerDownEvent event) {
     events.add(event);
@@ -18,14 +20,14 @@ class DoubleSwipeGestureRecognizer extends MultiDragGestureRecognizer {
 typedef OnDisposeState();
 
 class _DoubleSwipePointerState extends MultiDragPointerState {
-  final OnDisposeState onDisposeState;
+  final OnDisposeState? onDisposeState;
 
   _DoubleSwipePointerState(Offset initialPosition, {this.onDisposeState})
       : super(initialPosition, PointerDeviceKind.touch);
 
   @override
   void checkForResolutionAfterMove() {
-    if (pendingDelta.dx.abs() > kTouchSlop || pendingDelta.dy.abs() > kTouchSlop) {
+    if (pendingDelta!.dx.abs() > kTouchSlop || pendingDelta!.dy.abs() > kTouchSlop) {
       resolve(GestureDisposition.accepted);
     }
   }

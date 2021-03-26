@@ -19,7 +19,7 @@ class RouteEditorScreen extends StatelessWidget {
   final Wall wall;
   final Route route;
 
-  RouteEditorScreen(this.wall, this.route, {Key key}) : super(key: key);
+  RouteEditorScreen(this.wall, this.route, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

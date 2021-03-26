@@ -19,11 +19,11 @@ class Joystick extends StatefulWidget {
   Joystick(
       {this.size = defaultSize,
       this.sizeControlStick = defaultStickSize,
-      this.onDirectionChanged,
+      required this.onDirectionChanged,
       this.colorBackground = Colors.grey,
       this.colorControlStick = Colors.blueGrey,
       this.colorIcon = Colors.white,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
@@ -31,17 +31,17 @@ class Joystick extends StatefulWidget {
 }
 
 class _JoystickState extends State<Joystick> {
-  double outerSize;
-  double controlStickSize;
-  Offset controlStickPosition;
-  Offset center;
+  double? outerSize;
+  double? controlStickSize;
+  late Offset controlStickPosition;
+  late Offset center;
 
   @override
   void initState() {
     super.initState();
     outerSize = widget.size;
     controlStickSize = widget.sizeControlStick;
-    center = Offset(outerSize / 2, outerSize / 2);
+    center = Offset(outerSize! / 2, outerSize! / 2);
     controlStickPosition = calculateControlStickPosition(center);
   }
 
@@ -49,8 +49,8 @@ class _JoystickState extends State<Joystick> {
   ///
   /// Returns the radius of the stick analogues to a clock, and how far it is pulled away from center.
   void processCallback(Offset offset) {
-    double smallRadius = controlStickSize / 2.0;
-    double bigRadius = outerSize / 2.0;
+    double smallRadius = controlStickSize! / 2.0;
+    double bigRadius = outerSize! / 2.0;
 
     Offset shiftedOffset = (offset - center); // Shift to get the offset with the center as origin.
     double angle = _math.atan2(shiftedOffset.dy, shiftedOffset.dx); // Calculates the angle in radians between x-axis and the point.
@@ -69,10 +69,10 @@ class _JoystickState extends State<Joystick> {
   ///
   /// The calculation considers that [Positioned] starts from the top left corner of a widget, not the center.
   Offset calculateControlStickPosition(Offset offset) {
-    double smallRadius = controlStickSize / 2.0;
-    double bigRadius = outerSize / 2.0;
+    double smallRadius = controlStickSize! / 2.0;
+    double bigRadius = outerSize! / 2.0;
 
-    double maxDistance = outerSize / 2.0 - smallRadius; // Max. distance the stick should go, i.e. till it touches outer circle.
+    double maxDistance = outerSize! / 2.0 - smallRadius; // Max. distance the stick should go, i.e. till it touches outer circle.
 
     Offset shiftedOffset = (offset - center); // Shift to get the offset with the center as origin.
     double angle = _math.atan2(shiftedOffset.dy, shiftedOffset.dx); // Calculates the angle in radians between x-axis and the point.

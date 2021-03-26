@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 
 class HeaderControl extends StatefulWidget {
   final String title;
-  final Function nextSelectionCallback;
-  final Function resetCallback;
-  final Function stepFinishedCallback;
+  final Function? nextSelectionCallback;
+  final Function? resetCallback;
+  final Function? stepFinishedCallback;
 
   HeaderControl(this.title, {this.nextSelectionCallback, this.resetCallback, this.stepFinishedCallback});
 
@@ -16,7 +16,7 @@ class HeaderControl extends StatefulWidget {
 }
 
 class _HeaderControlState extends State<HeaderControl> {
-  ClimaxViewModel climaxModel;
+  late ClimaxViewModel climaxModel;
   int taskCounter = 0;
 
   @override
@@ -43,7 +43,7 @@ class _HeaderControlState extends State<HeaderControl> {
                   child: Text(widget.title,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Theme.of(context).colorScheme.onPrimary))),
             ),
             // Control elements
@@ -58,7 +58,7 @@ class _HeaderControlState extends State<HeaderControl> {
                   children: [
                     HeaderExtensionAnimation(buttonColor: Theme.of(context).colorScheme.onPrimary, children: [
                       TextButton(
-                        onPressed: widget.resetCallback ?? () {},
+                        onPressed: widget.resetCallback as void Function()? ?? () {},
                         child: Text("Reset", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                       )
                     ]),
@@ -76,7 +76,7 @@ class _HeaderControlState extends State<HeaderControl> {
                         Text("$order",
                             style: Theme.of(context)
                                 .textTheme
-                                .headline6
+                                .headline6!
                                 .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                         IconButton(
                             icon: Icon(Icons.add),

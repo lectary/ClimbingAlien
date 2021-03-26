@@ -2,24 +2,22 @@ import 'dart:async';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_painter.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Climax extends StatefulWidget {
-  final Offset position;
-
-  Climax({this.position, Key key}) : super(key: key);
+  Climax({Key? key}) : super(key: key);
 
   @override
   _ClimaxState createState() => _ClimaxState();
 }
 
 class _ClimaxState extends State<Climax> {
-  ClimaxViewModel climaxModel;
-  Offset screenCenter;
+  late ClimaxViewModel climaxModel;
 
-  Timer timer;
+  late Timer timer;
   final int refreshTime = 60;
 
   @override
@@ -32,7 +30,7 @@ class _ClimaxState extends State<Climax> {
 
   @override
   void dispose() {
-    timer?.cancel();
+    timer.cancel();
     super.dispose();
   }
 
@@ -43,9 +41,9 @@ class _ClimaxState extends State<Climax> {
     ClimaxLimbEnum selection = context.select((ClimaxViewModel model) => model.selectedLimb);
     return GestureDetector(
       onTapDown: (details) {
-        RenderBox box = context.findRenderObject();
+        RenderBox box = context.findRenderObject() as RenderBox;
         final offset = box.globalToLocal(details.globalPosition);
-        final limb = limbs.entries.lastWhere((entry) => entry.value.contains(offset), orElse: () => null);
+        final limb = limbs!.entries.lastWhereOrNull((entry) => entry.value.contains(offset));
         if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
       },
       child: CustomPaint(

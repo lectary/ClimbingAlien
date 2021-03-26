@@ -9,20 +9,20 @@ import 'package:flutter/material.dart' hide Route;
 class Grasp extends BaseObject {
   /// Used to indicate the sequence of grasps per route
   @ColumnInfo(name: 'order')
-  int order;
+  int? order;
 
   @ColumnInfo(name: 'route_id')
   int routeId;
 
   @ColumnInfo(name: 'scale_background')
-  double scaleBackground;
+  double? scaleBackground;
   @ColumnInfo(name: 'scale_all')
-  double scaleAll;
+  double? scaleAll;
 
   @ColumnInfo(name: 'translate_background')
-  Offset translateBackground;
+  Offset? translateBackground;
   @ColumnInfo(name: 'translate_all')
-  Offset translateAll;
+  Offset? translateAll;
 
   @ColumnInfo(name: 'left_arm')
   Offset leftArm;
@@ -35,18 +35,18 @@ class Grasp extends BaseObject {
 
   Grasp(
       {this.order,
-      this.routeId,
+      required this.routeId,
       this.scaleBackground,
       this.scaleAll,
       this.translateBackground,
       this.translateAll,
-      this.leftArm,
-      this.rightArm,
-      this.leftLeg,
-      this.rightLeg,
-      int id,
-      DateTime modifiedAt,
-      DateTime createdAt})
+      required this.leftArm,
+      required this.rightArm,
+      required this.leftLeg,
+      required this.rightLeg,
+      int? id,
+      DateTime? modifiedAt,
+      DateTime? createdAt})
       : super(id, modifiedAt, createdAt);
 
   @override

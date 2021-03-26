@@ -26,19 +26,19 @@ class ClimaxViewModel extends ChangeNotifier {
   final bodyWidth = 50.0;
   final bodyHeight = 80.0;
 
-  Offset _leftArmOffset;
-  Offset _rightArmOffset;
-  Offset _leftLegOffset;
-  Offset _rightLegOffset;
+  late Offset _leftArmOffset;
+  late Offset _rightArmOffset;
+  late Offset _leftLegOffset;
+  late Offset _rightLegOffset;
 
-  Rect _bodyRect;
-  Rect _leftArmRect;
-  Rect _rightArmRect;
-  Rect _leftLegRect;
-  Rect _rightLegRect;
+  Rect? _bodyRect;
+  Rect? _leftArmRect;
+  Rect? _rightArmRect;
+  Rect? _leftLegRect;
+  Rect? _rightLegRect;
 
-  Map<ClimaxLimbEnum, Rect> _climaxLimbs;
-  Map<ClimaxLimbEnum, Rect> get climaxLimbs => _climaxLimbs;
+  Map<ClimaxLimbEnum, Rect>? _climaxLimbs;
+  Map<ClimaxLimbEnum, Rect>? get climaxLimbs => _climaxLimbs;
 
   ClimaxLimbEnum _selectedLimb = ClimaxLimbEnum.BODY;
   ClimaxLimbEnum get selectedLimb => _selectedLimb;
@@ -65,7 +65,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
   bool tapOn = false;
   bool climaxMoved = false;
-  Function updateCallback;
+  Function? updateCallback;
   // TODO remove?
   int order = 0;
 
@@ -82,16 +82,16 @@ class ClimaxViewModel extends ChangeNotifier {
       leftArm: _leftArmOffset,
       rightArm: _rightArmOffset,
       leftLeg: _leftLegOffset,
-      rightLeg: _rightLegOffset,
+      rightLeg: _rightLegOffset, routeId: 0,
     );
     return newGrasp;
   }
 
   setupByGrasp(Grasp grasp) {
-    scaleBackground = grasp.scaleBackground;
-    scaleAll = grasp.scaleAll;
-    deltaTranslateBackground = grasp.translateBackground;
-    deltaTranslateAll = grasp.translateAll;
+    scaleBackground = grasp.scaleBackground!;
+    scaleAll = grasp.scaleAll!;
+    deltaTranslateBackground = grasp.translateBackground!;
+    deltaTranslateAll = grasp.translateAll!;
     _leftArmOffset = grasp.leftArm;
     _rightArmOffset = grasp.rightArm;
     _leftLegOffset = grasp.leftLeg;
@@ -208,7 +208,7 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
-  moveLimbDirectional(Direction direction, {ClimaxLimbEnum limb}) {
+  moveLimbDirectional(Direction direction, {ClimaxLimbEnum? limb}) {
     updateLimbDirectional(limb ?? this._selectedLimb, direction);
   }
 
@@ -274,7 +274,7 @@ class ClimaxViewModel extends ChangeNotifier {
   /// between 0 and 1.
   /// Works together with [updateLimbFree], which is called continuously by the climax widget, and
   /// moves climax based on the parameter passed to this function [moveLimbFree].
-  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum limb}) {
+  moveLimbFree(double degrees, double strength, {ClimaxLimbEnum? limb}) {
     if (limb != null) this._selectedLimb = limb;
     this._degrees = degrees;
     this._strength = strength;

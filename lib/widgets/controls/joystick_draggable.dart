@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class JoystickDraggable extends StatefulWidget {
-  final ValueChanged<Offset> valueChanged;
+  final ValueChanged<Offset>? valueChanged;
 
   JoystickDraggable({this.valueChanged});
 
@@ -22,7 +22,7 @@ class _JoystickDraggableState extends State<JoystickDraggable> {
   notifyParent() {
     print(valueListener.value);
     if (widget.valueChanged != null) {
-      widget.valueChanged(valueListener.value);
+      widget.valueChanged!(valueListener.value);
     }
   }
 
@@ -60,7 +60,7 @@ class _JoystickDraggableState extends State<JoystickDraggable> {
               GestureDetector(
                 onPanUpdate: (details) {
                   Offset newOffset = valueListener.value +
-                      Offset((details.delta.dx / context.size.width), (details.delta.dy / context.size.height));
+                      Offset((details.delta.dx / context.size!.width), (details.delta.dy / context.size!.height));
                   valueListener.value = Offset(newOffset.dx.clamp(.0, 1.0), newOffset.dy.clamp(.0, 1.0));
                 },
                 onPanEnd: (details) => resetStick(),

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ClimaxTransformer extends StatelessWidget {
-  final String imagePath;
+  final String? imagePath;
 
   const ClimaxTransformer({
-    Key key,
-    @required this.imagePath,
+    Key? key,
+    required this.imagePath,
   }) : super(key: key);
 
   @override

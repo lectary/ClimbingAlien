@@ -22,11 +22,11 @@ class $FloorClimbingDatabase {
 class _$ClimbingDatabaseBuilder {
   _$ClimbingDatabaseBuilder(this.name);
 
-  final String name;
+  final String? name;
 
   final List<Migration> _migrations = [];
 
-  Callback _callback;
+  Callback? _callback;
 
   /// Adds migrations to the builder.
   _$ClimbingDatabaseBuilder addMigrations(List<Migration> migrations) {
@@ -43,7 +43,7 @@ class _$ClimbingDatabaseBuilder {
   /// Creates the database and initializes it.
   Future<ClimbingDatabase> build() async {
     final path = name != null
-        ? await sqfliteDatabaseFactory.getDatabasePath(name)
+        ? await sqfliteDatabaseFactory.getDatabasePath(name!)
         : ':memory:';
     final database = _$ClimbingDatabase();
     database.database = await database.open(
@@ -56,18 +56,18 @@ class _$ClimbingDatabaseBuilder {
 }
 
 class _$ClimbingDatabase extends ClimbingDatabase {
-  _$ClimbingDatabase([StreamController<String> listener]) {
+  _$ClimbingDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  WallDao _wallDaoInstance;
+  WallDao? _wallDaoInstance;
 
-  RouteDao _routeDaoInstance;
+  RouteDao? _routeDaoInstance;
 
-  GraspDao _graspDaoInstance;
+  GraspDao? _graspDaoInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
-      [Callback callback]) async {
+      [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
@@ -84,11 +84,11 @@ class _$ClimbingDatabase extends ClimbingDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT NOT NULL, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `scale_background` REAL NOT NULL, `scale_all` REAL NOT NULL, `translate_background` TEXT NOT NULL, `translate_all` TEXT NOT NULL, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER, `route_id` INTEGER NOT NULL, `scale_background` REAL, `scale_all` REAL, `translate_background` TEXT, `translate_all` TEXT, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -118,42 +118,42 @@ class _$WallDao extends WallDao {
         _wallInsertionAdapter = InsertionAdapter(
             database,
             'walls',
-            (Wall item) => <String, dynamic>{
+            (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
                   'image_path': item.imagePath,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _wallUpdateAdapter = UpdateAdapter(
             database,
             'walls',
             ['id'],
-            (Wall item) => <String, dynamic>{
+            (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
                   'image_path': item.imagePath,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _wallDeletionAdapter = DeletionAdapter(
             database,
             'walls',
             ['id'],
-            (Wall item) => <String, dynamic>{
+            (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'height': item.height,
                   'image_path': item.imagePath,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener);
 
@@ -174,12 +174,12 @@ class _$WallDao extends WallDao {
     return _queryAdapter.queryListStream('SELECT * FROM walls',
         queryableName: 'walls',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Wall(row['title'] as String,
-            description: row['description'] as String,
-            height: row['height'] as int,
-            imagePath: row['image_path'] as String,
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+        mapper: (Map<String, Object?> row) => Wall(row['title'] as String,
+            description: row['description'] as String?,
+            height: row['height'] as int?,
+            imagePath: row['image_path'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
@@ -205,39 +205,39 @@ class _$RouteDao extends RouteDao {
         _routeInsertionAdapter = InsertionAdapter(
             database,
             'routes',
-            (Route item) => <String, dynamic>{
+            (Route item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _routeUpdateAdapter = UpdateAdapter(
             database,
             'routes',
             ['id'],
-            (Route item) => <String, dynamic>{
+            (Route item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _routeDeletionAdapter = DeletionAdapter(
             database,
             'routes',
             ['id'],
-            (Route item) => <String, dynamic>{
+            (Route item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener);
 
@@ -258,11 +258,11 @@ class _$RouteDao extends RouteDao {
     return _queryAdapter.queryListStream('SELECT * FROM routes',
         queryableName: 'routes',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Route(
+        mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
-            description: row['description'] as String,
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            description: row['description'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
@@ -270,25 +270,25 @@ class _$RouteDao extends RouteDao {
   Stream<List<Route>> watchAllRoutesByWallId(int wallId) {
     return _queryAdapter.queryListStream(
         'SELECT * FROM routes WHERE wall_id = ?',
-        arguments: <dynamic>[wallId],
+        arguments: [wallId],
         queryableName: 'routes',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Route(
+        mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
-            description: row['description'] as String,
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            description: row['description'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
   @override
   Future<List<Route>> findAllRoutes() async {
     return _queryAdapter.queryList('SELECT * FROM routes',
-        mapper: (Map<String, dynamic> row) => Route(
+        mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
-            description: row['description'] as String,
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+            description: row['description'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
@@ -314,7 +314,7 @@ class _$GraspDao extends GraspDao {
         _graspInsertionAdapter = InsertionAdapter(
             database,
             'grasps',
-            (Grasp item) => <String, dynamic>{
+            (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
                   'scale_background': item.scaleBackground,
@@ -322,20 +322,20 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'left_arm': _offsetConverter.encode(item.leftArm),
-                  'right_arm': _offsetConverter.encode(item.rightArm),
-                  'left_leg': _offsetConverter.encode(item.leftLeg),
-                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'left_arm': _offsetConverterNonNull.encode(item.leftArm),
+                  'right_arm': _offsetConverterNonNull.encode(item.rightArm),
+                  'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
+                  'right_leg': _offsetConverterNonNull.encode(item.rightLeg),
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _graspUpdateAdapter = UpdateAdapter(
             database,
             'grasps',
             ['id'],
-            (Grasp item) => <String, dynamic>{
+            (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
                   'scale_background': item.scaleBackground,
@@ -343,20 +343,20 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'left_arm': _offsetConverter.encode(item.leftArm),
-                  'right_arm': _offsetConverter.encode(item.rightArm),
-                  'left_leg': _offsetConverter.encode(item.leftLeg),
-                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'left_arm': _offsetConverterNonNull.encode(item.leftArm),
+                  'right_arm': _offsetConverterNonNull.encode(item.rightArm),
+                  'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
+                  'right_leg': _offsetConverterNonNull.encode(item.rightLeg),
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
         _graspDeletionAdapter = DeletionAdapter(
             database,
             'grasps',
             ['id'],
-            (Grasp item) => <String, dynamic>{
+            (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
                   'scale_background': item.scaleBackground,
@@ -364,13 +364,13 @@ class _$GraspDao extends GraspDao {
                   'translate_background':
                       _offsetConverter.encode(item.translateBackground),
                   'translate_all': _offsetConverter.encode(item.translateAll),
-                  'left_arm': _offsetConverter.encode(item.leftArm),
-                  'right_arm': _offsetConverter.encode(item.rightArm),
-                  'left_leg': _offsetConverter.encode(item.leftLeg),
-                  'right_leg': _offsetConverter.encode(item.rightLeg),
+                  'left_arm': _offsetConverterNonNull.encode(item.leftArm),
+                  'right_arm': _offsetConverterNonNull.encode(item.rightArm),
+                  'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
+                  'right_leg': _offsetConverterNonNull.encode(item.rightLeg),
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
-                  'created_at': _dateTimeConverter.encode(item.createdAt)
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener);
 
@@ -391,21 +391,23 @@ class _$GraspDao extends GraspDao {
     return _queryAdapter.queryListStream('SELECT * FROM grasps',
         queryableName: 'grasps',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Grasp(
-            order: row['order'] as int,
+        mapper: (Map<String, Object?> row) => Grasp(
+            order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double,
-            scaleAll: row['scale_all'] as double,
+            scaleBackground: row['scale_background'] as double?,
+            scaleAll: row['scale_all'] as double?,
             translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String),
+                _offsetConverter.decode(row['translate_background'] as String?),
             translateAll:
-                _offsetConverter.decode(row['translate_all'] as String),
-            leftArm: _offsetConverter.decode(row['left_arm'] as String),
-            rightArm: _offsetConverter.decode(row['right_arm'] as String),
-            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
-            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+                _offsetConverter.decode(row['translate_all'] as String?),
+            leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
+            rightArm:
+                _offsetConverterNonNull.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverterNonNull.decode(row['left_leg'] as String),
+            rightLeg:
+                _offsetConverterNonNull.decode(row['right_leg'] as String),
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
@@ -413,46 +415,50 @@ class _$GraspDao extends GraspDao {
   Stream<List<Grasp>> watchAllGraspsByRouteId(int routeId) {
     return _queryAdapter.queryListStream(
         'SELECT * FROM grasps WHERE route_id = ?',
-        arguments: <dynamic>[routeId],
+        arguments: [routeId],
         queryableName: 'grasps',
         isView: false,
-        mapper: (Map<String, dynamic> row) => Grasp(
-            order: row['order'] as int,
+        mapper: (Map<String, Object?> row) => Grasp(
+            order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double,
-            scaleAll: row['scale_all'] as double,
+            scaleBackground: row['scale_background'] as double?,
+            scaleAll: row['scale_all'] as double?,
             translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String),
+                _offsetConverter.decode(row['translate_background'] as String?),
             translateAll:
-                _offsetConverter.decode(row['translate_all'] as String),
-            leftArm: _offsetConverter.decode(row['left_arm'] as String),
-            rightArm: _offsetConverter.decode(row['right_arm'] as String),
-            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
-            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+                _offsetConverter.decode(row['translate_all'] as String?),
+            leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
+            rightArm:
+                _offsetConverterNonNull.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverterNonNull.decode(row['left_leg'] as String),
+            rightLeg:
+                _offsetConverterNonNull.decode(row['right_leg'] as String),
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
   @override
   Future<List<Grasp>> findAllByRouteId(int routeId) async {
     return _queryAdapter.queryList('SELECT * FROM grasps WHERE route_id = ?',
-        arguments: <dynamic>[routeId],
-        mapper: (Map<String, dynamic> row) => Grasp(
-            order: row['order'] as int,
+        arguments: [routeId],
+        mapper: (Map<String, Object?> row) => Grasp(
+            order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double,
-            scaleAll: row['scale_all'] as double,
+            scaleBackground: row['scale_background'] as double?,
+            scaleAll: row['scale_all'] as double?,
             translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String),
+                _offsetConverter.decode(row['translate_background'] as String?),
             translateAll:
-                _offsetConverter.decode(row['translate_all'] as String),
-            leftArm: _offsetConverter.decode(row['left_arm'] as String),
-            rightArm: _offsetConverter.decode(row['right_arm'] as String),
-            leftLeg: _offsetConverter.decode(row['left_leg'] as String),
-            rightLeg: _offsetConverter.decode(row['right_leg'] as String),
-            id: row['id'] as int,
-            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int),
+                _offsetConverter.decode(row['translate_all'] as String?),
+            leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
+            rightArm:
+                _offsetConverterNonNull.decode(row['right_arm'] as String),
+            leftLeg: _offsetConverterNonNull.decode(row['left_leg'] as String),
+            rightLeg:
+                _offsetConverterNonNull.decode(row['right_leg'] as String),
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
   }
 
@@ -474,4 +480,6 @@ class _$GraspDao extends GraspDao {
 
 // ignore_for_file: unused_element
 final _dateTimeConverter = DateTimeConverter();
+final _dateTimeConverterNonNull = DateTimeConverterNonNull();
 final _offsetConverter = OffsetConverter();
+final _offsetConverterNonNull = OffsetConverterNonNull();

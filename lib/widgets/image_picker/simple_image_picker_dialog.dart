@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SimpleImagePicker extends StatelessWidget {
-  final Wall wall;
+  final Wall? wall;
   final ImagePicker picker = ImagePicker();
 
   SimpleImagePicker(this.wall);
 
-  static Future<String> dialog(BuildContext context, {Wall wall}) async {
+  static Future<String?> dialog(BuildContext context, {Wall? wall}) async {
     return await showDialog<String>(
         context: context,
         barrierDismissible: false,
@@ -32,7 +32,7 @@ class SimpleImagePicker extends StatelessWidget {
     BuildContext context,
   ) async {
     final pickedFilePath =
-        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String?;
     if (pickedFilePath != null) {
       Navigator.pop(context, pickedFilePath);
     } else {

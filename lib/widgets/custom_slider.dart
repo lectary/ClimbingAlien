@@ -30,7 +30,7 @@ class CustomSliderWithLabel extends StatelessWidget {
               divisions: 10,
               label: "$speed",
               value: speed,
-              onChanged: onChanged,
+              onChanged: onChanged as void Function(double)?,
             ),
           ),
         ),
@@ -42,13 +42,13 @@ class CustomSliderWithLabel extends StatelessWidget {
 /// Custom track shape for Slider, to customize its track width/margin.
 class CustomTrackShape extends RoundedRectSliderTrackShape {
   Rect getPreferredRect({
-    @required RenderBox parentBox,
+    required RenderBox parentBox,
     Offset offset = Offset.zero,
-    @required SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
-    final double trackHeight = sliderTheme.trackHeight;
+    final double trackHeight = sliderTheme.trackHeight!;
     final double trackLeft = offset.dx + 5;
     final double trackTop = offset.dy + (parentBox.size.height - trackHeight) / 2;
     final double trackWidth = parentBox.size.width - 10;

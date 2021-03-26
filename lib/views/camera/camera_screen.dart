@@ -15,7 +15,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  CameraController controller;
+  late CameraController controller;
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -67,6 +67,9 @@ class _CameraScreenState extends State<CameraScreen> {
                 child: Center(
                     child: Text("Press the Button in the middle to take a photo.",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle1.merge(TextStyle(color: Theme.of(context).colorScheme.onPrimary)))))));
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle1!
+                            .merge(TextStyle(color: Theme.of(context).colorScheme.onPrimary)))))));
   }
 }

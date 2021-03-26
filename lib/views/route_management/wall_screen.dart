@@ -21,7 +21,7 @@ class WallScreen extends StatelessWidget {
         stream: wallModel.wallStream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final wallList = snapshot.data;
+            final wallList = snapshot.data!;
             return wallList.isEmpty
                 ? Center(child: Text("No walls available"))
                 : ListView.builder(
@@ -53,7 +53,7 @@ class WallScreen extends StatelessWidget {
                                               onPressed: () => WallForm.showWallFormDialog(context, wall: wall))
                                         ],
                                       ),
-                                      Text(wall.description),
+                                      Text(wall.description!),
                                     ],
                                   ),
                                 ),

@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class WallForm extends StatefulWidget {
-  final Wall wall;
+  final Wall? wall;
 
   WallForm(this.wall);
 
   @override
   _WallFormState createState() => _WallFormState();
 
-  static Future<bool> showWallFormDialog(BuildContext context, {Wall wall}) async {
+  static Future<bool?> showWallFormDialog(BuildContext context, {Wall? wall}) async {
     final model = Provider.of<WallViewModel>(context, listen: false);
     return await showDialog<bool>(
         context: context,
@@ -33,12 +33,12 @@ class _WallFormState extends State<WallForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _textEditingControllerImagePath = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  WallViewModel wallViewModel;
-  bool edit;
+  late WallViewModel wallViewModel;
+  late bool edit;
 
-  String title;
-  String description;
-  String imagePath;
+  String? title;
+  String? description;
+  String? imagePath;
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _WallFormState extends State<WallForm> {
               focusNode: _focusNode,
               decoration: InputDecoration(labelText: "Title"),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return "Title is mandatory!";
                 }
                 return null;
@@ -84,7 +84,7 @@ class _WallFormState extends State<WallForm> {
               decoration: InputDecoration(labelText: "Image - Click me"),
               readOnly: true,
               onTap: () async {
-                String newPath = await SimpleImagePicker.dialog(context);
+                String? newPath = await SimpleImagePicker.dialog(context);
                 if (newPath != null) {
                   setState(() {
                     imagePath = newPath;
@@ -109,15 +109,15 @@ class _WallFormState extends State<WallForm> {
                   ElevatedButton(
                       child: Text("Save"),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
                           if (edit) {
-                            widget.wall.title = title;
-                            widget.wall.description = description;
-                            widget.wall.imagePathUpdated = imagePath;
-                            wallViewModel.updateWall(widget.wall);
+                            widget.wall!.title = title!;
+                            widget.wall!.description = description;
+                            widget.wall!.imagePathUpdated = imagePath;
+                            wallViewModel.updateWall(widget.wall!);
                           } else {
-                            Wall wall = Wall(title, description: description, imagePath: imagePath);
+                            Wall wall = Wall(title!, description: description, imagePath: imagePath);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);

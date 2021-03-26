@@ -13,7 +13,7 @@ enum ModelState {
 class RouteEditorViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
   final ClimaxViewModel climaxViewModel;
-  final int routeId;
+  final int? routeId;
   final Size size;
 
   ModelState _state = ModelState.LOADING;
@@ -24,14 +24,14 @@ class RouteEditorViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  StreamSubscription _graspStreamSubscription;
+  late StreamSubscription _graspStreamSubscription;
 
   RouteEditorViewModel(
-      {@required this.routeId, @required this.size, @required ClimbingRepository climbingRepository, @required this.climaxViewModel})
+      {required this.routeId, required this.size, required ClimbingRepository climbingRepository, required this.climaxViewModel})
       : assert(climbingRepository != null && climaxViewModel != null),
         _climbingRepository = climbingRepository {
     print('RouteEditorViewModel created');
-    _startWatchingGrasps(routeId);
+    _startWatchingGrasps(routeId!);
     // Callback executed by climaxViewModel whenever a current grasp is updated
     climaxViewModel.updateCallback = _updateCallback;
   }
@@ -173,7 +173,7 @@ class RouteEditorViewModel extends ChangeNotifier {
   _saveNewGrasp() {
     Grasp newGrasp = climaxViewModel.getCurrentPosition();
     newGrasp.order = step;
-    newGrasp.routeId = routeId;
+    newGrasp.routeId = routeId!;
     // TODO review - necessary? just rely on db stream propagation?
     graspList.add(newGrasp);
     _insertGrasp(newGrasp);
