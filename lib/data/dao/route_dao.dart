@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/entity/route.dart';
+import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:floor/floor.dart';
 
 @dao
@@ -20,4 +21,18 @@ abstract class RouteDao {
 
   @delete
   Future<void> deleteRoute(Route route);
+
+
+
+  @Query('SELECT * FROM route_options WHERE id = :optionId')
+  Future<RouteOption?> findRouteOptionById(int optionId);
+
+  @insert
+  Future<int> insertRouteOption(RouteOption routeOption);
+
+  @update
+  Future<void> updateRouteOption(RouteOption routeOption);
+
+  @delete
+  Future<void> deleteRouteOption(RouteOption routeOption);
 }

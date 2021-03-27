@@ -86,9 +86,11 @@ class _$ClimbingDatabase extends ClimbingDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `height` INTEGER, `image_path` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT NOT NULL, `description` TEXT, `wall_id` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT NOT NULL, `description` TEXT, `wall_id` INTEGER NOT NULL, `route_option_id` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`route_option_id`) REFERENCES `route_options` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER, `route_id` INTEGER NOT NULL, `scale_background` REAL, `scale_all` REAL, `translate_background` TEXT, `translate_all` TEXT, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `route_options` (`scale_background` REAL NOT NULL, `translate_background` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `grasps` (`order` INTEGER, `route_id` INTEGER NOT NULL, `left_arm` TEXT NOT NULL, `right_arm` TEXT NOT NULL, `left_leg` TEXT NOT NULL, `right_leg` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -209,11 +211,23 @@ class _$RouteDao extends RouteDao {
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
+                  'route_option_id': item.routeOptionId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
+        _routeOptionInsertionAdapter = InsertionAdapter(
+            database,
+            'route_options',
+            (RouteOption item) => <String, Object?>{
+                  'scale_background': item.scaleBackground,
+                  'translate_background':
+                      _offsetConverterNonNull.encode(item.translateBackground),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
+                }),
         _routeUpdateAdapter = UpdateAdapter(
             database,
             'routes',
@@ -222,11 +236,24 @@ class _$RouteDao extends RouteDao {
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
+                  'route_option_id': item.routeOptionId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
             changeListener),
+        _routeOptionUpdateAdapter = UpdateAdapter(
+            database,
+            'route_options',
+            ['id'],
+            (RouteOption item) => <String, Object?>{
+                  'scale_background': item.scaleBackground,
+                  'translate_background':
+                      _offsetConverterNonNull.encode(item.translateBackground),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
+                }),
         _routeDeletionAdapter = DeletionAdapter(
             database,
             'routes',
@@ -235,11 +262,24 @@ class _$RouteDao extends RouteDao {
                   'title': item.title,
                   'description': item.description,
                   'wall_id': item.wallId,
+                  'route_option_id': item.routeOptionId,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
                 },
-            changeListener);
+            changeListener),
+        _routeOptionDeletionAdapter = DeletionAdapter(
+            database,
+            'route_options',
+            ['id'],
+            (RouteOption item) => <String, Object?>{
+                  'scale_background': item.scaleBackground,
+                  'translate_background':
+                      _offsetConverterNonNull.encode(item.translateBackground),
+                  'id': item.id,
+                  'modified_at': _dateTimeConverter.encode(item.modifiedAt),
+                  'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -249,9 +289,15 @@ class _$RouteDao extends RouteDao {
 
   final InsertionAdapter<Route> _routeInsertionAdapter;
 
+  final InsertionAdapter<RouteOption> _routeOptionInsertionAdapter;
+
   final UpdateAdapter<Route> _routeUpdateAdapter;
 
+  final UpdateAdapter<RouteOption> _routeOptionUpdateAdapter;
+
   final DeletionAdapter<Route> _routeDeletionAdapter;
+
+  final DeletionAdapter<RouteOption> _routeOptionDeletionAdapter;
 
   @override
   Stream<List<Route>> watchAllRoutes() {
@@ -260,6 +306,7 @@ class _$RouteDao extends RouteDao {
         isView: false,
         mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
+            routeOptionId: row['route_option_id'] as int?,
             description: row['description'] as String?,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
@@ -275,6 +322,7 @@ class _$RouteDao extends RouteDao {
         isView: false,
         mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
+            routeOptionId: row['route_option_id'] as int?,
             description: row['description'] as String?,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
@@ -286,7 +334,21 @@ class _$RouteDao extends RouteDao {
     return _queryAdapter.queryList('SELECT * FROM routes',
         mapper: (Map<String, Object?> row) => Route(
             row['title'] as String, row['wall_id'] as int,
+            routeOptionId: row['route_option_id'] as int?,
             description: row['description'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
+  Future<RouteOption?> findRouteOptionById(int optionId) async {
+    return _queryAdapter.query('SELECT * FROM route_options WHERE id = ?',
+        arguments: [optionId],
+        mapper: (Map<String, Object?> row) => RouteOption(
+            scaleBackground: row['scale_background'] as double,
+            translateBackground: _offsetConverterNonNull
+                .decode(row['translate_background'] as String),
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
@@ -298,13 +360,30 @@ class _$RouteDao extends RouteDao {
   }
 
   @override
+  Future<int> insertRouteOption(RouteOption routeOption) {
+    return _routeOptionInsertionAdapter.insertAndReturnId(
+        routeOption, OnConflictStrategy.abort);
+  }
+
+  @override
   Future<void> updateRoute(Route route) async {
     await _routeUpdateAdapter.update(route, OnConflictStrategy.abort);
   }
 
   @override
+  Future<void> updateRouteOption(RouteOption routeOption) async {
+    await _routeOptionUpdateAdapter.update(
+        routeOption, OnConflictStrategy.abort);
+  }
+
+  @override
   Future<void> deleteRoute(Route route) async {
     await _routeDeletionAdapter.delete(route);
+  }
+
+  @override
+  Future<void> deleteRouteOption(RouteOption routeOption) async {
+    await _routeOptionDeletionAdapter.delete(routeOption);
   }
 }
 
@@ -317,11 +396,6 @@ class _$GraspDao extends GraspDao {
             (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
-                  'scale_background': item.scaleBackground,
-                  'scale_all': item.scaleAll,
-                  'translate_background':
-                      _offsetConverter.encode(item.translateBackground),
-                  'translate_all': _offsetConverter.encode(item.translateAll),
                   'left_arm': _offsetConverterNonNull.encode(item.leftArm),
                   'right_arm': _offsetConverterNonNull.encode(item.rightArm),
                   'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
@@ -338,11 +412,6 @@ class _$GraspDao extends GraspDao {
             (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
-                  'scale_background': item.scaleBackground,
-                  'scale_all': item.scaleAll,
-                  'translate_background':
-                      _offsetConverter.encode(item.translateBackground),
-                  'translate_all': _offsetConverter.encode(item.translateAll),
                   'left_arm': _offsetConverterNonNull.encode(item.leftArm),
                   'right_arm': _offsetConverterNonNull.encode(item.rightArm),
                   'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
@@ -359,11 +428,6 @@ class _$GraspDao extends GraspDao {
             (Grasp item) => <String, Object?>{
                   'order': item.order,
                   'route_id': item.routeId,
-                  'scale_background': item.scaleBackground,
-                  'scale_all': item.scaleAll,
-                  'translate_background':
-                      _offsetConverter.encode(item.translateBackground),
-                  'translate_all': _offsetConverter.encode(item.translateAll),
                   'left_arm': _offsetConverterNonNull.encode(item.leftArm),
                   'right_arm': _offsetConverterNonNull.encode(item.rightArm),
                   'left_leg': _offsetConverterNonNull.encode(item.leftLeg),
@@ -394,12 +458,6 @@ class _$GraspDao extends GraspDao {
         mapper: (Map<String, Object?> row) => Grasp(
             order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double?,
-            scaleAll: row['scale_all'] as double?,
-            translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String?),
-            translateAll:
-                _offsetConverter.decode(row['translate_all'] as String?),
             leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
             rightArm:
                 _offsetConverterNonNull.decode(row['right_arm'] as String),
@@ -421,12 +479,6 @@ class _$GraspDao extends GraspDao {
         mapper: (Map<String, Object?> row) => Grasp(
             order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double?,
-            scaleAll: row['scale_all'] as double?,
-            translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String?),
-            translateAll:
-                _offsetConverter.decode(row['translate_all'] as String?),
             leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
             rightArm:
                 _offsetConverterNonNull.decode(row['right_arm'] as String),
@@ -445,12 +497,6 @@ class _$GraspDao extends GraspDao {
         mapper: (Map<String, Object?> row) => Grasp(
             order: row['order'] as int?,
             routeId: row['route_id'] as int,
-            scaleBackground: row['scale_background'] as double?,
-            scaleAll: row['scale_all'] as double?,
-            translateBackground:
-                _offsetConverter.decode(row['translate_background'] as String?),
-            translateAll:
-                _offsetConverter.decode(row['translate_all'] as String?),
             leftArm: _offsetConverterNonNull.decode(row['left_arm'] as String),
             rightArm:
                 _offsetConverterNonNull.decode(row['right_arm'] as String),
