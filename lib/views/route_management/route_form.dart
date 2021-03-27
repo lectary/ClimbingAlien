@@ -5,15 +5,15 @@ import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
 class RouteForm extends StatefulWidget {
-  final Route route;
-  final int wallId;
+  final Route? route;
+  final int? wallId;
 
   RouteForm(this.route, this.wallId);
 
   @override
   _RouteFormState createState() => _RouteFormState();
 
-  static Future<bool> showRouteFormDialog(BuildContext context, {Route route, int wallId}) async {
+  static Future<bool?> showRouteFormDialog(BuildContext context, {Route? route, int? wallId}) async {
     assert(route != null ? wallId != null : true);
     final model = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(
@@ -32,11 +32,11 @@ class RouteForm extends StatefulWidget {
 class _RouteFormState extends State<RouteForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode _focusNode = FocusNode();
-  RouteViewModel routeViewModel;
-  bool edit;
+  late RouteViewModel routeViewModel;
+  late bool edit;
 
-  String title;
-  String description;
+  String? title;
+  String? description;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _RouteFormState extends State<RouteForm> {
             focusNode: _focusNode,
             decoration: InputDecoration(hintText: "Title"),
             validator: (value) {
-              if (value.isEmpty) {
+              if (value!.isEmpty) {
                 return "Title is mandatory!";
               }
               return null;
@@ -84,16 +84,16 @@ class _RouteFormState extends State<RouteForm> {
                 ElevatedButton(
                     child: Text("Save"),
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        _formKey.currentState.save();
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
                         if (edit) {
-                          widget.route.title = title;
-                          widget.route.description = description;
-                          routeViewModel.updateRoute(widget.route);
+                          widget.route!.title = title!;
+                          widget.route!.description = description;
+                          routeViewModel.updateRoute(widget.route!);
                         } else {
                           Route route = Route(
-                            title,
-                            widget.wallId,
+                            title!,
+                            widget.wallId!,
                             description: description,
                           );
                           routeViewModel.insertRoute(route);

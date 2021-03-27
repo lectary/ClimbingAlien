@@ -17,7 +17,7 @@ class WallScreen extends StatefulWidget {
 }
 
 class _WallScreenState extends State<WallScreen> {
-  String selected;
+  String? selected;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class _WallScreenState extends State<WallScreen> {
         stream: wallModel.locationStream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final locations = snapshot.data;
+            final locations = snapshot.data!;
             return locations.isEmpty
                 ? Center(child: Text("No walls available"))
                 : _buildLocationsAsExpansionPanelList(context, locations);
@@ -135,7 +135,7 @@ class _WallScreenState extends State<WallScreen> {
                         )
                       ],
                     ),
-                    Text(wall.description),
+                    Text(wall.description!),
                   ],
                 ),
               ),

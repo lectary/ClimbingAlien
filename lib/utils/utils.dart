@@ -6,7 +6,7 @@ class Utils {
     return (deg * pi) / 180.0;
   }
 
-  static String getFilenameFromPath(String path) {
+  static String getFilenameFromPath(String? path) {
     if (path == null) return "";
     int lastSlash = path.lastIndexOf('/');
     int lastDot = path.lastIndexOf('.');

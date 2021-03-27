@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 
 /// Class for drawing Climax, the Cli-mbing max-erl.
 class ClimaxPainter extends CustomPainter {
-  final Map<ClimaxLimbEnum, Rect> limbs;
-  final double radius;
-  final ClimaxLimbEnum selectedLimb;
+  final Map<ClimaxLimbEnum, Rect>? limbs;
+  final double? radius;
+  final ClimaxLimbEnum? selectedLimb;
 
   ClimaxPainter({this.limbs, this.radius, this.selectedLimb});
 
@@ -24,30 +24,30 @@ class ClimaxPainter extends CustomPainter {
       ..strokeWidth = 5.0
       ..color = Colors.red;
 
-    limbs.entries.forEach((entry) {
+    limbs!.entries.forEach((entry) {
       canvas.drawOval(entry.value, entry.key == selectedLimb ? selectedColorPaint : defaultColorPaint);
     });
 
-    var position = limbs[ClimaxLimbEnum.BODY].center;
+    var position = limbs![ClimaxLimbEnum.BODY]!.center;
 
     Offset offsetForPointOnBorderTopLeft =
-        Offset(cos(Utils.degreesToRadians(45)) * radius, cos(Utils.degreesToRadians(45)) * radius);
-    canvas.drawLine(limbs[ClimaxLimbEnum.LEFT_ARM].center + offsetForPointOnBorderTopLeft, position, defaultColorPaint);
+        Offset(cos(Utils.degreesToRadians(45)) * radius!, cos(Utils.degreesToRadians(45)) * radius!);
+    canvas.drawLine(limbs![ClimaxLimbEnum.LEFT_ARM]!.center + offsetForPointOnBorderTopLeft, position, defaultColorPaint);
 
     Offset offsetForPointOnBorderTopRight =
-        Offset(-cos(Utils.degreesToRadians(45)) * radius, cos(Utils.degreesToRadians(45)) * radius);
+        Offset(-cos(Utils.degreesToRadians(45)) * radius!, cos(Utils.degreesToRadians(45)) * radius!);
     canvas.drawLine(
-        limbs[ClimaxLimbEnum.RIGHT_ARM].center + offsetForPointOnBorderTopRight, position, defaultColorPaint);
+        limbs![ClimaxLimbEnum.RIGHT_ARM]!.center + offsetForPointOnBorderTopRight, position, defaultColorPaint);
 
     Offset offsetForPointOnBorderBottomLeft =
-        Offset(cos(Utils.degreesToRadians(45)) * radius, -cos(Utils.degreesToRadians(45)) * radius);
+        Offset(cos(Utils.degreesToRadians(45)) * radius!, -cos(Utils.degreesToRadians(45)) * radius!);
     canvas.drawLine(
-        limbs[ClimaxLimbEnum.LEFT_LEG].center + offsetForPointOnBorderBottomLeft, position, defaultColorPaint);
+        limbs![ClimaxLimbEnum.LEFT_LEG]!.center + offsetForPointOnBorderBottomLeft, position, defaultColorPaint);
 
     Offset offsetForPointOnBorderBottomRight =
-        Offset(-cos(Utils.degreesToRadians(45)) * radius, -cos(Utils.degreesToRadians(45)) * radius);
+        Offset(-cos(Utils.degreesToRadians(45)) * radius!, -cos(Utils.degreesToRadians(45)) * radius!);
     canvas.drawLine(
-        limbs[ClimaxLimbEnum.RIGHT_LEG].center + offsetForPointOnBorderBottomRight, position, defaultColorPaint);
+        limbs![ClimaxLimbEnum.RIGHT_LEG]!.center + offsetForPointOnBorderBottomRight, position, defaultColorPaint);
   }
 
   @override

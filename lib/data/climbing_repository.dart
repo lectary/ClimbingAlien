@@ -1,15 +1,13 @@
 import 'package:climbing_alien/data/database.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
+import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:flutter/foundation.dart';
 
 class ClimbingRepository {
   final ClimbingDatabase _climbingDatabase;
 
-  ClimbingRepository({@required ClimbingDatabase climbingDatabase})
-      : assert(climbingDatabase != null),
-        _climbingDatabase = climbingDatabase;
+  ClimbingRepository({required ClimbingDatabase climbingDatabase}) : _climbingDatabase = climbingDatabase;
 
   /// Walls
   Stream<List<Wall>> watchAllWalls() {
@@ -55,6 +53,23 @@ class ClimbingRepository {
 
   Future<void> deleteRoute(Route route) {
     return _climbingDatabase.routeDao.deleteRoute(route);
+  }
+
+  /// Route option
+  Future<RouteOption?> findRouteOptionById(int optionId) {
+    return _climbingDatabase.routeDao.findRouteOptionById(optionId);
+  }
+
+  Future<int> insertRouteOption(RouteOption routeOption) {
+    return _climbingDatabase.routeDao.insertRouteOption(routeOption);
+  }
+
+  Future<void> updateRouteOption(RouteOption routeOption) {
+    return _climbingDatabase.routeDao.updateRouteOption(routeOption);
+  }
+
+  Future<void> deleteRouteOption(RouteOption routeOption) {
+    return _climbingDatabase.routeDao.deleteRouteOption(routeOption);
   }
 
   /// Grasps

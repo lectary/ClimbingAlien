@@ -1,23 +1,21 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/database.dart';
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/camera/camera_screen.dart';
-import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
-import 'package:climbing_alien/views/route_management/route_screen.dart';
 import 'package:climbing_alien/views/route_management/wall_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-List<CameraDescription> cameras;
+late List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // init database
-  final database = await DatabaseProvider.instance.db;
+  final database = await (DatabaseProvider.instance.db);
   cameras = await availableCameras();
   runApp(ClimbingProviderApp(climbingDatabase: database));
 }
@@ -25,7 +23,7 @@ Future<void> main() async {
 class ClimbingProviderApp extends StatelessWidget {
   final ClimbingDatabase climbingDatabase;
 
-  ClimbingProviderApp({this.climbingDatabase}) : assert(climbingDatabase != null);
+  ClimbingProviderApp({required this.climbingDatabase});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:climbing_alien/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class AssetImagePicker extends StatelessWidget {
-  Future _loadImages(BuildContext context) async {
+  Future<List<String>> _loadImages(BuildContext context) async {
     /// `AssetManifest.json` contains all info about the assets
     final manifestContent = await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
@@ -22,11 +22,11 @@ class AssetImagePicker extends StatelessWidget {
       appBar: AppBar(
         title: Text('Available asset images'),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<String>>(
         future: _loadImages(context),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List<String> pathList = snapshot.data;
+            List<String> pathList = snapshot.data!;
             return pathList.isEmpty
                 ? Center(child: Text('No images available'))
                 : Column(

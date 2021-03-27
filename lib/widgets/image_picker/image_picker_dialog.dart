@@ -13,14 +13,14 @@ extension SelectedImageSourceExtension on SelectedImageSource {
 }
 
 class RadioImagePicker extends StatefulWidget {
-  final Wall wall;
+  final Wall? wall;
 
   RadioImagePicker(this.wall);
 
   @override
   _RadioImagePickerState createState() => _RadioImagePickerState();
 
-  static Future<String> dialog(BuildContext context, {Wall wall}) async {
+  static Future<String?> dialog(BuildContext context, {Wall? wall}) async {
     return await showDialog<String>(
         context: context,
         barrierDismissible: false,
@@ -34,7 +34,7 @@ class RadioImagePicker extends StatefulWidget {
 class _RadioImagePickerState extends State<RadioImagePicker> {
   final ImagePicker picker = ImagePicker();
 
-  SelectedImageSource _selectedSource = SelectedImageSource.ASSET;
+  SelectedImageSource? _selectedSource = SelectedImageSource.ASSET;
 
   Future getImage(ImageSource imageSource) async {
     final pickedFile = await picker.getImage(source: imageSource);
@@ -47,7 +47,7 @@ class _RadioImagePickerState extends State<RadioImagePicker> {
 
   Future getImageFromAssets() async {
     final pickedFilePath =
-        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String;
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String?;
     if (pickedFilePath != null) {
       Navigator.pop(context, pickedFilePath);
     } else {
@@ -55,7 +55,7 @@ class _RadioImagePickerState extends State<RadioImagePicker> {
     }
   }
 
-  _handleRadioChange(SelectedImageSource value) {
+  _handleRadioChange(SelectedImageSource? value) {
     setState(() {
       _selectedSource = value;
     });

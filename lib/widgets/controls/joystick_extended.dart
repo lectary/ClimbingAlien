@@ -32,17 +32,17 @@ class JoystickWithButtonAndSlider extends StatefulWidget {
   JoystickWithButtonAndSlider(
       {this.size = defaultSize,
       this.sizeControlStick = defaultStickSize,
-      this.onDirectionChanged,
-      this.onSliderChanged,
+      required this.onDirectionChanged,
+      required this.onSliderChanged,
       this.colorBackground = Colors.grey,
       this.colorControlStick = Colors.blueGrey,
       this.colorIcon = Colors.white,
       this.sliderSide = SliderSide.BOTTOM,
-      this.onClickedUp,
-      this.onClickedDown,
-      this.onClickedLeft,
-      this.onClickedRight,
-      Key key})
+      required this.onClickedUp,
+      required this.onClickedDown,
+      required this.onClickedLeft,
+      required this.onClickedRight,
+      Key? key})
       : super(key: key);
 
   @override
@@ -50,10 +50,10 @@ class JoystickWithButtonAndSlider extends StatefulWidget {
 }
 
 class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlider> {
-  double outerSize;
-  double controlStickSize;
-  Offset controlStickPosition;
-  Offset center;
+  double? outerSize;
+  double? controlStickSize;
+  late Offset controlStickPosition;
+  late Offset center;
 
   double speed = 10;
   double maxSpeed = 20;
@@ -63,7 +63,7 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
     super.initState();
     outerSize = widget.size;
     controlStickSize = widget.sizeControlStick;
-    center = Offset(outerSize / 2, outerSize / 2);
+    center = Offset(outerSize! / 2, outerSize! / 2);
     controlStickPosition = calculateControlStickPosition(center);
   }
 
@@ -71,8 +71,8 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
   ///
   /// Returns the radius of the stick analogues to a clock, and how far it is pulled away from center.
   void processCallback(Offset offset) {
-    double smallRadius = controlStickSize / 2.0;
-    double bigRadius = outerSize / 2.0;
+    double smallRadius = controlStickSize! / 2.0;
+    double bigRadius = outerSize! / 2.0;
 
     Offset shiftedOffset = (offset - center); // Shift to get the offset with the center as origin.
     double angle = _math.atan2(
@@ -96,11 +96,11 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
   ///
   /// The calculation considers that [Positioned] starts from the top left corner of a widget, not the center.
   Offset calculateControlStickPosition(Offset offset) {
-    double smallRadius = controlStickSize / 2.0;
-    double bigRadius = outerSize / 2.0;
+    double smallRadius = controlStickSize! / 2.0;
+    double bigRadius = outerSize! / 2.0;
 
     double maxDistance =
-        outerSize / 2.0 - smallRadius; // Max. distance the stick should go, i.e. till it touches outer circle.
+        outerSize! / 2.0 - smallRadius; // Max. distance the stick should go, i.e. till it touches outer circle.
 
     Offset shiftedOffset = (offset - center); // Shift to get the offset with the center as origin.
     double angle = _math.atan2(
@@ -202,28 +202,28 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedUp ?? () {},
+                          onTap: widget.onClickedUp as void Function()? ?? () {},
                           child: Icon(Icons.keyboard_arrow_up, color: widget.colorIcon))),
                   Align(
                       alignment: Alignment.bottomCenter,
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedDown ?? () {},
+                          onTap: widget.onClickedDown as void Function()? ?? () {},
                           child: Icon(Icons.keyboard_arrow_down, color: widget.colorIcon))),
                   Align(
                       alignment: Alignment.centerLeft,
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedLeft ?? () {},
+                          onTap: widget.onClickedLeft as void Function()? ?? () {},
                           child: Icon(Icons.keyboard_arrow_left, color: widget.colorIcon))),
                   Align(
                       alignment: Alignment.centerRight,
                       child: InkResponse(
                           radius: widget.sizeControlStick / 4,
                           splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedRight ?? () {},
+                          onTap: widget.onClickedRight as void Function()? ?? () {},
                           child: Icon(Icons.keyboard_arrow_right, color: widget.colorIcon))),
                 ],
               ),

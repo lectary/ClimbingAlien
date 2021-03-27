@@ -17,14 +17,14 @@ class RouteEditor extends StatefulWidget {
   final Wall wall;
   final Route route;
 
-  RouteEditor(this.wall, this.route, {Key key}) : super(key: key);
+  RouteEditor(this.wall, this.route, {Key? key}) : super(key: key);
 
   @override
   _RouteEditorState createState() => _RouteEditorState();
 }
 
 class _RouteEditorState extends State<RouteEditor> {
-  ClimaxViewModel climaxModel;
+  late ClimaxViewModel climaxModel;
 
   bool isTranslate = false;
   bool isScale = false;
@@ -41,7 +41,7 @@ class _RouteEditorState extends State<RouteEditor> {
     return _buildGestureDetector(transformAll, child: ClimaxTransformer(imagePath: widget.wall.file));
   }
 
-  GestureDetector _buildGestureDetector(bool editAll, {Widget child}) {
+  GestureDetector _buildGestureDetector(bool editAll, {Widget? child}) {
     return GestureDetector(
       onScaleStart: (ScaleStartDetails details) {
         if (climaxModel.tapOn) {
@@ -77,6 +77,7 @@ class _RouteEditorState extends State<RouteEditor> {
           isScale = details.pointerCount == 2 ? true : false;
 
           if (isTranslate) {
+            climaxModel.isTranslating = true;
             if (editAll) {
               climaxModel.deltaTranslateAll += climaxModel.lastTranslateAll - details.localFocalPoint;
               climaxModel.lastTranslateAll = details.localFocalPoint;
@@ -97,6 +98,9 @@ class _RouteEditorState extends State<RouteEditor> {
             }
           }
         });
+      },
+      onScaleEnd: (details) {
+        climaxModel.isTranslating = false;
       },
       onTapDown: (details) {
         if (climaxModel.tapOn) {

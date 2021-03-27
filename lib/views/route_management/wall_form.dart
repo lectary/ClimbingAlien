@@ -9,29 +9,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class WallForm extends StatefulWidget {
-  final Wall wall;
+  final Wall? wall;
 
   WallForm(this.wall);
 
   @override
   _WallFormState createState() => _WallFormState();
 
-  static Future<bool> showWallFormDialog(BuildContext context, {Wall wall}) async {
+  static Future<bool?> showWallFormDialog(BuildContext context, {Wall? wall}) async {
     final model = Provider.of<WallViewModel>(context, listen: false);
     final repo = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(
         context: context,
         barrierDismissible: false,
         builder: (context) => ChangeNotifierProvider(
-          create: (context) => WallFormViewModel(climbingRepository: repo),
-          child: ChangeNotifierProvider.value(
+              create: (context) => WallFormViewModel(climbingRepository: repo),
+              child: ChangeNotifierProvider.value(
                 value: model,
                 child: AlertDialog(
                   title: wall == null ? Text("New wall") : Text("Edit wall"),
                   content: WallForm(wall),
                 ),
               ),
-        ));
+            ));
   }
 }
 
@@ -43,16 +43,16 @@ class _WallFormState extends State<WallForm> {
   final TextEditingController _locationTextEditingController = TextEditingController();
   final FocusNode _locationFocusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
-  OverlayEntry _overlayEntry;
+  OverlayEntry? _overlayEntry;
   List<String> _suggestions = List.empty();
 
-  WallViewModel wallViewModel;
-  bool edit;
+  late WallViewModel wallViewModel;
+  late bool edit;
 
-  String title;
-  String description;
-  String location;
-  String file;
+  String? title;
+  String? description;
+  String? location;
+  String? file;
 
   @override
   void initState() {
@@ -62,25 +62,25 @@ class _WallFormState extends State<WallForm> {
     edit = widget.wall != null;
     title = widget.wall?.title;
     description = widget.wall?.description;
-    _locationTextEditingController.text = widget.wall?.location;
+    _locationTextEditingController.text = widget.wall?.location ?? "";
     file = widget.wall?.file;
     _textEditingControllerImagePath.text = Utils.getFilenameFromPath(file);
 
     _locationFocusNode.addListener(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
         if (_locationFocusNode.hasFocus) {
           final practiseModel = Provider.of<WallFormViewModel>(context, listen: false);
-          _overlayEntry = _buildSuggestionOverlay(practiseModel);
-          Overlay.of(context).insert(_overlayEntry);
+          OverlayEntry _overlayEntry = _buildSuggestionOverlay(practiseModel);
+          Overlay.of(context)?.insert(_overlayEntry);
         } else {
-          _overlayEntry.remove();
+          _overlayEntry?.remove();
         }
       });
     });
   }
 
   OverlayEntry _buildSuggestionOverlay(WallFormViewModel wallFormViewModel) {
-    RenderBox renderBox = context.findRenderObject();
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
     var size = renderBox.size;
     return OverlayEntry(builder: (context) {
       return ChangeNotifierProvider.value(
@@ -134,7 +134,7 @@ class _WallFormState extends State<WallForm> {
               focusNode: _focusNode,
               decoration: InputDecoration(labelText: "Title"),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return "Title is mandatory!";
                 }
                 return null;
@@ -163,7 +163,7 @@ class _WallFormState extends State<WallForm> {
               decoration: InputDecoration(labelText: "Image - Click me"),
               readOnly: true,
               onTap: () async {
-                String newPath = await SimpleImagePicker.dialog(context);
+                String? newPath = await SimpleImagePicker.dialog(context);
                 if (newPath != null) {
                   setState(() {
                     file = newPath;
@@ -188,16 +188,16 @@ class _WallFormState extends State<WallForm> {
                   ElevatedButton(
                       child: Text("Save"),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
                           if (edit) {
-                            widget.wall.title = title;
-                            widget.wall.description = description;
-                            widget.wall.location = location;
-                            widget.wall.fileUpdated = file;
-                            wallViewModel.updateWall(widget.wall);
+                            widget.wall!.title = title!;
+                            widget.wall!.description = description;
+                            widget.wall!.location = location;
+                            widget.wall!.fileUpdated = file;
+                            wallViewModel.updateWall(widget.wall!);
                           } else {
-                            Wall wall = Wall(title, description: description, location: location, file: file);
+                            Wall wall = Wall(title: title!, description: description, location: location, file: file);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);

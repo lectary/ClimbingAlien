@@ -1,23 +1,35 @@
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 
-class DateTimeConverter extends TypeConverter<DateTime, int> {
+class DateTimeConverter extends TypeConverter<DateTime?, int?> {
   @override
-  DateTime decode(int databaseValue) {
+  DateTime? decode(int? databaseValue) {
     return databaseValue == null ? null : DateTime.fromMillisecondsSinceEpoch(databaseValue);
   }
 
   @override
-  int encode(DateTime value) {
+  int? encode(DateTime? value) {
     return value == null ? null : value.millisecondsSinceEpoch;
   }
 }
 
-class OffsetConverter extends TypeConverter<Offset, String> {
+class DateTimeConverterNonNull extends TypeConverter<DateTime, int> {
   @override
-  Offset decode(String databaseValue) {
+  DateTime decode(int databaseValue) {
+    return DateTime.fromMillisecondsSinceEpoch(databaseValue);
+  }
+
+  @override
+  int encode(DateTime value) {
+    return value.millisecondsSinceEpoch;
+  }
+}
+
+class OffsetConverter extends TypeConverter<Offset?, String?> {
+  @override
+  Offset? decode(String? databaseValue) {
     if (databaseValue == null) {
-     return null;
+      return null;
     } else {
       List<String> split = databaseValue.split(':');
       return Offset(double.parse(split[0]), double.parse(split[1]));
@@ -25,7 +37,20 @@ class OffsetConverter extends TypeConverter<Offset, String> {
   }
 
   @override
-  String encode(Offset value) {
+  String? encode(Offset? value) {
     return value == null ? null : "${value.dx}:${value.dy}";
+  }
+}
+
+class OffsetConverterNonNull extends TypeConverter<Offset, String> {
+  @override
+  Offset decode(String databaseValue) {
+    List<String> split = databaseValue.split(':');
+    return Offset(double.parse(split[0]), double.parse(split[1]));
+  }
+
+  @override
+  String encode(Offset value) {
+    return "${value.dx}:${value.dy}";
   }
 }

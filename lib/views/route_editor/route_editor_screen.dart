@@ -19,17 +19,17 @@ class RouteEditorScreen extends StatelessWidget {
   final Wall wall;
   final Route route;
 
-  RouteEditorScreen(this.wall, this.route, {Key key}) : super(key: key);
+  RouteEditorScreen(this.wall, this.route, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
-      create: (context) => ClimaxViewModel(),
+      create: (context) => ClimaxViewModel(size: size),
       child: ChangeNotifierProvider(
         /// Init viewModel for routeEditor
         create: (context) => RouteEditorViewModel(
-            routeId: route.id,
+            route: route,
             size: size,
             climbingRepository: Provider.of<ClimbingRepository>(context, listen: false),
             climaxViewModel: Provider.of<ClimaxViewModel>(context, listen: false)),
@@ -61,7 +61,7 @@ class RouteEditorScreen extends StatelessWidget {
                   title: Text("Edit ${route.title}"),
                   actions: [
                     _buildTapAction(context, initMode),
-                    _buildMoreOptionsAction(context, initMode, joystickOn),
+                    _buildMoreOptionsAction(context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
                     // _buildJoystickToggleAction(context, initMode, joystickOn),
                     // _buildOptionHeaderAction(context, initMode),
                     // _buildDeleteGraspAction(context, initMode),
@@ -211,7 +211,7 @@ class RouteEditorScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildMoreOptionsAction(BuildContext context, bool initMode, bool joystickOn) {
+  Widget _buildMoreOptionsAction(BuildContext context, bool initMode, bool joystickOn, bool initAllowed) {
     if (initMode) {
       return Container();
     } else {
@@ -222,6 +222,7 @@ class RouteEditorScreen extends StatelessWidget {
           return PopupMenuButton(
               itemBuilder: (context) => [
                     PopupMenuItem(
+                      enabled: initAllowed,
                       value: MenuOption.BACK_TO_INIT,
                       child: Row(
                         children: [

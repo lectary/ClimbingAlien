@@ -11,7 +11,7 @@ class CameraWidget extends StatefulWidget {
 }
 
 class _CameraWidgetState extends State<CameraWidget> {
-  CameraController controller;
+  late CameraController controller;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _CameraWidgetState extends State<CameraWidget> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 

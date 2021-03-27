@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// An extension area for the header control.
 /// Additional features can be displayed via an Slide in like Animation, done via [SizeTransition].
 class HeaderExtensionAnimation extends StatefulWidget {
-  final List<Widget> children;
-  final Color buttonColor;
+  final List<Widget>? children;
+  final Color? buttonColor;
 
   HeaderExtensionAnimation({this.children, this.buttonColor});
 
@@ -13,8 +13,8 @@ class HeaderExtensionAnimation extends StatefulWidget {
 }
 
 class _HeaderExtensionAnimationState extends State<HeaderExtensionAnimation> with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<double> _animation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
   bool _extensionEnabled = false;
 
   @override
@@ -73,7 +73,7 @@ class _HeaderExtensionAnimationState extends State<HeaderExtensionAnimation> wit
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ...widget.children,
+              ...widget.children!,
             ],
           ),
         )

@@ -3,26 +3,19 @@ import 'package:climbing_alien/data/entity/route.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart' hide Route;
 
-@Entity(tableName: 'grasps', foreignKeys: [
-  ForeignKey(childColumns: ['route_id'], parentColumns: ['id'], entity: Route)
-],)
+@Entity(
+  tableName: 'grasps',
+  foreignKeys: [
+    ForeignKey(childColumns: ['route_id'], parentColumns: ['id'], entity: Route)
+  ],
+)
 class Grasp extends BaseObject {
   /// Used to indicate the sequence of grasps per route
   @ColumnInfo(name: 'order')
-  int order;
+  int? order;
 
   @ColumnInfo(name: 'route_id')
   int routeId;
-
-  @ColumnInfo(name: 'scale_background')
-  double scaleBackground;
-  @ColumnInfo(name: 'scale_all')
-  double scaleAll;
-
-  @ColumnInfo(name: 'translate_background')
-  Offset translateBackground;
-  @ColumnInfo(name: 'translate_all')
-  Offset translateAll;
 
   @ColumnInfo(name: 'left_arm')
   Offset leftArm;
@@ -35,23 +28,19 @@ class Grasp extends BaseObject {
 
   Grasp(
       {this.order,
-      this.routeId,
-      this.scaleBackground,
-      this.scaleAll,
-      this.translateBackground,
-      this.translateAll,
-      this.leftArm,
-      this.rightArm,
-      this.leftLeg,
-      this.rightLeg,
-      int id,
-      DateTime modifiedAt,
-      DateTime createdAt})
+      required this.routeId,
+      required this.leftArm,
+      required this.rightArm,
+      required this.leftLeg,
+      required this.rightLeg,
+      int? id,
+      DateTime? modifiedAt,
+      DateTime? createdAt})
       : super(id, modifiedAt, createdAt);
 
   @override
   String toString() {
-    return 'Grasp{order: $order, routeId: $routeId, scaleBackground: $scaleBackground, scaleAll: $scaleAll, translateBackground: $translateBackground, translateAll: $translateAll, leftArm: $leftArm, rightArm: $rightArm, leftLeg: $leftLeg, rightLeg: $rightLeg}';
+    return 'Grasp{order: $order, routeId: $routeId, leftArm: $leftArm, rightArm: $rightArm, leftLeg: $leftLeg, rightLeg: $rightLeg}';
   }
 
   @override
@@ -61,10 +50,6 @@ class Grasp extends BaseObject {
           runtimeType == other.runtimeType &&
           order == other.order &&
           routeId == other.routeId &&
-          scaleBackground == other.scaleBackground &&
-          scaleAll == other.scaleAll &&
-          translateBackground == other.translateBackground &&
-          translateAll == other.translateAll &&
           leftArm == other.leftArm &&
           rightArm == other.rightArm &&
           leftLeg == other.leftLeg &&
@@ -72,14 +57,5 @@ class Grasp extends BaseObject {
 
   @override
   int get hashCode =>
-      order.hashCode ^
-      routeId.hashCode ^
-      scaleBackground.hashCode ^
-      scaleAll.hashCode ^
-      translateBackground.hashCode ^
-      translateAll.hashCode ^
-      leftArm.hashCode ^
-      rightArm.hashCode ^
-      leftLeg.hashCode ^
-      rightLeg.hashCode;
+      order.hashCode ^ routeId.hashCode ^ leftArm.hashCode ^ rightArm.hashCode ^ leftLeg.hashCode ^ rightLeg.hashCode;
 }

@@ -5,26 +5,27 @@ import 'package:floor/floor.dart';
 class Wall extends BaseObject {
   String title;
 
-  String description;
+  String? description;
 
-  int height;
+  int? height;
 
-  String location;
+  String? location;
 
-  String file;
+  String? file;
 
   @ignore
-  String fileUpdated;
+  String? fileUpdated;
 
-  Wall(this.title,
-      {this.description,
+  Wall(
+      {required this.title,
+      this.description,
       this.height,
       this.location,
       this.file,
       this.fileUpdated,
-      int id,
-      DateTime modifiedAt,
-      DateTime createdAt})
+      int? id,
+      DateTime? modifiedAt,
+      DateTime? createdAt})
       : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {
@@ -42,7 +43,7 @@ class Wall extends BaseObject {
 
   factory Wall.fromJson(Map<String, dynamic> json) {
     return Wall(
-      json['wall'],
+      title: json['wall'],
       location: json['location'],
       file: json['file'],
     );
@@ -50,6 +51,6 @@ class Wall extends BaseObject {
 
   @override
   String toString() {
-    return 'Wall{title: $title, description: $description, height: $height, imagePath: $file}';
+    return 'Wall{title: $title, description: $description, height: $height, location: $location, file: $file, fileUpdated: $fileUpdated}';
   }
 }
