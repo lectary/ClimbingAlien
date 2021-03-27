@@ -5,10 +5,7 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:flutter/material.dart';
 
-enum ModelState {
-  IDLE,
-  LOADING
-}
+enum ModelState { IDLE, LOADING }
 
 class RouteEditorViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
@@ -17,6 +14,7 @@ class RouteEditorViewModel extends ChangeNotifier {
   final Size size;
 
   ModelState _state = ModelState.LOADING;
+
   ModelState get state => _state;
 
   set state(ModelState state) {
@@ -27,9 +25,11 @@ class RouteEditorViewModel extends ChangeNotifier {
   late StreamSubscription _graspStreamSubscription;
 
   RouteEditorViewModel(
-      {required this.routeId, required this.size, required ClimbingRepository climbingRepository, required this.climaxViewModel})
-      : assert(climbingRepository != null && climaxViewModel != null),
-        _climbingRepository = climbingRepository {
+      {required this.routeId,
+      required this.size,
+      required ClimbingRepository climbingRepository,
+      required this.climaxViewModel})
+      : _climbingRepository = climbingRepository {
     print('RouteEditorViewModel created');
     _startWatchingGrasps(routeId!);
     // Callback executed by climaxViewModel whenever a current grasp is updated
@@ -74,7 +74,7 @@ class RouteEditorViewModel extends ChangeNotifier {
         resetClimax(size);
       } else {
         if (graspList.isNotEmpty) {
-          climaxViewModel.setupByGrasp(graspList[step-1]);
+          climaxViewModel.setupByGrasp(graspList[step - 1]);
         } else {
           resetClimax(size); // test
         }
@@ -86,9 +86,12 @@ class RouteEditorViewModel extends ChangeNotifier {
   }
 
   List<Grasp> _graspList = [];
+
   List<Grasp> get graspList => _graspList;
+
   set graspList(List<Grasp> graspList) {
     _graspList = graspList;
+
     /// When no grasp available, permit to save without explicit movement, since the first position
     /// should be valid anyway due to initMode.
     if (_graspList.isEmpty) {
@@ -101,7 +104,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   /// Normally, climax and background are transformed together.
   /// Depends on being [climaxViewModel.transformAll] false by default.
   bool _initMode = true;
+
   bool get initMode => _initMode;
+
   set initMode(bool initMode) {
     _initMode = initMode;
     print('InitMode: $initMode');
@@ -110,7 +115,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   }
 
   bool _joystickOn = true;
+
   bool get joystickOn => _joystickOn;
+
   set joystickOn(bool joystickOn) {
     _joystickOn = joystickOn;
     notifyListeners();
@@ -119,7 +126,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   /// Represents the current number of grasp to edit/display.
   /// This is NOT the index of the array, but rather `x of y Grasps`.
   int _step = 1;
+
   int get step => _step;
+
   set step(int step) {
     _step = step;
   }
@@ -183,11 +192,11 @@ class RouteEditorViewModel extends ChangeNotifier {
     return _climbingRepository.insertGrasp(grasp);
   }
 
-Future<void> _updateGrasp(Grasp grasp) {
-  return _climbingRepository.updateGrasp(grasp);
-}
+  Future<void> _updateGrasp(Grasp grasp) {
+    return _climbingRepository.updateGrasp(grasp);
+  }
 
-Future<void> _deleteGrasp(Grasp grasp) async {
-  return await _climbingRepository.deleteGrasp(grasp);
-}
+  Future<void> _deleteGrasp(Grasp grasp) async {
+    return await _climbingRepository.deleteGrasp(grasp);
+  }
 }

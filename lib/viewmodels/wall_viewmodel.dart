@@ -9,9 +9,7 @@ import 'package:path_provider/path_provider.dart';
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  WallViewModel({required ClimbingRepository climbingRepository})
-      : assert(climbingRepository != null),
-        _climbingRepository = climbingRepository;
+  WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository;
 
   Stream<List<Wall>> get wallStream => _climbingRepository.watchAllWalls();
 

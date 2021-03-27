@@ -8,9 +8,7 @@ import 'package:flutter/foundation.dart';
 class RouteViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  RouteViewModel({required ClimbingRepository climbingRepository})
-      : assert(climbingRepository != null),
-        _climbingRepository = climbingRepository;
+  RouteViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository;
 
   /// Routes
   Stream<List<Route>> getRouteStreamByWallId(int wallId) => _climbingRepository.watchAllRoutesByWallId(wallId);
