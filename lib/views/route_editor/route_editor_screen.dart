@@ -25,7 +25,7 @@ class RouteEditorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
-      create: (context) => ClimaxViewModel(),
+      create: (context) => ClimaxViewModel(size: size),
       child: ChangeNotifierProvider(
         /// Init viewModel for routeEditor
         create: (context) => RouteEditorViewModel(

@@ -69,16 +69,14 @@ class ClimaxViewModel extends ChangeNotifier {
   // TODO remove?
   int order = 0;
 
-  ClimaxViewModel() {
+  Size _size;
+
+  ClimaxViewModel({required Size size}) : _size = size {
     resetClimax();
   }
 
   Grasp getCurrentPosition() {
     Grasp newGrasp = Grasp(
-      scaleBackground: scaleBackground,
-      scaleAll: scaleAll,
-      translateBackground: deltaTranslateBackground,
-      translateAll: deltaTranslateAll,
       leftArm: _leftArmOffset,
       rightArm: _rightArmOffset,
       leftLeg: _leftLegOffset,
@@ -88,10 +86,6 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   setupByGrasp(Grasp grasp) {
-    scaleBackground = grasp.scaleBackground!;
-    scaleAll = grasp.scaleAll!;
-    deltaTranslateBackground = grasp.translateBackground!;
-    deltaTranslateAll = grasp.translateAll!;
     _leftArmOffset = grasp.leftArm;
     _rightArmOffset = grasp.rightArm;
     _leftLegOffset = grasp.leftLeg;
@@ -119,8 +113,17 @@ class ClimaxViewModel extends ChangeNotifier {
     return Rect.fromLTRB(minX, minY, maxX, maxY).center;
   }
 
+  _refreshFollowerCamera() {
+    Offset climaxCenter = _computeClimaxCenter();
+    Offset screenCenter = Offset(_size.width, _size.height - kToolbarHeight);
+
+    // deltaTranslateAll = screenCenter - climaxCenter;
+  }
+
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
+    _refreshFollowerCamera();
+
     _bodyRect = Rect.fromCenter(center: _computeClimaxCenter(), width: bodyWidth, height: bodyHeight);
     _leftArmRect = Rect.fromCircle(center: _leftArmOffset, radius: radius);
     _rightArmRect = Rect.fromCircle(center: _rightArmOffset, radius: radius);

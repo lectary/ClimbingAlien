@@ -33,10 +33,11 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
       create: (context) => RouteViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
       child: ChangeNotifierProvider(
-        create: (context) => ClimaxViewModel(),
+        create: (context) => ClimaxViewModel(size: size),
         child: Consumer2<RouteViewModel, ClimaxViewModel>(
           builder: (context, routeModel, climaxModel, child) {
             return Scaffold(
