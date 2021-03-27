@@ -115,9 +115,9 @@ class ClimaxViewModel extends ChangeNotifier {
 
   _refreshFollowerCamera() {
     Offset climaxCenter = _computeClimaxCenter();
-    Offset screenCenter = Offset(_size.width, _size.height - kToolbarHeight);
+    Offset screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
 
-    // deltaTranslateAll = screenCenter - climaxCenter;
+    deltaTranslateAll = climaxCenter- screenCenter;
   }
 
   /// Updates climax' rectangles data for redrawing.
