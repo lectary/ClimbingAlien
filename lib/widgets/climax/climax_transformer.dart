@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ClimaxTransformer extends StatefulWidget {
-  final String? imagePath;
+  final String? file;
 
   const ClimaxTransformer({
     Key? key,
-    required this.imagePath,
+    required this.file,
   }) : super(key: key);
 
   @override
@@ -80,7 +80,7 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
         child: Stack(fit: StackFit.expand, children: [
           Transform.translate(
               offset: -deltaTranslateBackground,
-              child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.imagePath))),
+              child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.file))),
           Container(color: Colors.transparent, child: Climax()),
         ]),
       ),

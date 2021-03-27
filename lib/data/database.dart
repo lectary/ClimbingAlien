@@ -46,17 +46,19 @@ class DatabaseProvider {
 
   /// insert mock data
   final callback = Callback(onCreate: (database, version) {
-    Wall wall1 = Wall('Wand1',
+    Wall wall1 = Wall(
+        title: 'Wand1',
         location: "Reith",
         description: 'Super wand 1000',
         file: 'assets/images/climbing_walls/reith-pantarai-1.jpg',
         id: 1);
-    Wall wall2 = Wall('Boulder1',
+    Wall wall2 = Wall(
+        title: 'Boulder1',
         location: "Reith",
         description: 'Schwierig',
         file: 'assets/images/climbing_walls/reith-pantarai-2.jpg',
         id: 2);
-    Wall wall3 = Wall('Wand1', location: "Custom", description: 'Schwierig', id: 3);
+    Wall wall3 = Wall(title: 'Wand1', location: "Custom", description: 'Schwierig', id: 3);
     database.insert('walls', wall1.toMap());
     database.insert('walls', wall2.toMap());
     database.insert('walls', wall3.toMap());

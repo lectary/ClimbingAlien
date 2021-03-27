@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
 class Dialogs {
-  static Future<DateTime> showDatePickerDialog(BuildContext context) async {
+  static Future<DateTime?> showDatePickerDialog(BuildContext context) async {
     return showDatePicker(
         context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2030));
   }
 
-  static Future<TimeOfDay> showTimePickerDialog(BuildContext context) async {
+  static Future<TimeOfDay?> showTimePickerDialog(BuildContext context) async {
     return showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
-  static Future<bool> showAlertDialog(
-      {@required BuildContext context,
-      @required String title,
-      @required String submitText,
-      @required Function submitFunc}) async {
-    return showDialog<bool>(
+  static Future<bool?> showAlertDialog(
+      {required BuildContext context,
+      required String title,
+      required String submitText,
+      required Function submitFunc}) async {
+    return showDialog<bool?>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -48,9 +48,9 @@ class Dialogs {
     );
   }
 
-  static Future<bool> showInfoDialog(
-      {@required BuildContext context, @required String title, @required String content}) async {
-    return showDialog<bool>(
+  static Future<bool?> showInfoDialog(
+      {required BuildContext context, required String title, required String content}) async {
+    return showDialog<bool?>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 class ClimbrData {
   List<Wall> walls;
 
-  ClimbrData({this.walls});
+  ClimbrData({required this.walls});
 
   factory ClimbrData.fromJson(Map<String, dynamic> json) {
     List<dynamic> jsonWalls = json['walls'];

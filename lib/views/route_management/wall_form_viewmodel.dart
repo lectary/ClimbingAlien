@@ -6,11 +6,9 @@ import 'package:flutter/material.dart';
 
 class WallFormViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
-  StreamSubscription<List<Wall>> _wallStreamSubscription;
+  late StreamSubscription<List<Wall>> _wallStreamSubscription;
 
-  WallFormViewModel({@required ClimbingRepository climbingRepository})
-      : assert(climbingRepository != null),
-        _climbingRepository = climbingRepository {
+  WallFormViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository {
     print("WallFormViewModel created");
     _wallStreamSubscription = _climbingRepository.watchAllWalls().listen(wallStreamListener);
   }
@@ -22,11 +20,17 @@ class WallFormViewModel extends ChangeNotifier {
   }
 
   void wallStreamListener(List<Wall> wallList) {
-    walls = wallList.where((Wall wall) => wall.location != null && wall.location.isNotEmpty).toList();
-    suggestions = walls.map((e) => e.location).toList();
+    walls = wallList.where((Wall wall) => wall.location != null && wall.location!.isNotEmpty).toList();
+    suggestions = walls.map((e) {
+      if (e.location == null) {
+        return "<no-location>";
+      } else {
+        return e.location!;
+      }
+    }).toList();
   }
 
-  List<Wall> walls;
+  List<Wall> walls = List.empty();
 
   List<String> _suggestions = List.empty();
 
@@ -38,9 +42,11 @@ class WallFormViewModel extends ChangeNotifier {
   }
 
   getSuggestionsByString(String string) {
-    if (walls == null || walls.isEmpty) return;
-    final newList =
-        walls.where((Wall wall) => wall.location.contains(string)).map((Wall wall) => wall.location).toList();
+    if (walls.isEmpty) return;
+    final newList = walls
+        .where((Wall wall) => wall.location != null && wall.location!.contains(string))
+        .map((Wall wall) => wall.location)
+        .toList();
     suggestions = List.from(newList);
   }
 }
