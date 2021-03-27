@@ -70,10 +70,11 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
     final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
     final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+    final bool isTranslating = context.select((ClimaxViewModel model) => model.isTranslating);
     newDeltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     _updateTranslateAnimation();
     return Transform.translate(
-      offset: -Offset(_offsetXAnimation.value, _offsetYAnimation.value),
+      offset: isTranslating ? -newDeltaTranslateAll : -Offset(_offsetXAnimation.value, _offsetYAnimation.value),
       child: Transform.scale(
         scale: scaleAll,
         child: Stack(fit: StackFit.expand, children: [

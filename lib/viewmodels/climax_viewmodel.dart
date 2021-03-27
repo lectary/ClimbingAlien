@@ -113,16 +113,20 @@ class ClimaxViewModel extends ChangeNotifier {
     return Rect.fromLTRB(minX, minY, maxX, maxY).center;
   }
 
+  bool isTranslating = false;
+
   _refreshFollowerCamera() {
     Offset climaxCenter = _computeClimaxCenter();
     Offset screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
 
-    deltaTranslateAll = climaxCenter- screenCenter;
+    deltaTranslateAll = climaxCenter - screenCenter;
   }
 
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    _refreshFollowerCamera();
+    if (!isTranslating) {
+      _refreshFollowerCamera();
+    }
 
     _bodyRect = Rect.fromCenter(center: _computeClimaxCenter(), width: bodyWidth, height: bodyHeight);
     _leftArmRect = Rect.fromCircle(center: _leftArmOffset, radius: radius);

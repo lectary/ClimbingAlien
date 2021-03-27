@@ -77,6 +77,7 @@ class _RouteEditorState extends State<RouteEditor> {
           isScale = details.pointerCount == 2 ? true : false;
 
           if (isTranslate) {
+            climaxModel.isTranslating = true;
             if (editAll) {
               climaxModel.deltaTranslateAll += climaxModel.lastTranslateAll - details.localFocalPoint;
               climaxModel.lastTranslateAll = details.localFocalPoint;
@@ -97,6 +98,9 @@ class _RouteEditorState extends State<RouteEditor> {
             }
           }
         });
+      },
+      onScaleEnd: (details) {
+        climaxModel.isTranslating = false;
       },
       onTapDown: (details) {
         if (climaxModel.tapOn) {
