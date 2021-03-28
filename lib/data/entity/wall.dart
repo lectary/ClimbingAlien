@@ -17,7 +17,7 @@ class Wall extends BaseObject {
   String? fileUpdated;
 
   @ignore
-  bool isRemote;
+  bool isCustom;
 
   Wall(
       {required this.title,
@@ -26,7 +26,7 @@ class Wall extends BaseObject {
       this.location,
       this.file,
       this.fileUpdated,
-      this.isRemote = false,
+      this.isCustom = true,
       int? id,
       DateTime? modifiedAt,
       DateTime? createdAt})
@@ -50,7 +50,7 @@ class Wall extends BaseObject {
       title: _titleFromJson(json['wall']),
       location: json['location'],
       file: json['file'],
-      isRemote: true,
+      isCustom: false,
     );
   }
 

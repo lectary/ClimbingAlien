@@ -73,7 +73,7 @@ class WallCard extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: AspectRatio(
                   aspectRatio: 4 / 3,
-                  child: wall.isRemote
+                  child: !wall.isCustom
                       // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
                       ? (isExpanded
                           ? Image.network(
