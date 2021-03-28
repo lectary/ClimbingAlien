@@ -74,7 +74,7 @@ class WallViewModel extends ChangeNotifier {
     return resultList;
   }
 
-  Future<void> insertWall(Wall wall) async {
+  Future<int> insertWall(Wall wall) async {
     if (wall.file != null && !wall.file!.startsWith('assets')) {
       String? newPath = await _saveImageToDevice(wall.file!);
       wall.file = newPath;

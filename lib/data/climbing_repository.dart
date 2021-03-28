@@ -26,7 +26,7 @@ class ClimbingRepository {
     return _climbrApi.fetchWalls();
   }
 
-  Future<void> insertWall(Wall wall) {
+  Future<int> insertWall(Wall wall) {
     return _climbingDatabase.wallDao.insertWall(wall);
   }
 

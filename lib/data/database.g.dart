@@ -205,8 +205,9 @@ class _$WallDao extends WallDao {
   }
 
   @override
-  Future<void> insertWall(Wall wall) async {
-    await _wallInsertionAdapter.insert(wall, OnConflictStrategy.abort);
+  Future<int> insertWall(Wall wall) {
+    return _wallInsertionAdapter.insertAndReturnId(
+        wall, OnConflictStrategy.abort);
   }
 
   @override

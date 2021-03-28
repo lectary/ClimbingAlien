@@ -10,7 +10,7 @@ abstract class WallDao {
   Future<List<Wall>> fetchAllWalls();
 
   @insert
-  Future<void> insertWall(Wall wall);
+  Future<int> insertWall(Wall wall);
 
   @update
   Future<void> updateWall(Wall wall);
