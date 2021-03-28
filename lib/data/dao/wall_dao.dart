@@ -6,6 +6,9 @@ abstract class WallDao {
   @Query('SELECT * FROM walls')
   Stream<List<Wall>> watchAllWalls();
 
+  @Query('SELECT * FROM walls')
+  Future<List<Wall>> fetchAllWalls();
+
   @insert
   Future<void> insertWall(Wall wall);
 

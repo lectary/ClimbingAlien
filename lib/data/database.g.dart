@@ -191,6 +191,20 @@ class _$WallDao extends WallDao {
   }
 
   @override
+  Future<List<Wall>> fetchAllWalls() async {
+    return _queryAdapter.queryList('SELECT * FROM walls',
+        mapper: (Map<String, Object?> row) => Wall(
+            title: row['title'] as String,
+            description: row['description'] as String?,
+            height: row['height'] as int?,
+            location: row['location'] as String?,
+            file: row['file'] as String?,
+            id: row['id'] as int?,
+            modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
+            createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
+  }
+
+  @override
   Future<void> insertWall(Wall wall) async {
     await _wallInsertionAdapter.insert(wall, OnConflictStrategy.abort);
   }

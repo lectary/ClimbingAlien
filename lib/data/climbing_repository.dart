@@ -1,3 +1,4 @@
+import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/database.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
@@ -6,12 +7,23 @@ import 'package:climbing_alien/data/entity/wall.dart';
 
 class ClimbingRepository {
   final ClimbingDatabase _climbingDatabase;
+  final ClimbrApi _climbrApi;
 
-  ClimbingRepository({required ClimbingDatabase climbingDatabase}) : _climbingDatabase = climbingDatabase;
+  ClimbingRepository({required ClimbingDatabase climbingDatabase, required ClimbrApi climbrApi})
+      : _climbingDatabase = climbingDatabase,
+        _climbrApi = climbrApi;
 
   /// Walls
   Stream<List<Wall>> watchAllWalls() {
     return _climbingDatabase.wallDao.watchAllWalls();
+  }
+
+  Future<List<Wall>> fetchAllWalls() {
+    return _climbingDatabase.wallDao.fetchAllWalls();
+  }
+
+  Future<List<Wall>> fetchAllWallsFromApi() {
+    return _climbrApi.fetchWalls();
   }
 
   Future<void> insertWall(Wall wall) {

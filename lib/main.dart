@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/database.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
@@ -27,7 +28,9 @@ class ClimbingProviderApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ClimbingRepository climbingRepository = ClimbingRepository(climbingDatabase: climbingDatabase);
+    final ClimbrApi climbrApi = ClimbrApi();
+    final ClimbingRepository climbingRepository =
+        ClimbingRepository(climbingDatabase: climbingDatabase, climbrApi: climbrApi);
     return MultiProvider(providers: [
       Provider.value(value: climbingRepository),
       ChangeNotifierProvider(create: (context) => ImageViewModel()),
