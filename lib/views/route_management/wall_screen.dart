@@ -24,6 +24,7 @@ class _WallScreenState extends State<WallScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Climbing Walls"),
+        actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.showWallFormDialog(context))],
       ),
       body: FutureBuilder<List<Location>>(
         future: wallModel.loadAllWalls(),
@@ -37,10 +38,6 @@ class _WallScreenState extends State<WallScreen> {
             return Center(child: CircularProgressIndicator());
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => WallForm.showWallFormDialog(context),
       ),
     );
   }
