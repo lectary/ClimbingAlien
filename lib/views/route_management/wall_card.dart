@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
@@ -76,21 +77,15 @@ class WallCard extends StatelessWidget {
                   child: !wall.isCustom
                       // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
                       ? (isExpanded
-                          ? Image.network(
-                              ClimbrApi.apiUrl + wall.file!,
-                              loadingBuilder: (context, child, ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  print("Loading ${wall.file}");
-                                  return child;
-                                }
-                                return Center(
+                          ? CachedNetworkImage(
+                              imageUrl: ClimbrApi.apiUrl + wall.file!,
+                              progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                                   child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                );
-                              },
+                                value: downloadProgress.totalSize != null
+                                    ? downloadProgress.downloaded / downloadProgress.totalSize!
+                                    : null,
+                              )),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
                             )
                           : Container())
                       : ImageDisplay(
