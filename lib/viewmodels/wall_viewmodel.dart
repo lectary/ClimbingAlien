@@ -21,6 +21,15 @@ class WallViewModel extends ChangeNotifier {
           .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value))
           .toList());
 
+  Future<List<Location>> loadAllWalls() async {
+    List<Wall> localWalls = await _climbingRepository.fetchAllWalls();
+    List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
+
+    return groupBy(remoteWalls, (Wall wall) => wall.location)
+        .entries
+        .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value)).toList();
+  }
+
   Future<void> insertWall(Wall wall) async {
     if (wall.file != null && !wall.file!.startsWith('assets')) {
       String? newPath = await _saveImageToDevice(wall.file!);
