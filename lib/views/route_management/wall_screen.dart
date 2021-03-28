@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
@@ -21,6 +22,7 @@ class _WallScreenState extends State<WallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final wallModel = Provider.of<WallViewModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +35,7 @@ class _WallScreenState extends State<WallScreen> {
             final locations = snapshot.data!;
             return locations.isEmpty
                 ? Center(child: Text("No walls available"))
-                : _buildLocationsAsExpansionPanelList(context, locations);
+                : _buildLocationsAsExpansionPanelList(context, locations, size);
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -46,19 +48,23 @@ class _WallScreenState extends State<WallScreen> {
     );
   }
 
-  _buildLocationsAsExpansionPanelList(BuildContext context, List<Location> locations) {
+  _buildLocationsAsExpansionPanelList(BuildContext context, List<Location> locations, Size size) {
     return SingleChildScrollView(
       child: ExpansionPanelList.radio(
         children: locations.map<ExpansionPanelRadio>((Location location) {
           return ExpansionPanelRadio(
-              value: location.name ?? "<no-name>",
+              value: location.name,
               headerBuilder: (BuildContext context, bool isExpanded) {
                 return ListTile(
-                  title: Text(location.name ?? "<no-name>"),
+                  title: Text(location.name),
                 );
               },
-              body: Column(
-                children: location.walls.map((Wall wall) => _buildWall(context, wall)).toList(),
+              body: CarouselSlider(
+                options: CarouselOptions(
+                  height: size.height * 0.5,
+                  enableInfiniteScroll: false,
+                ),
+                items: location.walls.map((Wall wall) => _buildWall(context, wall)).toList(),
               ));
         }).toList(),
       ),
@@ -84,7 +90,7 @@ class _WallScreenState extends State<WallScreen> {
                   });
                 }
               },
-              title: Text(location.name ?? "<no-name>"),
+              title: Text(location.name),
               children: location.walls.map((Wall wall) => _buildWall(context, wall)).toList());
         });
   }
@@ -142,13 +148,17 @@ class _WallScreenState extends State<WallScreen> {
             ),
 
             /// Wall image
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
                   child: ImageDisplay(
-                wall.file,
-                emptyText: 'No image',
-              )),
+                    wall.file,
+                    emptyText: 'No image',
+                  ),
+                ),
+              ),
             )
           ]),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteScreen(wall))),
