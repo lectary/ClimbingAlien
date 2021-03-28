@@ -70,8 +70,8 @@ class _WallFormState extends State<WallForm> {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         if (_locationFocusNode.hasFocus) {
           final practiseModel = Provider.of<WallFormViewModel>(context, listen: false);
-          OverlayEntry _overlayEntry = _buildSuggestionOverlay(practiseModel);
-          Overlay.of(context)?.insert(_overlayEntry);
+          _overlayEntry = _buildSuggestionOverlay(practiseModel);
+          Overlay.of(context)?.insert(_overlayEntry!);
         } else {
           _overlayEntry?.remove();
         }
