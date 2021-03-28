@@ -16,6 +16,9 @@ class Wall extends BaseObject {
   @ignore
   String? fileUpdated;
 
+  @ignore
+  bool isRemote;
+
   Wall(
       {required this.title,
       this.description,
@@ -23,6 +26,7 @@ class Wall extends BaseObject {
       this.location,
       this.file,
       this.fileUpdated,
+      this.isRemote = false,
       int? id,
       DateTime? modifiedAt,
       DateTime? createdAt})
@@ -43,10 +47,21 @@ class Wall extends BaseObject {
 
   factory Wall.fromJson(Map<String, dynamic> json) {
     return Wall(
-      title: json['wall'],
+      title: _titleFromJson(json['wall']),
       location: json['location'],
       file: json['file'],
+      isRemote: true,
     );
+  }
+
+  static String _titleFromJson(String string) {
+    if (string.contains('.jpg')) {
+      return string.substring(0, string.lastIndexOf('.jpg'));
+    }
+    if (string.contains('.png')) {
+      return string.substring(0, string.lastIndexOf('.png'));
+    }
+    return string;
   }
 
   @override
