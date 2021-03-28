@@ -27,7 +27,7 @@ class WallFormViewModel extends ChangeNotifier {
       } else {
         return e.location!;
       }
-    }).toList();
+    }).toSet().toList();
   }
 
   List<Wall> walls = List.empty();
@@ -43,10 +43,10 @@ class WallFormViewModel extends ChangeNotifier {
 
   getSuggestionsByString(String string) {
     if (walls.isEmpty) return;
-    final newList = walls
+    final Set<String> newList = walls
         .where((Wall wall) => wall.location != null && wall.location!.contains(string))
-        .map((Wall wall) => wall.location)
-        .toList();
+        .map((Wall wall) => wall.location!)
+        .toSet();
     suggestions = List.from(newList);
   }
 }
