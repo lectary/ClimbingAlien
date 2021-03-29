@@ -36,30 +36,32 @@ class WallCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(wall.title, style: Theme.of(context).textTheme.headline5),
-                        Row(
-                          children: [
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                visualDensity: VisualDensity.compact,
-                                icon: Icon(Icons.edit),
-                                onPressed: () => WallForm.showWallFormDialog(context, wall: wall)),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                visualDensity: VisualDensity.compact,
-                                icon: Icon(Icons.delete),
-                                onPressed: () async {
-                                  bool canDeleteWithoutConflicts = await wallModel.deleteWall(wall);
-                                  if (!canDeleteWithoutConflicts) {
-                                    await Dialogs.showAlertDialog(
-                                        context: context,
-                                        title:
-                                            'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
-                                        submitText: 'Löschen',
-                                        submitFunc: () => wallModel.deleteWall(wall, cascade: true));
-                                  }
-                                })
-                          ],
-                        )
+                        wall.isCustom
+                            ? Row(
+                                children: [
+                                  IconButton(
+                                      padding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity.compact,
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () => WallForm.showWallFormDialog(context, wall: wall)),
+                                  IconButton(
+                                      padding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity.compact,
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () async {
+                                        bool canDeleteWithoutConflicts = await wallModel.deleteWall(wall);
+                                        if (!canDeleteWithoutConflicts) {
+                                          await Dialogs.showAlertDialog(
+                                              context: context,
+                                              title:
+                                                  'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
+                                              submitText: 'Löschen',
+                                              submitFunc: () => wallModel.deleteWall(wall, cascade: true));
+                                        }
+                                      })
+                                ],
+                              )
+                            : Container()
                       ],
                     ),
                     Text(wall.description ?? ""),
