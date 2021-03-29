@@ -54,7 +54,7 @@ class RouteScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
-                              onLongPress: () => RouteForm.showRouteFormDialog(context, route: route, wallId: wall.id),
+                              onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),
                               onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -71,7 +71,7 @@ class RouteScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => RouteForm.showRouteFormDialog(context, wallId: wall.id),
+        onPressed: () => RouteForm.showRouteFormDialog(context, wall),
       ),
     );
   }

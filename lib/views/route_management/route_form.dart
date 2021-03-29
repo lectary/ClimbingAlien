@@ -1,20 +1,20 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/route.dart';
+import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
 class RouteForm extends StatefulWidget {
+  final Wall wall;
   final Route? route;
-  final int? wallId;
 
-  RouteForm(this.route, this.wallId);
+  RouteForm(this.wall, this.route);
 
   @override
   _RouteFormState createState() => _RouteFormState();
 
-  static Future<bool?> showRouteFormDialog(BuildContext context, {Route? route, int? wallId}) async {
-    assert(route != null ? wallId != null : true);
+  static Future<bool?> showRouteFormDialog(BuildContext context, Wall wall, {Route? route}) async {
     final model = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(
         context: context,
@@ -23,7 +23,7 @@ class RouteForm extends StatefulWidget {
               create: (context) => RouteViewModel(climbingRepository: model),
               child: AlertDialog(
                 title: route == null ? Text("New route") : Text("Edit route"),
-                content: RouteForm(route, wallId),
+                content: RouteForm(wall, route),
               ),
             ));
   }
@@ -91,12 +91,21 @@ class _RouteFormState extends State<RouteForm> {
                           widget.route!.description = description;
                           routeViewModel.updateRoute(widget.route!);
                         } else {
-                          Route route = Route(
-                            title!,
-                            widget.wallId!,
-                            description: description,
-                          );
-                          routeViewModel.insertRoute(route);
+                          if (widget.wall.id == null) {
+                            Route route = Route(
+                              title!,
+                              -1,
+                              description: description,
+                            );
+                            routeViewModel.insertRouteWithWall(route, widget.wall);
+                          } else {
+                            Route route = Route(
+                              title!,
+                              widget.wall.id!,
+                              description: description,
+                            );
+                            routeViewModel.insertRoute(route);
+                          }
                         }
                         Navigator.pop(context);
                       }
