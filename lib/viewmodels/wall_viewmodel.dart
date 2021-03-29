@@ -159,4 +159,11 @@ class WallViewModel extends ChangeNotifier {
   Future<void> _deleteImageFromDevice(String imagePath) async {
     await File(imagePath).delete();
   }
+
+  Future<int> getNumberOfRoutesByWall(Wall wall) async {
+    if (wall.id == null) {
+      return Future.value(0);
+    }
+    return await _climbingRepository.findAllRoutesByWallId(wall.id!).then((value) => value.length);
+  }
 }

@@ -35,7 +35,21 @@ class WallCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(wall.title, style: Theme.of(context).textTheme.headline5),
+                        Row(
+                          children: [
+                            Text(wall.title, style: Theme.of(context).textTheme.headline5),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: FutureBuilder(future: wallModel.getNumberOfRoutesByWall(wall), builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text("${snapshot.data!} Routes");
+                                } else {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                              }),
+                            ),
+                          ],
+                        ),
                         wall.isCustom
                             ? Row(
                                 children: [
