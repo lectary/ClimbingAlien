@@ -34,7 +34,6 @@ class ClimbingProviderApp extends StatelessWidget {
     return MultiProvider(providers: [
       Provider.value(value: climbingRepository),
       ChangeNotifierProvider(create: (context) => ImageViewModel()),
-      ChangeNotifierProvider(create: (context) => WallViewModel(climbingRepository: climbingRepository)),
     ], child: ClimbingApp());
   }
 }

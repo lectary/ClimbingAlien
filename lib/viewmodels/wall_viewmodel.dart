@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:climbing_alien/data/climbing_repository.dart';
@@ -10,20 +11,48 @@ import 'package:flutter/material.dart' hide Route;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+enum ModelState { IDLE, LOADING }
+
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository;
+  ModelState _modelState = ModelState.IDLE;
 
-  Stream<List<Location>> get locationStream =>
-      _climbingRepository.watchAllWalls().map((wallList) => groupBy(wallList, (Wall wall) => wall.location)
-          .entries
-          .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value))
-          .toList());
+  ModelState get modelState => _modelState;
+
+  set modelState(ModelState modelState) {
+    _modelState = modelState;
+    notifyListeners();
+  }
+
+  List<Location> locationList = List.empty();
+
+  WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository {
+    print("Created WallViewModel");
+    loadAllWalls();
+    listenToLocalWalls();
+  }
+
+  late StreamSubscription<List<Wall>> _wallStreamSubscription;
+
+  listenToLocalWalls() {
+    _wallStreamSubscription = _climbingRepository.watchAllWalls().listen((wallList) {
+      // TODO improve, just update local walls, dont requery remote ones
+      loadAllWalls();
+    });
+  }
+
+  @override
+  void dispose() {
+    _wallStreamSubscription.cancel();
+    super.dispose();
+  }
 
   /// Loads all walls, local and remote ones.
   /// Returns a [List] of [Location] grouped by [Wall.location].
-  Future<List<Location>> loadAllWalls() async {
+  void loadAllWalls() async {
+    modelState = ModelState.LOADING;
+
     final localWalls = await _climbingRepository.fetchAllWalls();
     List<Wall> customWalls = [];
     List<Wall> localRemoteWalls = [];
@@ -37,10 +66,12 @@ class WallViewModel extends ChangeNotifier {
     List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
     List<Wall> mergedWalls = _mergeWalls(localWalls: localRemoteWalls, remoteWalls: remoteWalls)..addAll(customWalls);
 
-    return groupBy(mergedWalls, (Wall wall) => wall.location)
+    locationList = groupBy(mergedWalls, (Wall wall) => wall.location)
         .entries
         .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value))
         .toList();
+
+    modelState = ModelState.IDLE;
   }
 
   /// Merges two lists of [Wall].

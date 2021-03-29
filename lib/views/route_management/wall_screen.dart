@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/wall_card.dart';
@@ -20,24 +21,27 @@ class _WallScreenState extends State<WallScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final wallModel = Provider.of<WallViewModel>(context, listen: false);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Climbing Walls"),
-        actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.showWallFormDialog(context))],
-      ),
-      body: FutureBuilder<List<Location>>(
-        future: wallModel.loadAllWalls(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final locations = snapshot.data!;
-            return locations.isEmpty
-                ? Center(child: Text("No walls available"))
-                : _buildLocationsAsExpansionPanelList(context, locations, size);
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+    return ChangeNotifierProvider<WallViewModel>(
+      create: (context) => WallViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
+      child: Consumer<WallViewModel>(
+        builder: (context, wallModel, child) => Scaffold(
+            appBar: AppBar(
+              title: Text("Climbing Walls"),
+              actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.showWallFormDialog(context))],
+            ),
+            body: Builder(
+              builder: (context) {
+                switch (wallModel.modelState) {
+                  case ModelState.LOADING:
+                    return Center(child: CircularProgressIndicator());
+                  case ModelState.IDLE:
+                    final locations = wallModel.locationList;
+                    return locations.isEmpty
+                        ? Center(child: Text("No walls available"))
+                        : _buildLocationsAsExpansionPanelList(context, locations, size);
+                }
+              },
+            )),
       ),
     );
   }
