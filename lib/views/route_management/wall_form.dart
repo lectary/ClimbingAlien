@@ -155,7 +155,11 @@ class _WallFormState extends State<WallForm> {
                 focusNode: _locationFocusNode,
                 onChanged: (value) => wallFormViewModel.getSuggestionsByString(value),
                 decoration: InputDecoration(labelText: "Location"),
-                onSaved: (value) => location = value,
+                onSaved: (value) {
+                  if (value!.isNotEmpty) {
+                    location = value;
+                  }
+                },
               ),
             ),
             TextFormField(

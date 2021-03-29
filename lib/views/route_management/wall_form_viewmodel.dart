@@ -15,8 +15,8 @@ class WallFormViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    super.dispose();
     _wallStreamSubscription.cancel();
+    super.dispose();
   }
 
   void wallStreamListener(List<Wall> wallList) {
