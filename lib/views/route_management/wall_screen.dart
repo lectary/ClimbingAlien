@@ -60,7 +60,7 @@ class _WallScreenState extends State<WallScreen> {
             value: location.name,
             headerBuilder: (BuildContext context, bool isExpanded) {
               return ListTile(
-                title: Text(location.name),
+                title: Text("${location.name} - ${location.walls.length} Walls"),
               );
             },
             body: CarouselSlider.builder(
