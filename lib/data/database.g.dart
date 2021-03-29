@@ -84,7 +84,7 @@ class _$ClimbingDatabase extends ClimbingDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `height` INTEGER, `location` TEXT, `file` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `height` INTEGER, `location` TEXT, `file` TEXT, `isCustom` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT NOT NULL, `description` TEXT, `wall_id` INTEGER NOT NULL, `route_option_id` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`route_option_id`) REFERENCES `route_options` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -126,6 +126,7 @@ class _$WallDao extends WallDao {
                   'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
@@ -141,6 +142,7 @@ class _$WallDao extends WallDao {
                   'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
@@ -156,6 +158,7 @@ class _$WallDao extends WallDao {
                   'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
                   'created_at': _dateTimeConverterNonNull.encode(item.createdAt)
@@ -185,6 +188,7 @@ class _$WallDao extends WallDao {
             height: row['height'] as int?,
             location: row['location'] as String?,
             file: row['file'] as String?,
+            isCustom: (row['isCustom'] as int) != 0,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));
@@ -199,6 +203,7 @@ class _$WallDao extends WallDao {
             height: row['height'] as int?,
             location: row['location'] as String?,
             file: row['file'] as String?,
+            isCustom: (row['isCustom'] as int) != 0,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
             createdAt: _dateTimeConverter.decode(row['created_at'] as int)));

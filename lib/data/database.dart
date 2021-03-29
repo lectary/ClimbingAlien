@@ -33,7 +33,9 @@ class DatabaseProvider {
 
   Future<ClimbingDatabase> get db async {
     if (_db == null) {
-      _db = await $FloorClimbingDatabase.databaseBuilder('climbing.db').addCallback(callback).build();
+      _db = await $FloorClimbingDatabase.databaseBuilder('climbing.db')
+          // .addCallback(callback)
+          .build();
     }
     return _db!;
   }
