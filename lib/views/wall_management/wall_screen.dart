@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
-import 'package:climbing_alien/views/route_management/wall_card.dart';
-import 'package:climbing_alien/views/route_management/wall_form.dart';
+import 'package:climbing_alien/views/wall_management/wall_card.dart';
+import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

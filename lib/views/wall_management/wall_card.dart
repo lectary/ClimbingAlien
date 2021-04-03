@@ -4,7 +4,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
-import 'package:climbing_alien/views/route_management/wall_form.dart';
+import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

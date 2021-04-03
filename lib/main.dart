@@ -7,7 +7,7 @@ import 'package:climbing_alien/data/database.dart';
 import 'package:climbing_alien/viewmodels/image_viewmodel.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/camera/camera_screen.dart';
-import 'package:climbing_alien/views/route_management/wall_screen.dart';
+import 'package:climbing_alien/views/wall_management/wall_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
