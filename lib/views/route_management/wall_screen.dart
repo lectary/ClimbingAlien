@@ -7,59 +7,77 @@ import 'package:climbing_alien/views/route_management/wall_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class WallScreen extends StatefulWidget {
+class WallScreen extends StatelessWidget {
   static String routeName = '/walls';
-
-  @override
-  _WallScreenState createState() => _WallScreenState();
-}
-
-class _WallScreenState extends State<WallScreen> {
-  // Map for storing whether a location panel is expanded or not
-  Map<String, bool> _expandedList = Map();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider<WallViewModel>(
       create: (context) => WallViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
-      child: Consumer<WallViewModel>(
-        builder: (context, wallModel, child) => Scaffold(
+      // First selector for the general modelState, used for example for re-querying remote list and showing a loading indicator
+      child: Selector<WallViewModel, ModelState>(
+        selector: (context, model) => model.modelState,
+        shouldRebuild: (oldValue, newValue) => oldValue != newValue,
+        builder: (context, modelState, child) => Scaffold(
             appBar: AppBar(
               title: Text("Climbing Walls"),
               actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.showWallFormDialog(context))],
             ),
             body: Builder(
               builder: (context) {
-                switch (wallModel.modelState) {
+                switch (modelState) {
                   case ModelState.LOADING:
                     return Center(child: CircularProgressIndicator());
                   case ModelState.IDLE:
-                    final locations = wallModel.locationList;
-                    return locations.isEmpty
-                        ? Center(child: Text("No walls available"))
-                        : _buildLocationsAsExpansionPanelList(context, locations, size);
+                    // Second selector for the locationList directly, to react to wall list updates (add, remove) or other actions like sorting
+                    // Those changes are displayed as soon as they finished, no need for a loading indicator
+                    return Selector<WallViewModel, List<Location>>(
+                      selector: (context, model) => model.locationList,
+                      shouldRebuild: (oldValue, newValue) => oldValue != newValue,
+                      builder: (context, locations, child) {
+                        return locations.isEmpty
+                            ? Center(child: Text("No walls available"))
+                            : LocationPanelList(locations, size);
+                      },
+                    );
                 }
               },
             )),
       ),
     );
   }
+}
 
-  _buildLocationsAsExpansionPanelList(BuildContext context, List<Location> locations, Size size) {
+class LocationPanelList extends StatefulWidget {
+  final List<Location> locations;
+  final Size size;
+
+  LocationPanelList(this.locations, this.size);
+
+  @override
+  _LocationPanelListState createState() => _LocationPanelListState();
+}
+
+class _LocationPanelListState extends State<LocationPanelList> {
+  // Map for storing whether a location panel is expanded or not
+  Map<String, bool> _expandedList = Map();
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: ExpansionPanelList.radio(
         expansionCallback: (int panelIndex, bool isExpanded) {
           // Only mark as expanded if null or if callback value and current stored value are false.
           // Read doc of [ExpansionPanelList.expansionCallback] for more details.
-          _expandedList.update(locations[panelIndex].name, (expanded) {
+          _expandedList.update(widget.locations[panelIndex].name, (expanded) {
             if (!isExpanded && !expanded) {
               return true;
             }
             return false;
           }, ifAbsent: () => true);
         },
-        children: locations.map<ExpansionPanelRadio>((Location location) {
+        children: widget.locations.map<ExpansionPanelRadio>((Location location) {
           return ExpansionPanelRadio(
             value: location.name,
             headerBuilder: (BuildContext context, bool isExpanded) {
@@ -69,7 +87,7 @@ class _WallScreenState extends State<WallScreen> {
             },
             body: CarouselSlider.builder(
                 options: CarouselOptions(
-                  height: size.height * 0.5,
+                  height: widget.size.height * 0.5,
                   enableInfiniteScroll: false,
                 ),
                 itemCount: location.walls.length,
