@@ -9,6 +9,7 @@ import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Class representing a single carousel wall entry in the location list.
 class WallCard extends StatelessWidget {
   final Wall wall;
   final bool isExpanded;
@@ -40,13 +41,15 @@ class WallCard extends StatelessWidget {
                             Text(wall.title, style: Theme.of(context).textTheme.headline5),
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
-                              child: FutureBuilder(future: wallModel.getNumberOfRoutesByWall(wall), builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text("${snapshot.data!} Routes");
-                                } else {
-                                  return Center(child: CircularProgressIndicator());
-                                }
-                              }),
+                              child: FutureBuilder(
+                                  future: wallModel.getNumberOfRoutesByWall(wall),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text("${snapshot.data!} Routes");
+                                    } else {
+                                      return Center(child: CircularProgressIndicator());
+                                    }
+                                  }),
                             ),
                           ],
                         ),
