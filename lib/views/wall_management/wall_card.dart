@@ -25,97 +25,102 @@ class WallCard extends StatelessWidget {
         elevation: 5,
         child: GestureDetector(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            /// Header
-            Container(
-              color: Colors.grey[300],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(wall.title, style: Theme.of(context).textTheme.headline5),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: FutureBuilder(
-                                  future: wallModel.getNumberOfRoutesByWall(wall),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Text("${snapshot.data!} Routes");
-                                    } else {
-                                      return Center(child: CircularProgressIndicator());
-                                    }
-                                  }),
-                            ),
-                          ],
-                        ),
-                        wall.isCustom
-                            ? Row(
-                                children: [
-                                  IconButton(
-                                      padding: EdgeInsets.zero,
-                                      visualDensity: VisualDensity.compact,
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () => WallForm.showWallFormDialog(context, wall: wall)),
-                                  IconButton(
-                                      padding: EdgeInsets.zero,
-                                      visualDensity: VisualDensity.compact,
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () async {
-                                        bool canDeleteWithoutConflicts = await wallModel.deleteWall(wall);
-                                        if (!canDeleteWithoutConflicts) {
-                                          await Dialogs.showAlertDialog(
-                                              context: context,
-                                              title:
-                                                  'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
-                                              submitText: 'Löschen',
-                                              submitFunc: () => wallModel.deleteWall(wall, cascade: true));
-                                        }
-                                      })
-                                ],
-                              )
-                            : Container()
-                      ],
-                    ),
-                    Text(wall.description ?? ""),
-                  ],
-                ),
-              ),
-            ),
-
-            /// Wall image
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: !wall.isCustom
-                      // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
-                      ? (isExpanded
-                          ? CachedNetworkImage(
-                              imageUrl: ClimbrApi.apiUrl + wall.file!,
-                              progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                                  child: CircularProgressIndicator(
-                                value: downloadProgress.totalSize != null
-                                    ? downloadProgress.downloaded / downloadProgress.totalSize!
-                                    : null,
-                              )),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            )
-                          : Container())
-                      : ImageDisplay(
-                          wall.file,
-                          emptyText: 'No image',
-                        ),
-                ),
-              ),
-            )
+            _buildHeader(context, wallModel),
+            _buildBody(context),
           ]),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteScreen(wall))),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, WallViewModel wallViewModel) {
+    return Container(
+      color: Colors.grey[300],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(wall.title, style: Theme.of(context).textTheme.headline5),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: FutureBuilder(
+                          future: wallViewModel.getNumberOfRoutesByWall(wall),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text("${snapshot.data!} Routes");
+                            } else {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                          }),
+                    ),
+                  ],
+                ),
+                wall.isCustom
+                    ? Row(
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.edit),
+                              onPressed: () => WallForm.showWallFormDialog(context, wall: wall)),
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                bool canDeleteWithoutConflicts = await wallViewModel.deleteWall(wall);
+                                if (!canDeleteWithoutConflicts) {
+                                  await Dialogs.showAlertDialog(
+                                      context: context,
+                                      title:
+                                          'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
+                                      submitText: 'Löschen',
+                                      submitFunc: () => wallViewModel.deleteWall(wall, cascade: true));
+                                }
+                              })
+                        ],
+                      )
+                    : Container()
+              ],
+            ),
+            Text(wall.description ?? ""),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
+          child: !wall.isCustom
+              // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
+              ? (isExpanded
+                  ? CachedNetworkImage(
+                      imageUrl: ClimbrApi.apiUrl + wall.file!,
+                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                          child: CircularProgressIndicator(
+                        value: downloadProgress.totalSize != null
+                            ? downloadProgress.downloaded / downloadProgress.totalSize!
+                            : null,
+                      )),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    )
+                  : Container())
+              : ImageDisplay(
+                  wall.file,
+                  emptyText: 'No image',
+                ),
         ),
       ),
     );
