@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 
 enum ModelState { IDLE, LOADING }
 
-class RouteViewModel extends ChangeNotifier {
+class RouteScreenViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
   ModelState _modelState = ModelState.IDLE;
@@ -21,10 +21,51 @@ class RouteViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  late Wall wall;
   List<Route> routeList = List.empty();
 
-  RouteViewModel({required ClimbingRepository climbingRepository})
-      : _climbingRepository = climbingRepository;
+  RouteScreenViewModel({required ClimbingRepository climbingRepository, required this.wall})
+      : _climbingRepository = climbingRepository {
+    loadRoutesByWall(wall);
+    listenToLocalRoutes();
+  }
+
+  StreamSubscription<List<Route>>? _routeStreamSubscription;
+
+  listenToLocalRoutes() {
+    if (wall.id == null) {
+      return;
+    }
+    _routeStreamSubscription = _climbingRepository.watchAllRoutesByWallId(wall.id!).listen((wallList) {
+      // TODO improve, just update local walls, dont requery remote ones
+      loadRoutesByWall(wall);
+    });
+  }
+
+  @override
+  void dispose() {
+    _routeStreamSubscription?.cancel();
+    super.dispose();
+  }
+
+  void loadRoutesByWall(Wall wall) async {
+    modelState = ModelState.LOADING;
+
+    if (wall.id != null) {
+      routeList = await _climbingRepository.findAllRoutesByWallId(wall.id!);
+    }
+
+    modelState = ModelState.IDLE;
+  }
+
+  /// Routes
+  Stream<List<Route>> getRouteStreamByWallId(int? wallId) {
+    // TODO FIX
+    if (wallId == null) {
+      return Stream.value([]);
+    }
+    return _climbingRepository.watchAllRoutesByWallId(wallId);
+  }
 
   Future<void> insertRoute(Route route) {
     return _climbingRepository.insertRoute(route);
