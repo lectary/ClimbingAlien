@@ -26,6 +26,7 @@ class WallViewModel extends ChangeNotifier {
   }
 
   List<Location> locationList = List.empty();
+  List<Wall> _wallList = List.empty();
 
   WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository {
     print("Created WallViewModel");
@@ -37,8 +38,7 @@ class WallViewModel extends ChangeNotifier {
 
   listenToLocalWalls() {
     _wallStreamSubscription = _climbingRepository.watchAllWalls().listen((wallList) {
-      // TODO improve, just update local walls, dont requery remote ones
-      loadAllWalls();
+      updateCachedWallsAndLocations(wallList);
     });
   }
 
@@ -46,6 +46,13 @@ class WallViewModel extends ChangeNotifier {
   void dispose() {
     _wallStreamSubscription.cancel();
     super.dispose();
+  }
+
+  /// Updates the locally cached location and wall list with the passed wall list.
+  void updateCachedWallsAndLocations(List<Wall> newLocalList) {
+    _wallList = _mergeWalls(localWalls: newLocalList, remoteWalls: _wallList);
+    locationList = groupWalls(_wallList);
+    notifyListeners();
   }
 
   /// Loads all walls, local and remote ones.
@@ -64,14 +71,18 @@ class WallViewModel extends ChangeNotifier {
       }
     });
     List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
-    List<Wall> mergedWalls = _mergeWalls(localWalls: localRemoteWalls, remoteWalls: remoteWalls)..addAll(customWalls);
+    _wallList = _mergeWalls(localWalls: localRemoteWalls, remoteWalls: remoteWalls)..addAll(customWalls);
 
-    locationList = groupBy(mergedWalls, (Wall wall) => wall.location)
+    locationList = groupWalls(_wallList);
+
+    modelState = ModelState.IDLE;
+  }
+
+  List<Location> groupWalls(List<Wall> wallList) {
+    return groupBy(wallList, (Wall wall) => wall.location)
         .entries
         .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value))
         .toList();
-
-    modelState = ModelState.IDLE;
   }
 
   /// Merges two lists of [Wall].
@@ -89,16 +100,25 @@ class WallViewModel extends ChangeNotifier {
 
     // Check if any local walls are outdated (i.e. not available remotely anymore)
     localWalls.forEach((e1) {
+      // If its a custom wall, add it to list, otherwise its a copy from a remote wall, and then it may be deleted
       if (remoteWalls.any((e2) => e1.location == e2.location && e1.title == e2.title) == false) {
         // TODO remove wall and its children automatically or provide a user option
         // _removeWall(e1);
+        if (e1.isCustom) {
+          resultList.add(e1);
+        }
       }
     });
 
     // Add all remaining and not persisted walls available remotely
     remoteWalls.forEach((e1) {
       if (localWalls.any((e2) => e1.location == e2.location && e1.title == e2.title) == false) {
-        resultList.add(e1);
+        // Remove any
+        if (e1.isCustom) {
+          resultList.remove(e1);
+        } else {
+          resultList.add(e1);
+        }
       }
     });
 
@@ -125,6 +145,8 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
+    print("Deleting wall with name: " + wall.title.toString());
+
     if (!(wall.file?.startsWith('assets') ?? true)) {
       _deleteImageFromDevice(wall.file!);
     }
