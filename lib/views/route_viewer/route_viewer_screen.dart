@@ -4,7 +4,7 @@ import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
+import 'package:climbing_alien/views/route_viewer/route_viewer_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_transformer.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
@@ -22,24 +22,17 @@ class RouteViewerScreen extends StatefulWidget {
 }
 
 class _RouteViewerScreenState extends State<RouteViewerScreen> {
-  RouteViewModel? routeModel;
-  ClimaxViewModel? climaxModel;
-
   int index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return ChangeNotifierProvider(
-      create: (context) => RouteViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
+    return ChangeNotifierProvider<RouteViewerScreenViewModel>(
+      create: (context) =>
+          RouteViewerScreenViewModel(climbingRepository: Provider.of<ClimbingRepository>(context, listen: false)),
       child: ChangeNotifierProvider(
         create: (context) => ClimaxViewModel(size: size),
-        child: Consumer2<RouteViewModel, ClimaxViewModel>(
+        child: Consumer2<RouteViewerScreenViewModel, ClimaxViewModel>(
           builder: (context, routeModel, climaxModel, child) {
             return Scaffold(
               appBar: AppBar(
