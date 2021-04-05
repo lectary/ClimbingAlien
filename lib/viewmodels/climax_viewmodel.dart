@@ -43,6 +43,9 @@ class ClimaxViewModel extends ChangeNotifier {
   ClimaxLimbEnum? _selectedLimb;
   ClimaxLimbEnum? get selectedLimb => _selectedLimb;
 
+  Map<ClimaxLimbEnum, Rect>? _previousClimaxLimbs;
+  Map<ClimaxLimbEnum, Rect>? get previousClimaxLimbs => _previousClimaxLimbs;
+
   double _degrees = 0.0; // direction, analogues to clock
   double _speed = _defaultSpeed;
   double _strength = 0.0;
@@ -86,6 +89,16 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   setupByGrasp(Grasp grasp) {
+    if (grasp.order! > 2) {
+      _previousClimaxLimbs = HashMap.from({
+        ClimaxLimbEnum.BODY: _bodyRect,
+        ClimaxLimbEnum.LEFT_ARM: _leftArmRect,
+        ClimaxLimbEnum.RIGHT_ARM: _rightArmRect,
+        ClimaxLimbEnum.RIGHT_LEG: _rightLegRect,
+        ClimaxLimbEnum.LEFT_LEG: _leftLegRect,
+      });
+    }
+
     _leftArmOffset = grasp.leftArm;
     _rightArmOffset = grasp.rightArm;
     _leftLegOffset = grasp.leftLeg;
@@ -133,6 +146,8 @@ class ClimaxViewModel extends ChangeNotifier {
     _rightArmRect = Rect.fromCircle(center: _rightArmOffset, radius: radius);
     _leftLegRect = Rect.fromCircle(center: _leftLegOffset, radius: radius);
     _rightLegRect = Rect.fromCircle(center: _rightLegOffset, radius: radius);
+
+    // _previousClimaxLimbs = _climaxLimbs;
 
     _climaxLimbs = HashMap.from({
       ClimaxLimbEnum.BODY: _bodyRect,

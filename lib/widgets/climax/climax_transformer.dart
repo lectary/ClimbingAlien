@@ -1,6 +1,7 @@
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,12 +26,15 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
   Offset deltaTranslateAll = Offset.zero;
   Offset newDeltaTranslateAll = Offset.zero;
 
+  bool init = true;
+
   @override
   void initState() {
     super.initState();
     _animationXController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     _animationYController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     _updateTranslateAnimation();
+    init = false;
   }
 
   @override
@@ -41,7 +45,7 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
   }
 
   _updateTranslateAnimation() {
-    if (deltaTranslateAll == newDeltaTranslateAll) {
+    if (deltaTranslateAll == newDeltaTranslateAll && !init) {
       return;
     }
 
@@ -73,16 +77,32 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     final bool isTranslating = context.select((ClimaxViewModel model) => model.isTranslating);
     newDeltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     _updateTranslateAnimation();
-    return Transform.translate(
-      offset: isTranslating ? -newDeltaTranslateAll : -Offset(_offsetXAnimation.value, _offsetYAnimation.value),
-      child: Transform.scale(
-        scale: scaleAll,
-        child: Stack(fit: StackFit.expand, children: [
-          Transform.translate(
-              offset: -deltaTranslateBackground,
-              child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.file))),
-          Container(color: Colors.transparent, child: Climax()),
-        ]),
+    //
+    final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
+    final followerCameraOffset = Offset(_offsetXAnimation.value, _offsetYAnimation.value);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (details) {
+        final offset = details.localPosition;
+        final limb = limbs!.entries.lastWhereOrNull((entry) {
+          if (entry.key != ClimaxLimbEnum.BODY) {
+            return entry.value.contains(offset + followerCameraOffset);
+          }
+          return false;
+        });
+        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
+      },
+      child: Transform.translate(
+        offset: isTranslating ? -newDeltaTranslateAll : -followerCameraOffset,
+        child: Transform.scale(
+          scale: scaleAll,
+          child: Stack(fit: StackFit.expand, children: [
+            Transform.translate(
+                offset: -deltaTranslateBackground,
+                child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.file))),
+            Container(color: Colors.transparent, child: Climax()),
+          ]),
+        ),
       ),
     );
   }

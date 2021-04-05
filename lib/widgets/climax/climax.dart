@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_painter.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,23 +36,19 @@ class _ClimaxState extends State<Climax> {
   @override
   Widget build(BuildContext context) {
     final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
+    final previousLimbs = context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
     final double radius = context.select((ClimaxViewModel model) => model.radius);
     ClimaxLimbEnum? selection = context.select((ClimaxViewModel model) => model.selectedLimb);
-    return GestureDetector(
-      onTapDown: (details) {
-        RenderBox box = context.findRenderObject() as RenderBox;
-        final offset = box.globalToLocal(details.globalPosition);
-        final limb = limbs!.entries.lastWhereOrNull((entry) {
-          if (entry.key != ClimaxLimbEnum.BODY) {
-            return entry.value.contains(offset);
-          }
-          return false;
-        });
-        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
-      },
-      child: CustomPaint(
-        painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection),
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        CustomPaint(
+          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: Colors.grey, opacity: 0.5),
+        ),
+        CustomPaint(
+          painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection),
+        ),
+      ],
     );
   }
 }
