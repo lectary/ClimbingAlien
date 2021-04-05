@@ -103,18 +103,29 @@ class WallCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
           aspectRatio: 4 / 3,
-          child: !wall.isCustom
+          child: !wall.isCustom && wall.id == null
               // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
               ? (isExpanded
                   ? CachedNetworkImage(
-                      imageUrl: ClimbrApi.apiUrl + wall.file!,
+                      imageUrl: ClimbrApi.apiUrl + wall.thumbnail!,
                       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                           child: CircularProgressIndicator(
                         value: downloadProgress.totalSize != null
                             ? downloadProgress.downloaded / downloadProgress.totalSize!
                             : null,
                       )),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: (context, url, error) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error),
+                          SizedBox(height: 10),
+                          Text(
+                            "Error loading thumbnail:\n" +
+                                (error.toString().contains('404') ? "Not found" : error.toString()),
+                            textAlign: TextAlign.center,
+                          )
+                        ],
+                      ),
                     )
                   : Container())
               : ImageDisplay(
