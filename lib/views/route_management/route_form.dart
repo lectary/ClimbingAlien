@@ -1,7 +1,7 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/viewmodels/route_viewmodel.dart';
+import 'package:climbing_alien/views/route_management/route_viewmodel.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
@@ -15,12 +15,12 @@ class RouteForm extends StatefulWidget {
   _RouteFormState createState() => _RouteFormState();
 
   static Future<bool?> showRouteFormDialog(BuildContext context, Wall wall, {Route? route}) async {
-    final model = Provider.of<ClimbingRepository>(context, listen: false);
+    final model = Provider.of<RouteViewModel>(context, listen: false);
     return await showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => ChangeNotifierProvider(
-              create: (context) => RouteViewModel(climbingRepository: model),
+        builder: (context) => ChangeNotifierProvider.value(
+              value: model,
               child: AlertDialog(
                 title: route == null ? Text("New route") : Text("Edit route"),
                 content: RouteForm(wall, route),
@@ -91,6 +91,7 @@ class _RouteFormState extends State<RouteForm> {
                           widget.route!.description = description;
                           routeViewModel.updateRoute(widget.route!);
                         } else {
+                          // Wall is from api and not persisted yet.
                           if (widget.wall.id == null) {
                             Route route = Route(
                               title!,

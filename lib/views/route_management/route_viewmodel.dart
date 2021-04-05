@@ -3,68 +3,43 @@ import 'dart:async';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
-import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:flutter/foundation.dart';
 
-enum ModelState { IDLE, LOADING }
-
-class RouteScreenViewModel extends ChangeNotifier {
+class RouteViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  ModelState _modelState = ModelState.IDLE;
-
-  ModelState get modelState => _modelState;
-
-  set modelState(ModelState modelState) {
-    _modelState = modelState;
-    notifyListeners();
-  }
-
-  late Wall wall;
+  Wall? wall;
   List<Route> routeList = List.empty();
 
-  RouteScreenViewModel({required ClimbingRepository climbingRepository, required this.wall})
+  StreamController<List<Route>> routeStreamController = StreamController<List<Route>>();
+
+  Stream<List<Route>> get routeStream => routeStreamController.stream;
+  StreamSubscription<List<Route>>? routeStreamSubscription;
+
+  RouteViewModel({required ClimbingRepository climbingRepository, this.wall})
       : _climbingRepository = climbingRepository {
     loadRoutesByWall(wall);
-    listenToLocalRoutes();
-  }
-
-  StreamSubscription<List<Route>>? _routeStreamSubscription;
-
-  listenToLocalRoutes() {
-    if (wall.id == null) {
-      return;
-    }
-    _routeStreamSubscription = _climbingRepository.watchAllRoutesByWallId(wall.id!).listen((wallList) {
-      // TODO improve, just update local walls, dont requery remote ones
-      loadRoutesByWall(wall);
-    });
   }
 
   @override
   void dispose() {
-    _routeStreamSubscription?.cancel();
+    routeStreamController.close();
+    routeStreamSubscription?.cancel();
     super.dispose();
   }
 
-  void loadRoutesByWall(Wall wall) async {
-    modelState = ModelState.LOADING;
-
-    if (wall.id != null) {
-      routeList = await _climbingRepository.findAllRoutesByWallId(wall.id!);
+  void loadRoutesByWall(Wall? wall) async {
+    if (wall == null) return;
+    if (wall.id == null) {
+      routeStreamController.sink.add([]);
+    } else {
+      routeStreamSubscription?.cancel();
+      routeStreamSubscription = _climbingRepository.watchAllRoutesByWallId(wall.id!).listen((event) {
+        print("new route list");
+        routeStreamController.sink.add(event);
+      });
     }
-
-    modelState = ModelState.IDLE;
-  }
-
-  /// Routes
-  Stream<List<Route>> getRouteStreamByWallId(int? wallId) {
-    // TODO FIX
-    if (wallId == null) {
-      return Stream.value([]);
-    }
-    return _climbingRepository.watchAllRoutesByWallId(wallId);
   }
 
   Future<void> insertRoute(Route route) {
@@ -75,23 +50,28 @@ class RouteScreenViewModel extends ChangeNotifier {
     return _climbingRepository.updateRoute(route);
   }
 
-  Future<void> deleteRoute(Route route) {
-    return _climbingRepository.deleteRoute(route);
+  Future<void> deleteRoute(Route route) async {
+    await _climbingRepository.deleteRoute(route);
+    List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(route.wallId);
+    // Delete locally persisted wall if it has no routes
+    if (routesOfWall.isEmpty) {
+      print("deleting empty wall");
+      Wall emptyWallToDelete = await _climbingRepository
+          .fetchAllWalls()
+          .then((List<Wall> wallList) => wallList.firstWhere((Wall wall) => wall.id == route.wallId));
+      await _climbingRepository.deleteWall(emptyWallToDelete);
+    } else {
+      return;
+    }
   }
 
   Future<void> insertRouteWithWall(Route route, Wall wall) async {
     int newWallId = await _climbingRepository.insertWall(wall);
     // TODO download wall image file
     await _climbingRepository.insertRoute(route..wallId = newWallId);
+    loadRoutesByWall(wall..id = newWallId);
   }
 
   /// Grasps
   Stream<List<Grasp>> getGraspStreamByRouteId(int routeId) => _climbingRepository.watchAllGraspsByRouteId(routeId);
-
-  Future<RouteOption?> getRouteOption(Route route) {
-    if (route.routeOptionId == null) {
-      return Future.value(null);
-    }
-    return _climbingRepository.findRouteOptionById(route.routeOptionId!);
-  }
 }
