@@ -4,6 +4,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
+import 'package:climbing_alien/views/route_viewer/route_viewer_screen.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
@@ -65,6 +66,17 @@ class RouteEditorScreen extends StatelessWidget {
                     // _buildJoystickToggleAction(context, initMode, joystickOn),
                     // _buildOptionHeaderAction(context, initMode),
                     // _buildDeleteGraspAction(context, initMode),
+                    IconButton(
+                      icon: Icon(Icons.remove_red_eye_outlined),
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(context,
+                            MaterialPageRoute(builder: (context) => RouteViewerScreen(wall, route, key: UniqueKey())),
+                            (route) {
+                              return route.settings.name == '/walls';
+                            }
+                        );
+                      },
+                    )
                   ],
                 ),
                 body: Builder(builder: (context) {
