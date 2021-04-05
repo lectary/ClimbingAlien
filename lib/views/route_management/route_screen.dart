@@ -2,6 +2,7 @@ import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
+import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
 import 'package:climbing_alien/views/route_management/route_viewmodel.dart';
@@ -69,7 +70,13 @@ class RouteScreen extends StatelessWidget {
                     icon: Icon(Icons.edit),
                     onPressed: () => Navigator.push(context,
                         MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
-                IconButton(icon: Icon(Icons.delete), onPressed: () => routeModel.deleteRoute(route))
+                IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () async => await Dialogs.showAlertDialog(
+                        context: context,
+                        title: 'Möchten Sie wirklich diese Route samt allen Griffen löschen?',
+                        submitText: 'Löschen',
+                        submitFunc: () => routeModel.deleteRoute(route)))
               ],
             ),
             onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),
