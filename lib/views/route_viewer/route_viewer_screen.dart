@@ -88,7 +88,7 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
                                                     backgroundColor: Theme.of(context).colorScheme.primary,
                                                   ),
                                                   onPressed: () {},
-                                                  child: Text('Grasp ${index + 1} of ${_graspList.length}',
+                                                  child: Text('Step ${index + 1} of ${_graspList.length}',
                                                       style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                                                 ),
                                                 ElevatedButton(

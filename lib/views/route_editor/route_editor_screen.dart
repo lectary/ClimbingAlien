@@ -124,7 +124,7 @@ class RouteEditorScreen extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {},
-                    child: Text('Grasp $step of ${graspList.length}',
+                    child: Text(step > graspList.length ? 'Step $step (new)' : 'Step $step of ${graspList.length}',
                         style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                   ),
                   ElevatedButton(
