@@ -117,6 +117,10 @@ class WallViewModel extends ChangeNotifier {
         if (e1.isCustom) {
           resultList.remove(e1);
         } else {
+          // Set id null, if wall was persisted and then deleted
+          if (e1.id != null) {
+            e1.id = null;
+          }
           resultList.add(e1);
         }
       }
