@@ -40,8 +40,8 @@ class ClimaxViewModel extends ChangeNotifier {
   Map<ClimaxLimbEnum, Rect>? _climaxLimbs;
   Map<ClimaxLimbEnum, Rect>? get climaxLimbs => _climaxLimbs;
 
-  ClimaxLimbEnum _selectedLimb = ClimaxLimbEnum.BODY;
-  ClimaxLimbEnum get selectedLimb => _selectedLimb;
+  ClimaxLimbEnum? _selectedLimb;
+  ClimaxLimbEnum? get selectedLimb => _selectedLimb;
 
   double _degrees = 0.0; // direction, analogues to clock
   double _speed = _defaultSpeed;
@@ -197,7 +197,7 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   selectNextLimb() {
-    _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb.index + 1) % 5];
+    _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb?.index ?? 1  + 1) % 5];
     notifyListeners();
   }
 
@@ -213,7 +213,11 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Moving limbs directional. Uses [Direction] to determine direction. Uses [selectedLimb] if [limb] is null.
   moveLimbDirectional(Direction direction, {ClimaxLimbEnum? limb}) {
-    updateLimbDirectional(limb ?? this._selectedLimb, direction);
+    if (limb == null && _selectedLimb == null) {
+      return;
+    } else {
+      updateLimbDirectional(limb ?? _selectedLimb!, direction);
+    }
   }
 
   updateLimbDirectional(ClimaxLimbEnum limb, Direction direction) {
@@ -330,5 +334,9 @@ class ClimaxViewModel extends ChangeNotifier {
     }
 
     _updateClimax();
+  }
+
+  void unselectAll() {
+    _selectedLimb = null;
   }
 }

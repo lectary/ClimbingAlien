@@ -38,12 +38,17 @@ class _ClimaxState extends State<Climax> {
   Widget build(BuildContext context) {
     final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     final double radius = context.select((ClimaxViewModel model) => model.radius);
-    ClimaxLimbEnum selection = context.select((ClimaxViewModel model) => model.selectedLimb);
+    ClimaxLimbEnum? selection = context.select((ClimaxViewModel model) => model.selectedLimb);
     return GestureDetector(
       onTapDown: (details) {
         RenderBox box = context.findRenderObject() as RenderBox;
         final offset = box.globalToLocal(details.globalPosition);
-        final limb = limbs!.entries.lastWhereOrNull((entry) => entry.value.contains(offset));
+        final limb = limbs!.entries.lastWhereOrNull((entry) {
+          if (entry.key != ClimaxLimbEnum.BODY) {
+            return entry.value.contains(offset);
+          }
+          return false;
+        });
         if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
       },
       child: CustomPaint(
