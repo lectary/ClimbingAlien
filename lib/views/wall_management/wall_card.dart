@@ -4,6 +4,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
+import 'package:climbing_alien/views/wall_management/image_preview.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +88,15 @@ class WallCard extends StatelessWidget {
                               })
                         ],
                       )
-                    : Container()
+                    : Row(
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.remove_red_eye_outlined),
+                              onPressed: () => ImagePreview.asDialog(context, wall.file!))
+                        ],
+                      )
               ],
             ),
             Text(wall.description ?? ""),
