@@ -16,18 +16,24 @@ class Wall extends BaseObject {
   @ignore
   String? fileUpdated;
 
+  @ignore
+  String? thumbnail;
+
   bool isCustom;
 
-  Wall({required this.title,
-    this.description,
-    this.height,
-    this.location,
-    this.file,
-    this.fileUpdated,
-    this.isCustom = true,
-    int? id,
-    DateTime? modifiedAt,
-    DateTime? createdAt}) : super(id, modifiedAt, createdAt);
+  Wall(
+      {required this.title,
+      this.description,
+      this.height,
+      this.location,
+      this.file,
+      this.fileUpdated,
+      this.thumbnail,
+      this.isCustom = true,
+      int? id,
+      DateTime? modifiedAt,
+      DateTime? createdAt})
+      : super(id, modifiedAt, createdAt);
 
   Map<String, dynamic> toMap() {
     return {
@@ -48,6 +54,7 @@ class Wall extends BaseObject {
       title: _titleFromJson(json['wall']),
       location: json['location'],
       file: json['file'],
+      thumbnail: json['thumbnail'],
     )..isCustom = false;
   }
 
@@ -63,6 +70,6 @@ class Wall extends BaseObject {
 
   @override
   String toString() {
-    return 'Wall{title: $title, description: $description, height: $height, location: $location, file: $file, fileUpdated: $fileUpdated}';
+    return 'Wall{title: $title, description: $description, height: $height, location: $location, file: $file, fileUpdated: $fileUpdated, thumbnail: $thumbnail, isCustom: $isCustom}';
   }
 }
