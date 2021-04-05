@@ -126,6 +126,8 @@ class WallViewModel extends ChangeNotifier {
       }
     });
 
+    resultList.sort((wall1, wall2) => wall1.location!.compareTo(wall2.location!));
+
     return resultList;
   }
 
