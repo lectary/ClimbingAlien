@@ -4,6 +4,7 @@ import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_viewer/route_viewer_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_transformer.dart';
 import 'package:flutter/material.dart' hide Route;
@@ -37,6 +38,18 @@ class _RouteViewerScreenState extends State<RouteViewerScreen> {
             return Scaffold(
               appBar: AppBar(
                 title: Text('Route Viewer'),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(context,
+                        MaterialPageRoute(builder: (context) => RouteEditorScreen(widget.wall, widget.route, key: UniqueKey())),
+                      (route) {
+                      return route.settings.name == '/walls';
+                      });
+                    },
+                  )
+                ],
               ),
               body: FutureBuilder<RouteOption?>(
                 future: routeModel.getRouteOption(widget.route),
