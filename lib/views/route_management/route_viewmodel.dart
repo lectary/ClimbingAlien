@@ -51,7 +51,11 @@ class RouteViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteRoute(Route route) async {
+    // Deletes all grasps from route
+    List<Grasp> graspByRoute = await _climbingRepository.findAllGraspsByRouteId(route.id!);
+    await Future.forEach(graspByRoute, (Grasp grasp) => _climbingRepository.deleteGrasp(grasp));
     await _climbingRepository.deleteRoute(route);
+    // Check whether route's wall has other routes anymore
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(route.wallId);
     // Delete locally persisted wall if it has no routes
     if (routesOfWall.isEmpty) {

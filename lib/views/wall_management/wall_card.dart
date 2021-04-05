@@ -4,6 +4,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
+import 'package:climbing_alien/views/wall_management/image_preview.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +88,15 @@ class WallCard extends StatelessWidget {
                               })
                         ],
                       )
-                    : Container()
+                    : Row(
+                        children: [
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.remove_red_eye_outlined),
+                              onPressed: () => ImagePreview.asDialog(context, wall.file!))
+                        ],
+                      )
               ],
             ),
             Text(wall.description ?? ""),
@@ -103,18 +112,29 @@ class WallCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
           aspectRatio: 4 / 3,
-          child: !wall.isCustom
+          child: !wall.isCustom && wall.id == null
               // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
               ? (isExpanded
                   ? CachedNetworkImage(
-                      imageUrl: ClimbrApi.apiUrl + wall.file!,
+                      imageUrl: ClimbrApi.apiUrl + wall.thumbnail!,
                       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                           child: CircularProgressIndicator(
                         value: downloadProgress.totalSize != null
                             ? downloadProgress.downloaded / downloadProgress.totalSize!
                             : null,
                       )),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: (context, url, error) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error),
+                          SizedBox(height: 10),
+                          Text(
+                            "Error loading thumbnail:\n" +
+                                (error.toString().contains('404') ? "Not found" : error.toString()),
+                            textAlign: TextAlign.center,
+                          )
+                        ],
+                      ),
                     )
                   : Container())
               : ImageDisplay(
