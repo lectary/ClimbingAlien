@@ -85,7 +85,7 @@ class RouteEditorScreen extends StatelessWidget {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            RouteEditor(wall, route, key: UniqueKey()),
+                            RouteEditor(wall, route),
                             ...editMode
                                 ? [
                                     _buildInitModeBar(context, initMode),
