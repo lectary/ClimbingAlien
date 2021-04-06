@@ -84,7 +84,7 @@ class _$ClimbingDatabase extends ClimbingDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `height` INTEGER, `location` TEXT, `file` TEXT, `isCustom` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `walls` (`title` TEXT NOT NULL, `description` TEXT, `location` TEXT, `file` TEXT, `thumbnail` TEXT, `isCustom` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `routes` (`title` TEXT NOT NULL, `description` TEXT, `wall_id` INTEGER NOT NULL, `route_option_id` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `modified_at` INTEGER, `created_at` INTEGER NOT NULL, FOREIGN KEY (`wall_id`) REFERENCES `walls` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`route_option_id`) REFERENCES `route_options` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
@@ -123,9 +123,9 @@ class _$WallDao extends WallDao {
             (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
-                  'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'thumbnail': item.thumbnail,
                   'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
@@ -139,9 +139,9 @@ class _$WallDao extends WallDao {
             (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
-                  'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'thumbnail': item.thumbnail,
                   'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
@@ -155,9 +155,9 @@ class _$WallDao extends WallDao {
             (Wall item) => <String, Object?>{
                   'title': item.title,
                   'description': item.description,
-                  'height': item.height,
                   'location': item.location,
                   'file': item.file,
+                  'thumbnail': item.thumbnail,
                   'isCustom': item.isCustom ? 1 : 0,
                   'id': item.id,
                   'modified_at': _dateTimeConverter.encode(item.modifiedAt),
@@ -185,9 +185,9 @@ class _$WallDao extends WallDao {
         mapper: (Map<String, Object?> row) => Wall(
             title: row['title'] as String,
             description: row['description'] as String?,
-            height: row['height'] as int?,
             location: row['location'] as String?,
             file: row['file'] as String?,
+            thumbnail: row['thumbnail'] as String?,
             isCustom: (row['isCustom'] as int) != 0,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),
@@ -200,9 +200,9 @@ class _$WallDao extends WallDao {
         mapper: (Map<String, Object?> row) => Wall(
             title: row['title'] as String,
             description: row['description'] as String?,
-            height: row['height'] as int?,
             location: row['location'] as String?,
             file: row['file'] as String?,
+            thumbnail: row['thumbnail'] as String?,
             isCustom: (row['isCustom'] as int) != 0,
             id: row['id'] as int?,
             modifiedAt: _dateTimeConverter.decode(row['modified_at'] as int?),

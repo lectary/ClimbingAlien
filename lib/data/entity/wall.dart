@@ -1,13 +1,13 @@
 import 'package:climbing_alien/data/entity/base_object.dart';
 import 'package:floor/floor.dart';
 
+enum WallStatus { notPersisted, downloading, persisted, removed, updateAvailable }
+
 @Entity(tableName: 'walls')
 class Wall extends BaseObject {
   String title;
 
   String? description;
-
-  int? height;
 
   String? location;
 
@@ -16,15 +16,18 @@ class Wall extends BaseObject {
   @ignore
   String? fileUpdated;
 
-  @ignore
   String? thumbnail;
 
+  /// Used for showing corresponding status information and providing further actions in the wall management list
+  @ignore
+  WallStatus status = WallStatus.notPersisted;
+
+  /// Used as indicator that this wall is based on a local image
   bool isCustom;
 
   Wall(
       {required this.title,
       this.description,
-      this.height,
       this.location,
       this.file,
       this.fileUpdated,
@@ -39,9 +42,9 @@ class Wall extends BaseObject {
     return {
       "title": title,
       "description": description,
-      "height": height,
       "location": location,
       "file": file,
+      "thumbnail": thumbnail,
       "isCustom": isCustom,
       "id": id,
       "modified_at": modifiedAt?.millisecondsSinceEpoch,
@@ -70,6 +73,6 @@ class Wall extends BaseObject {
 
   @override
   String toString() {
-    return 'Wall{title: $title, description: $description, height: $height, location: $location, file: $file, fileUpdated: $fileUpdated, thumbnail: $thumbnail, isCustom: $isCustom}';
+    return 'Wall{title: $title, description: $description, location: $location, file: $file, thumbnail: $thumbnail, fileUpdated: $fileUpdated, wallStatus: $status, isCustom: $isCustom}';
   }
 }
