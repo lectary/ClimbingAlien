@@ -29,7 +29,7 @@ class ImageDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imagePath == null || imagePath!.isEmpty) {
-      return emptyText == null ? Container() : Text(emptyText!);
+      return emptyText == null ? Container() : Center(child: Text(emptyText!));
     } else {
       return imagePath!.startsWith('assets')
           ? Image.asset(
