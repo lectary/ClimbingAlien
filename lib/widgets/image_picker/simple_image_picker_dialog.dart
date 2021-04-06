@@ -1,5 +1,4 @@
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/widgets/image_picker/asset_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -28,18 +27,6 @@ class SimpleImagePicker extends StatelessWidget {
     }
   }
 
-  Future getImageFromAssets(
-    BuildContext context,
-  ) async {
-    final pickedFilePath =
-        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => AssetImagePicker())) as String?;
-    if (pickedFilePath != null) {
-      Navigator.pop(context, pickedFilePath);
-    } else {
-      print('No image selected.');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -54,11 +41,6 @@ class SimpleImagePicker extends StatelessWidget {
               "Choose the source of the image:",
               style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.remove),
-            title: Text('Assets'),
-            onTap: () => getImageFromAssets(context),
           ),
           ListTile(
             leading: Icon(Icons.remove),
