@@ -1,5 +1,5 @@
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/widgets/image_picker/asset_image_picker.dart';
+import 'package:climbing_alien/widgets/unused/image_picker/asset_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
