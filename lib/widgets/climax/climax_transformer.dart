@@ -1,4 +1,5 @@
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -78,15 +79,19 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     final bool isTranslating = context.select((ClimaxViewModel model) => model.isTranslating);
     newDeltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     _updateTranslateAnimation();
-    //
     final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     final followerCameraOffset = Offset(_offsetXAnimation.value, _offsetYAnimation.value);
+    // Check whether view or edit mode
+    final isEditMode = Provider.of<RouteEditorViewModel>(context, listen: false).editMode;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (details) {
+        if (!isEditMode) return;
         final offset = details.localPosition;
         final limb = limbs!.entries.lastWhereOrNull((entry) {
           if (entry.key != ClimaxLimbEnum.BODY) {
+            // Due to the adjustments of followerCamera, its offset has to be added to the tap position, since the
+            // positions (offsets) of the grasps are saved before applying the followerCamera related transformations.
             return entry.value.contains(offset + followerCameraOffset);
           }
           return false;

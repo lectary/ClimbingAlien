@@ -97,13 +97,24 @@ class RouteEditorViewModel extends ChangeNotifier {
     _graspStreamSubscription = _climbingRepository.watchAllGraspsByRouteId(route.id!).listen(_graspListener);
   }
 
-  ///*******************************
-  /// Init Mode
-  ///*******************************
+  /// Edit Mode
+  /// Used for switching between strict view mode and step edit mode.
+  bool _editMode = false;
+  bool get editMode => _editMode;
+  set editMode(bool editMode) {
+    _editMode = editMode;
+    notifyListeners();
+  }
 
-  /// Init mode allows transforming only the background image independently from climax.
-  /// Normally, climax and background are transformed together.
-  /// Depends on being [climaxViewModel.transformAll] false by default.
+
+  ///*****************************************
+  /// Init Mode state variables and actions
+  ///*****************************************
+
+  /// Init Mode
+  /// Allows transforming only the background image independently from climax, where normally, climax and background
+  /// are transformed together.
+  /// Depends on having [climaxViewModel.transformAll] the value [False] by default.
   bool _initMode = false;
   bool get initMode => _initMode;
   set initMode(bool initMode) {

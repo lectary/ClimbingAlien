@@ -4,13 +4,14 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
-import 'package:climbing_alien/views/route_viewer/route_viewer_screen.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
 enum MenuOption {
-  DELETE, BACK_TO_INIT, TOGGLE_JOYSTICK,
+  DELETE,
+  BACK_TO_INIT,
+  TOGGLE_JOYSTICK,
 }
 
 /// Screen for creating and editing grasps for a route.
@@ -42,7 +43,7 @@ class RouteEditorScreen extends StatelessWidget {
               // Scaffold with loading indicators
               return Scaffold(
                 appBar: AppBar(
-                  title: Text("Edit ${route.title}"),
+                  title: Text(route.title),
                   actions: [
                     Padding(
                       padding: const EdgeInsets.only(right: 32.0),
@@ -56,27 +57,24 @@ class RouteEditorScreen extends StatelessWidget {
               );
             } else {
               final initMode = context.select((RouteEditorViewModel model) => model.initMode);
+              final editMode = context.select((RouteEditorViewModel model) => model.editMode);
               final joystickOn = context.select((RouteEditorViewModel model) => model.joystickOn);
               return Scaffold(
                 appBar: AppBar(
-                  title: Text("Edit ${route.title}"),
+                  title: Text(editMode ? "Edit ${route.title}" : route.title),
                   actions: [
-                    _buildTapAction(context, initMode),
-                    _buildMoreOptionsAction(context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
-                    // _buildJoystickToggleAction(context, initMode, joystickOn),
-                    // _buildOptionHeaderAction(context, initMode),
-                    // _buildDeleteGraspAction(context, initMode),
-                    IconButton(
-                      icon: Icon(Icons.remove_red_eye_outlined),
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(context,
-                            MaterialPageRoute(builder: (context) => RouteViewerScreen(wall, route, key: UniqueKey())),
-                            (route) {
-                              return route.settings.name == '/walls';
-                            }
-                        );
-                      },
-                    )
+                    ...editMode
+                        ? [
+                            _buildTapAction(context, initMode),
+                            _buildMoreOptionsAction(context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
+                            // _buildJoystickToggleAction(context, initMode, joystickOn),
+                            // _buildOptionHeaderAction(context, initMode),
+                            // _buildDeleteGraspAction(context, initMode),
+                            _toggleEditModeAction(context, false),
+                          ]
+                        : [
+                            _toggleEditModeAction(context, true),
+                          ],
                   ],
                 ),
                 body: Builder(builder: (context) {
@@ -88,8 +86,12 @@ class RouteEditorScreen extends StatelessWidget {
                           fit: StackFit.expand,
                           children: [
                             RouteEditor(wall, route, key: UniqueKey()),
-                            _buildInitModeBar(context, initMode),
-                            _buildJoystick(context, initMode, joystickOn),
+                            ...editMode
+                                ? [
+                                    _buildInitModeBar(context, initMode),
+                                    _buildJoystick(context, initMode, joystickOn),
+                                  ]
+                                : [],
                             _buildBottomBar(context, initMode),
                           ],
                         ),
@@ -207,7 +209,17 @@ class RouteEditorScreen extends StatelessWidget {
     }
   }
 
+  ///********************************************
   /// AppBar actions
+  ///********************************************
+
+  Widget _toggleEditModeAction(BuildContext context, bool editMode) {
+    return IconButton(
+      icon: Icon(editMode ? Icons.edit : Icons.remove_red_eye_outlined),
+      onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).editMode = editMode,
+    );
+  }
+
   Widget _buildTapAction(BuildContext context, bool initMode) {
     return Builder(builder: (context) {
       final tapOn = context.select((ClimaxViewModel model) => model.tapOn);
@@ -298,9 +310,9 @@ class RouteEditorScreen extends StatelessWidget {
   Widget _buildJoystickToggleAction(BuildContext context, bool initMode, bool joystickOn) {
     return !initMode
         ? IconButton(
-        icon: Icon(Icons.gamepad),
-        color: joystickOn ? Colors.red : Colors.white,
-        onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn)
+            icon: Icon(Icons.gamepad),
+            color: joystickOn ? Colors.red : Colors.white,
+            onPressed: () => Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn)
         : Container();
   }
 
