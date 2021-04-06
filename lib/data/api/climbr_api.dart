@@ -11,7 +11,7 @@ class ClimbrApi {
   static const String apiUrl = "https://ro.ogg.at/ClimbingAlien/w/";
 
   static const String _uri_authority = "ro.ogg.at";
-  static const String _uri_path = "/ClimbingAlien/w/w.php";
+  static const String _uri_path = "/ClimbingAlien/w/w2.php";
 
   Future<List<Wall>> fetchWalls() async {
     http.Response response;
