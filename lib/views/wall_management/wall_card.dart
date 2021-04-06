@@ -43,24 +43,17 @@ class WallCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Structure: Row1[ Row2[Left side with title] <- space-between -> Row3[Right side with actions]]
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Text(wall.title, style: Theme.of(context).textTheme.headline5),
                     Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: FutureBuilder(
-                          future: wallViewModel.getNumberOfRoutesByWall(wall),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Text("${snapshot.data!} Routes");
-                            } else {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                          }),
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: _buildWallStatusIcon(context, wall.status),
                     ),
+                    Text(wall.title, style: Theme.of(context).textTheme.headline5),
                   ],
                 ),
                 wall.isCustom
@@ -99,12 +92,40 @@ class WallCard extends StatelessWidget {
                       )
               ],
             ),
-            Text(wall.description ?? ""),
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0),
+              child: FutureBuilder(
+                  future: wallViewModel.getNumberOfRoutesByWall(wall),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text("${snapshot.data!} Routes");
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  }),
+            ),
           ],
         ),
       ),
     );
   }
+
+  /// TODO remove maybe - primarily build for testing purpose
+  Widget _buildWallStatusIcon(BuildContext context, WallStatus status) {
+    switch (status) {
+      case WallStatus.notPersisted:
+        return Icon(Icons.file_download);
+      case WallStatus.persisted:
+        return Icon(Icons.file_download_done, color: Colors.green);
+      case WallStatus.removed:
+        return Icon(Icons.remove_circle_outline, color: Colors.red);
+      case WallStatus.downloading:
+        return CircularProgressIndicator();
+      case WallStatus.updateAvailable:
+        return Container();
+    }
+  }
+
 
   Widget _buildBody(BuildContext context) {
     return Expanded(
@@ -116,7 +137,7 @@ class WallCard extends StatelessWidget {
               // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
               ? (isExpanded
                   ? CachedNetworkImage(
-                      imageUrl: ClimbrApi.apiUrl + wall.thumbnail!,
+                      imageUrl: ClimbrApi.urlApiEndpoint + wall.thumbnail!,
                       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
                           child: CircularProgressIndicator(
                         value: downloadProgress.totalSize != null
