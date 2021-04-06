@@ -68,8 +68,7 @@ class RouteScreen extends StatelessWidget {
               children: [
                 IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route, key: UniqueKey())))),
+                    onPressed: () => RouteForm.showRouteFormDialog(context, wall, route: route)),
                 IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () async => await Dialogs.showAlertDialog(
@@ -80,8 +79,8 @@ class RouteScreen extends StatelessWidget {
               ],
             ),
             onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => RouteViewerScreen(wall, route, key: UniqueKey()))),
+            onTap: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route))),
           );
         });
   }
