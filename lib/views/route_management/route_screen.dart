@@ -6,7 +6,6 @@ import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
 import 'package:climbing_alien/views/route_management/route_viewmodel.dart';
-import 'package:climbing_alien/views/route_viewer/route_viewer_screen.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
