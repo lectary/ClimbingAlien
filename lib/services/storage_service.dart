@@ -17,6 +17,10 @@ class StorageService {
   }
 
   static Future<void> deleteFromDevice(String filePath) async {
-    await File(filePath).delete();
+    try {
+      await File(filePath).delete();
+    } catch (e) {
+      print("Failed to delete file: $e");
+    }
   }
 }

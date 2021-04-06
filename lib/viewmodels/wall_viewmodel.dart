@@ -6,6 +6,7 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
+import 'package:climbing_alien/services/storage_service.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:path/path.dart';
@@ -135,20 +136,21 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<int> insertWall(Wall wall) async {
-    if (wall.file != null && !wall.file!.startsWith('assets')) {
-      String? newPath = await _saveImageToDevice(wall.file!);
+    if (wall.file != null) {
+      String? newPath = await StorageService.saveToDevice(wall.file!);
       wall.file = newPath;
     }
+
     return _climbingRepository.insertWall(wall);
   }
 
   Future<void> updateWall(Wall wall) async {
     if (wall.file != wall.fileUpdated) {
-      wall.file = wall.fileUpdated;
-      if (!wall.file!.startsWith('assets')) {
-        String? newPath = await _saveImageToDevice(wall.file!);
-        wall.file = newPath;
+      if (wall.file != null) {
+        await StorageService.deleteFromDevice(wall.file!);
       }
+      String? newPath = await StorageService.saveToDevice(wall.fileUpdated!);
+      wall.file = newPath;
     }
     return _climbingRepository.updateWall(wall);
   }
@@ -156,9 +158,8 @@ class WallViewModel extends ChangeNotifier {
   Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
     print("Deleting wall with name: " + wall.title.toString());
 
-    if (!(wall.file?.startsWith('assets') ?? true)) {
-      _deleteImageFromDevice(wall.file!);
-    }
+    await StorageService.deleteFromDevice(wall.file!);
+
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(wall.id!);
     if (routesOfWall.isNotEmpty) {
       if (cascade) {
@@ -174,21 +175,6 @@ class WallViewModel extends ChangeNotifier {
     }
     await _climbingRepository.deleteWall(wall);
     return true;
-  }
-
-  Future<String?> _saveImageToDevice(String imagePath) async {
-    if (imagePath.contains('assets')) return null;
-    File tmpFile = File(imagePath);
-    final String filename = basename(imagePath); // Filename without extension
-
-    final directory = await getApplicationDocumentsDirectory();
-    String filePath = '${directory.path}/$filename';
-    await tmpFile.copy(filePath);
-    return filePath;
-  }
-
-  Future<void> _deleteImageFromDevice(String imagePath) async {
-    await File(imagePath).delete();
   }
 
   Future<int> getNumberOfRoutesByWall(Wall wall) async {

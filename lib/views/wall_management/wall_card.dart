@@ -132,37 +132,37 @@ class WallCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
-          aspectRatio: 4 / 3,
-          child: !wall.isCustom && wall.id == null
-              // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
-              ? (isExpanded
-                  ? CachedNetworkImage(
-                      imageUrl: ClimbrApi.urlApiEndpoint + wall.thumbnail!,
-                      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                          child: CircularProgressIndicator(
-                        value: downloadProgress.totalSize != null
-                            ? downloadProgress.downloaded / downloadProgress.totalSize!
-                            : null,
-                      )),
-                      errorWidget: (context, url, error) => Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error),
-                          SizedBox(height: 10),
-                          Text(
-                            "Error loading thumbnail:\n" +
-                                (error.toString().contains('404') ? "Not found" : error.toString()),
-                            textAlign: TextAlign.center,
+            aspectRatio: 4 / 3,
+            child: wall.status == WallStatus.persisted
+                ? ImageDisplay(
+                    // TODO create some thumbnail for custom made images for consistent image size
+                    wall.isCustom ? wall.file : wall.thumbnail,
+                    emptyText: 'No image found',
+                  )
+                : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
+                    isExpanded
+                        ? CachedNetworkImage(
+                            imageUrl: ClimbrApi.urlApiEndpoint + wall.thumbnail!,
+                            progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                                child: CircularProgressIndicator(
+                              value: downloadProgress.totalSize != null
+                                  ? downloadProgress.downloaded / downloadProgress.totalSize!
+                                  : null,
+                            )),
+                            errorWidget: (context, url, error) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.error),
+                                SizedBox(height: 10),
+                                Text(
+                                  "Error loading thumbnail:\n" +
+                                      (error.toString().contains('404') ? "Not found" : error.toString()),
+                                  textAlign: TextAlign.center,
+                                )
+                              ],
+                            ),
                           )
-                        ],
-                      ),
-                    )
-                  : Container())
-              : ImageDisplay(
-                  wall.file,
-                  emptyText: 'No image',
-                ),
-        ),
+                        : Container())),
       ),
     );
   }
