@@ -86,42 +86,45 @@ class WallViewModel extends ChangeNotifier {
   }
 
   /// Merges two lists of [Wall].
+  /// This function can handle the case, that [remoteWalls] is a previous merged list (the result of this function).
   List<Wall> _mergeWalls({required List<Wall> localWalls, required List<Wall> remoteWalls}) {
     List<Wall> resultList = [];
 
-    // comparing local with remote list and adding all local persisted lectures to the result list and checking if updates are available (i.e. identical lecture with never date)
+    // Comparing local with remote list and adding all local persisted lectures to the result list
     localWalls.forEach((local) {
       remoteWalls.forEach((remote) {
         if (local.location == remote.location && local.title == remote.title) {
-          resultList.add(local);
+          resultList.add(local..status = WallStatus.persisted);
         }
       });
     });
 
     // Check if any local walls are outdated (i.e. not available remotely anymore)
-    localWalls.forEach((e1) {
+    localWalls.forEach((local) {
       // If its a custom wall, add it to list, otherwise its a copy from a remote wall, and then it may be deleted
-      if (remoteWalls.any((e2) => e1.location == e2.location && e1.title == e2.title) == false) {
-        // TODO remove wall and its children automatically or provide a user option
-        // _removeWall(e1);
-        if (e1.isCustom) {
-          resultList.add(e1);
+      if (remoteWalls.any((remote) => local.location == remote.location && local.title == remote.title) == false) {
+        if (local.isCustom) {
+          resultList.add(local..status = WallStatus.persisted);
+        } else {
+          // TODO remove wall and its children automatically or provide a user option
+          resultList.add(local..status = WallStatus.removed);
         }
       }
     });
 
     // Add all remaining and not persisted walls available remotely
-    remoteWalls.forEach((e1) {
-      if (localWalls.any((e2) => e1.location == e2.location && e1.title == e2.title) == false) {
-        // Remove any
-        if (e1.isCustom) {
-          resultList.remove(e1);
+    remoteWalls.forEach((remote) {
+      if (localWalls.any((local) => remote.location == local.location && remote.title == local.title) == false) {
+        // If wall is a custom one, this indicates, that the passed remoteList was a previous merged list,
+        // therefore remove this entry from the result, since it got already added in the loop before.
+        if (remote.isCustom) {
+          resultList.remove(remote);
         } else {
-          // Set id null, if wall was persisted and then deleted
-          if (e1.id != null) {
-            e1.id = null;
+          // Update id to null, if wall was previously persisted and then deleted
+          if (remote.id != null) {
+            remote.id = null;
           }
-          resultList.add(e1);
+          resultList.add(remote..status = WallStatus.notPersisted);
         }
       }
     });
