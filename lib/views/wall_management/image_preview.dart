@@ -41,7 +41,7 @@ class ImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: ClimbrApi.apiUrl + imageName,
+      imageUrl: ClimbrApi.urlApiEndpoint + imageName,
       progressIndicatorBuilder: (context, url, downloadProgress) => Center(
           child: CircularProgressIndicator(
         value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
