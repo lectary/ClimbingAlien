@@ -107,6 +107,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   bool get editMode => _editMode;
   set editMode(bool editMode) {
     _editMode = editMode;
+    if (!editMode && step > graspList.length) {
+      step--;
+    }
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
@@ -92,7 +93,7 @@ class RouteEditorScreen extends StatelessWidget {
                                     _buildJoystick(context, initMode, joystickOn),
                                   ]
                                 : [],
-                            _buildBottomBar(context, initMode),
+                            _buildBottomBar(context, initMode, editMode),
                           ],
                         ),
                       ),
@@ -108,7 +109,7 @@ class RouteEditorScreen extends StatelessWidget {
   }
 
   /// Body widgets
-  Widget _buildBottomBar(BuildContext context, bool initMode) {
+  Widget _buildBottomBar(BuildContext context, bool initMode, bool editMode) {
     return Builder(
       builder: (context) {
         final step = context.select((RouteEditorViewModel model) => model.step);
@@ -146,7 +147,7 @@ class RouteEditorScreen extends StatelessWidget {
                       // Disable button when
                       // 1. no next grasp is available
                       // 2. a new grasp for editing is created, but climax was not moved yet (to avoid redundant copies)
-                      onPressed: (step > graspList.length && !climaxMoved)
+                      onPressed: _checkIsEnabled(editMode, step, graspList, climaxMoved)
                           ? null
                           : () {
                               routeEditorModel.nextGrasp();
@@ -156,6 +157,13 @@ class RouteEditorScreen extends StatelessWidget {
         }
       },
     );
+  }
+  bool _checkIsEnabled(bool editMode, int step, List<Grasp> graspList, bool climaxMoved) {
+    if (editMode) {
+      return step > graspList.length && !climaxMoved;
+    } else {
+      return step >= graspList.length;
+    }
   }
 
   Widget _buildInitModeBar(BuildContext context, bool initMode) {
