@@ -60,7 +60,7 @@ class WallViewModel extends ChangeNotifier {
 
   /// Loads all walls, local and remote ones.
   /// Returns a [List] of [Location] grouped by [Wall.location].
-  void loadAllWalls() async {
+  Future<void> loadAllWalls() async {
     modelState = ModelState.LOADING;
 
     final localWalls = await _climbingRepository.fetchAllWalls();

@@ -65,36 +65,42 @@ class _LocationPanelListState extends State<LocationPanelList> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: ExpansionPanelList.radio(
-        expansionCallback: (int panelIndex, bool isExpanded) {
-          // Only mark as expanded if null or if callback value and current stored value are false.
-          // Read doc of [ExpansionPanelList.expansionCallback] for more details.
-          _expandedList.update(widget.locations[panelIndex].name, (expanded) {
-            if (!isExpanded && !expanded) {
-              return true;
-            }
-            return false;
-          }, ifAbsent: () => true);
-        },
-        children: widget.locations.map<ExpansionPanelRadio>((Location location) {
-          return ExpansionPanelRadio(
-            value: location.name,
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return ListTile(
-                title: Text("${location.name} - ${location.walls.length} Walls"),
-              );
-            },
-            body: CarouselSlider.builder(
-                options: CarouselOptions(
-                  height: widget.size.height * 0.5,
-                  enableInfiniteScroll: false,
-                ),
-                itemCount: location.walls.length,
-                itemBuilder: (context, index, realIndex) =>
-                    WallCard(location.walls[index], _expandedList[location.walls[index].location] ?? false)),
-          );
-        }).toList(),
+    return RefreshIndicator(
+      onRefresh: () => Provider.of<WallViewModel>(context, listen: false).loadAllWalls(),
+      // TODO review and maybe rebuild [ExpansionPanelList] to [ListView] combined with [ExpansionTile]s, since [ExpansionPanelList] seems not to use any builder and
+      // TODO therefore may not have a good performance with long lists.
+      child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: ExpansionPanelList.radio(
+          expansionCallback: (int panelIndex, bool isExpanded) {
+            // Only mark as expanded if null or if callback value and current stored value are false.
+            // Read doc of [ExpansionPanelList.expansionCallback] for more details.
+            _expandedList.update(widget.locations[panelIndex].name, (expanded) {
+              if (!isExpanded && !expanded) {
+                return true;
+              }
+              return false;
+            }, ifAbsent: () => true);
+          },
+          children: widget.locations.map<ExpansionPanelRadio>((Location location) {
+            return ExpansionPanelRadio(
+              value: location.name,
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return ListTile(
+                  title: Text("${location.name} - ${location.walls.length} Walls"),
+                );
+              },
+              body: CarouselSlider.builder(
+                  options: CarouselOptions(
+                    height: widget.size.height * 0.5,
+                    enableInfiniteScroll: false,
+                  ),
+                  itemCount: location.walls.length,
+                  itemBuilder: (context, index, realIndex) =>
+                      WallCard(location.walls[index], _expandedList[location.walls[index].location] ?? false)),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
