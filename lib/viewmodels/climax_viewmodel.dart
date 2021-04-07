@@ -166,7 +166,6 @@ class ClimaxViewModel extends ChangeNotifier {
     bool zoomOut = _checkZoomOut(minThreshold, maxThreshold);
 
     while (zoomOut) {
-      print("zooming out");
       scaleAll = scaleAll - scaleAccuracy;
 
       minThreshold = climaxCenter - (halfScreenSize - thresholdOffset) / scaleAll;
@@ -186,7 +185,6 @@ class ClimaxViewModel extends ChangeNotifier {
     bool zoomIn = _checkZoomIn(minMaxThreshold, maxMinThreshold);
 
     while (zoomIn) {
-      print("zooming in");
       if (scaleAll + scaleAccuracy >= defaultScale) {
         scaleAll = defaultScale;
         break;
