@@ -8,7 +8,8 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/services/storage_service.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart' hide Route;
+import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as image;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -62,17 +63,8 @@ class WallViewModel extends ChangeNotifier {
     modelState = ModelState.LOADING;
 
     final localWalls = await _climbingRepository.fetchAllWalls();
-    List<Wall> customWalls = [];
-    List<Wall> localRemoteWalls = [];
-    localWalls.forEach((element) {
-      if (element.isCustom) {
-        customWalls.add(element);
-      } else {
-        localRemoteWalls.add(element);
-      }
-    });
     List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
-    _wallList = _mergeWalls(localWalls: localRemoteWalls, remoteWalls: remoteWalls)..addAll(customWalls);
+    _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: remoteWalls);
 
     locationList = groupWalls(_wallList);
 
@@ -137,6 +129,11 @@ class WallViewModel extends ChangeNotifier {
 
   Future<int> insertWall(Wall wall) async {
     if (wall.filePathUpdated != null) {
+      String thumbnailPath = await _createThumbnailFromImage(wall.filePathUpdated!);
+      String? newPathThumbnail = await StorageService.saveToDevice(thumbnailPath);
+      wall.thumbnailName = basename(newPathThumbnail);
+      wall.thumbnailPath = newPathThumbnail;
+
       String? newPath = await StorageService.saveToDevice(wall.filePathUpdated!);
       wall.fileName = basename(newPath);
       wall.filePath = newPath;
@@ -147,6 +144,12 @@ class WallViewModel extends ChangeNotifier {
 
   Future<void> updateWall(Wall wall) async {
     if (basename(wall.filePath ?? "") != basename(wall.filePathUpdated ?? "")) {
+      await StorageService.deleteFromDevice(wall.thumbnailPath);
+      String thumbnailPath = await _createThumbnailFromImage(wall.filePathUpdated!);
+      String? newPathThumbnail = await StorageService.saveToDevice(thumbnailPath);
+      wall.thumbnailName = basename(newPathThumbnail);
+      wall.thumbnailPath = newPathThumbnail;
+
       await StorageService.deleteFromDevice(wall.filePath);
       String? newPath = await StorageService.saveToDevice(wall.filePathUpdated!);
       wall.fileName = basename(newPath);
@@ -182,5 +185,37 @@ class WallViewModel extends ChangeNotifier {
       return Future.value(0);
     }
     return await _climbingRepository.findAllRoutesByWallId(wall.id!).then((value) => value.length);
+  }
+
+  /// Creates a thumbnail 300x300 from the provided [Image] accessible via its [imagePath].
+  /// The thumbnail will be created from the centered 300x300 rectangle.
+  /// Returns the filePath of the cached [Image].
+  Future<String> _createThumbnailFromImage(String imagePath) async {
+    String newPath = "";
+
+    File imageFile = File(imagePath);
+
+    image.Image? srcImage = image.decodeImage(imageFile.readAsBytesSync());
+    image.Image? newImage;
+    if (srcImage != null) {
+      int imageCenterX = srcImage.width ~/ 2;
+      int imageCenterY = srcImage.height ~/ 2;
+      newImage = image.copyCrop(srcImage, imageCenterX - 150, imageCenterY - 150, 300, 300);
+
+      String fileExtension = extension(imagePath);
+      String fileName =
+          basename(imagePath).substring(0, basename(imagePath).lastIndexOf('.')) + '-thumbnail' + fileExtension;
+
+      String dirPath = (await getTemporaryDirectory()).path;
+      File outFile = File('$dirPath/$fileName');
+      if (fileExtension.contains('jpg')) {
+        await outFile.writeAsBytes(image.encodeJpg(newImage));
+      } else if (fileExtension.contains('png')) {
+        await outFile.writeAsBytes(image.encodePng(newImage));
+      }
+      newPath = outFile.path;
+    }
+
+    return newPath;
   }
 }

@@ -21,6 +21,9 @@ class WallCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallModel = Provider.of<WallViewModel>(context, listen: false);
+    if (wall.title =="CustomWall") {
+      print("Test");
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -57,9 +60,13 @@ class WallCard extends StatelessWidget {
                     Text(wall.title, style: Theme.of(context).textTheme.headline5),
                   ],
                 ),
-                wall.isCustom
-                    ? Row(
+                    Row(
                         children: [
+                          IconButton(
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.remove_red_eye_outlined),
+                              onPressed: () => WallImagePreview.asDialog(context, wall)),
                           IconButton(
                               padding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
@@ -80,15 +87,6 @@ class WallCard extends StatelessWidget {
                                       submitFunc: () => wallViewModel.deleteWall(wall, cascade: true));
                                 }
                               })
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          IconButton(
-                              padding: EdgeInsets.zero,
-                              visualDensity: VisualDensity.compact,
-                              icon: Icon(Icons.remove_red_eye_outlined),
-                              onPressed: () => WallImagePreview.asDialog(context, wall))
                         ],
                       )
               ],
@@ -137,7 +135,8 @@ class WallCard extends StatelessWidget {
             child: wall.status == WallStatus.persisted
                 ? ImageDisplay(
                     // TODO create some thumbnail for custom made images for consistent image size
-                    wall.isCustom ? wall.filePath : wall.thumbnailPath,
+                    // wall.isCustom ? wall.filePath : wall.thumbnailPath,
+                    wall.thumbnailPath,
                     emptyText: 'No image found',
                   )
                 : (wall.status == WallStatus.downloading

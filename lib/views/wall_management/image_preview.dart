@@ -17,7 +17,7 @@ class WallImagePreview extends StatelessWidget {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Preview of " + Utils.getEncodedName(wall.fileName!)),
+          title: Text(wall.fileName == null ? 'No image found' : "Preview of " + Utils.getEncodedName(wall.fileName!)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
