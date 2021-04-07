@@ -42,4 +42,19 @@ class Route extends BaseObject {
   String toString() {
     return 'Route{title: $title, description: $description, wallId: $wallId, routeOptionId: $routeOptionId, graspList: $graspList}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Route &&
+          runtimeType == other.runtimeType &&
+          title == other.title &&
+          description == other.description &&
+          wallId == other.wallId &&
+          routeOptionId == other.routeOptionId &&
+          graspList == other.graspList;
+
+  @override
+  int get hashCode =>
+      title.hashCode ^ description.hashCode ^ wallId.hashCode ^ routeOptionId.hashCode ^ graspList.hashCode;
 }
