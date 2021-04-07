@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:path/path.dart';
+
 class Utils {
   /// Helper function for converting degress to radians
   static num degreesToRadians(num deg) {
@@ -22,6 +24,8 @@ class Utils {
         int indexOfFileEnding = splitPrimary[1].indexOf('.');
         name = splitPrimary[1].substring(0, indexOfFileEnding);
       }
+    } else {
+      name = basename(encodedName);
     }
 
     return name;
