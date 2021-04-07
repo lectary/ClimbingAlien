@@ -43,7 +43,7 @@ class AssetImagePicker extends StatelessWidget {
                           itemBuilder: (context, index) => ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(Utils.getFilenameFromPath(pathList[index]), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                  child: Text(pathList[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                                 ),
                                 subtitle: Image.asset(pathList[index], fit: BoxFit.fill),
                                 onTap: () => pickImage(context, pathList[index]),

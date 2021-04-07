@@ -65,7 +65,7 @@ class _WallFormState extends State<WallForm> {
     description = widget.wall?.description;
     _locationTextEditingController.text = widget.wall?.location ?? "";
     filePath = widget.wall?.filePath;
-    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(filePath);
+    _textEditingControllerImagePath.text = Utils.getEncodedName(filePath ?? "");
 
     _locationFocusNode.addListener(() {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -172,7 +172,7 @@ class _WallFormState extends State<WallForm> {
                 if (newPath != null) {
                   setState(() {
                     filePath = newPath;
-                    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(filePath);
+                    _textEditingControllerImagePath.text = Utils.getEncodedName(filePath!);
                   });
                 }
               },

@@ -6,11 +6,24 @@ class Utils {
     return (deg * pi) / 180.0;
   }
 
-  static String getFilenameFromPath(String? path) {
-    if (path == null) return "";
-    int lastSlash = path.lastIndexOf('/');
-    int lastDot = path.lastIndexOf('.');
-    if (lastSlash == -1 || lastDot == -1) return "";
-    return path.substring(lastSlash + 1, lastDot);
+  /// Extracts the name from an encoded string.
+  ///
+  /// Supported encoding scheme:
+  /// <Location-name>---<Wall-name>[-thumbnail].<jpg|png>
+  static String getEncodedName(String encodedName) {
+    String name = "";
+
+    if (encodedName.contains('---')) {
+      List<String> splitPrimary = encodedName.split('---');
+      if (splitPrimary[1].contains('-thumbnail')) {
+        int indexOfThumbnailSeparator = splitPrimary[1].indexOf('-');
+        name = splitPrimary[1].substring(0, indexOfThumbnailSeparator);
+      } else {
+        int indexOfFileEnding = splitPrimary[1].indexOf('.');
+        name = splitPrimary[1].substring(0, indexOfFileEnding);
+      }
+    }
+
+    return name;
   }
 }
