@@ -31,12 +31,7 @@ class ImageDisplay extends StatelessWidget {
     if (imagePath == null || imagePath!.isEmpty) {
       return emptyText == null ? Container() : Center(child: Text(emptyText!));
     } else {
-      return imagePath!.startsWith('assets')
-          ? Image.asset(
-              imagePath!,
-              errorBuilder: _errorBuilderFunction,
-            )
-          : Image.file(File(imagePath!), errorBuilder: _errorBuilderFunction);
+      return Image.file(File(imagePath!), errorBuilder: _errorBuilderFunction);
     }
   }
 }
