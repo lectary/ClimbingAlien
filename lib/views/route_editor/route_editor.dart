@@ -38,7 +38,7 @@ class _RouteEditorState extends State<RouteEditor> {
   @override
   Widget build(BuildContext context) {
     final transformAll = context.select((ClimaxViewModel model) => model.transformAll);
-    return _buildGestureDetector(transformAll, child: ClimaxTransformer(background: widget.wall.file));
+    return _buildGestureDetector(transformAll, child: ClimaxTransformer(background: widget.wall.fileName));
   }
 
   GestureDetector _buildGestureDetector(bool editAll, {Widget? child}) {

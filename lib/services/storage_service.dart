@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 /// Service class for saving and removing images from local device storage.
 class StorageService {
-  static Future<String?> saveToDevice(String filePath) async {
+  static Future<String> saveToDevice(String filePath) async {
     File outFile = File(filePath);
     String fileName = basename(filePath);
 

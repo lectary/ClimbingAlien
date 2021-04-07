@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
+import 'package:climbing_alien/services/storage_service.dart';
 import 'package:flutter/foundation.dart';
 
 class RouteViewModel extends ChangeNotifier {
@@ -37,7 +40,9 @@ class RouteViewModel extends ChangeNotifier {
       routeStreamSubscription?.cancel();
       routeStreamSubscription = _climbingRepository.watchAllRoutesByWallId(wall.id!).listen((event) {
         print("new route list");
-        routeStreamController.sink.add(event);
+        if (!routeStreamController.isClosed) {
+          routeStreamController.sink.add(event);
+        }
       });
     }
   }
@@ -63,6 +68,8 @@ class RouteViewModel extends ChangeNotifier {
       Wall emptyWallToDelete = await _climbingRepository
           .fetchAllWalls()
           .then((List<Wall> wallList) => wallList.firstWhere((Wall wall) => wall.id == route.wallId));
+      await StorageService.deleteFromDevice(emptyWallToDelete.filePath!);
+      await StorageService.deleteFromDevice(emptyWallToDelete.thumbnailPath!);
       await _climbingRepository.deleteWall(emptyWallToDelete);
     } else {
       return;
@@ -70,8 +77,19 @@ class RouteViewModel extends ChangeNotifier {
   }
 
   Future<void> insertRouteWithWall(Route route, Wall wall) async {
-    int newWallId = await _climbingRepository.insertWall(wall);
     // TODO download wall image file
+    wall.status = WallStatus.downloading;
+
+    File fileThumbnail = await _climbingRepository.downloadFile(wall.thumbnailName!);
+    String newPathThumbnail = await StorageService.saveToDevice(fileThumbnail.path);
+    wall.thumbnailPath = newPathThumbnail;
+
+    File file = await _climbingRepository.downloadFile(wall.fileName!);
+    String newPath = await StorageService.saveToDevice(file.path);
+    wall.filePath = newPath;
+
+    int newWallId = await _climbingRepository.insertWall(wall);
+
     await _climbingRepository.insertRoute(route..wallId = newWallId);
     loadRoutesByWall(wall..id = newWallId);
   }

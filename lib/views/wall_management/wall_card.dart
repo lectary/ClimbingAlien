@@ -8,6 +8,7 @@ import 'package:climbing_alien/views/wall_management/image_preview.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 /// Class representing a single carousel wall entry in the location list.
@@ -87,7 +88,7 @@ class WallCard extends StatelessWidget {
                               padding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
                               icon: Icon(Icons.remove_red_eye_outlined),
-                              onPressed: () => ImagePreview.asDialog(context, wall.file!))
+                              onPressed: () => WallImagePreview.asDialog(context, wall))
                         ],
                       )
               ],
@@ -136,33 +137,35 @@ class WallCard extends StatelessWidget {
             child: wall.status == WallStatus.persisted
                 ? ImageDisplay(
                     // TODO create some thumbnail for custom made images for consistent image size
-                    wall.isCustom ? wall.file : wall.thumbnail,
+                    wall.isCustom ? wall.filePath : wall.thumbnailPath,
                     emptyText: 'No image found',
                   )
-                : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
-                    isExpanded
-                        ? CachedNetworkImage(
-                            imageUrl: ClimbrApi.urlApiEndpoint + wall.thumbnail!,
-                            progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                                child: CircularProgressIndicator(
-                              value: downloadProgress.totalSize != null
-                                  ? downloadProgress.downloaded / downloadProgress.totalSize!
-                                  : null,
-                            )),
-                            errorWidget: (context, url, error) => Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.error),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Error loading thumbnail:\n" +
-                                      (error.toString().contains('404') ? "Not found" : error.toString()),
-                                  textAlign: TextAlign.center,
-                                )
-                              ],
-                            ),
-                          )
-                        : Container())),
+                : (wall.status == WallStatus.downloading
+            ? Center(child: CircularProgressIndicator())
+            : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
+                isExpanded
+                    ? CachedNetworkImage(
+                  imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.thumbnailName!),
+                  progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                      child: CircularProgressIndicator(
+                        value: downloadProgress.totalSize != null
+                            ? downloadProgress.downloaded / downloadProgress.totalSize!
+                            : null,
+                      )),
+                  errorWidget: (context, url, error) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error),
+                      SizedBox(height: 10),
+                      Text(
+                        "Error loading thumbnail:\n" +
+                            (error.toString().contains('404') ? "Not found" : error.toString()),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                )
+                    : Container()))),
       ),
     );
   }

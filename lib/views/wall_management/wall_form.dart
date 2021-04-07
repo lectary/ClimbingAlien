@@ -6,6 +6,7 @@ import 'package:climbing_alien/views/wall_management/wall_form_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:climbing_alien/widgets/image_picker/simple_image_picker_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 class WallForm extends StatefulWidget {
@@ -52,7 +53,7 @@ class _WallFormState extends State<WallForm> {
   String? title;
   String? description;
   String? location;
-  String? file;
+  String? filePath;
 
   @override
   void initState() {
@@ -63,8 +64,8 @@ class _WallFormState extends State<WallForm> {
     title = widget.wall?.title;
     description = widget.wall?.description;
     _locationTextEditingController.text = widget.wall?.location ?? "";
-    file = widget.wall?.file;
-    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(file);
+    filePath = widget.wall?.filePath;
+    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(filePath);
 
     _locationFocusNode.addListener(() {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -170,15 +171,15 @@ class _WallFormState extends State<WallForm> {
                 String? newPath = await SimpleImagePicker.dialog(context);
                 if (newPath != null) {
                   setState(() {
-                    file = newPath;
-                    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(newPath);
+                    filePath = newPath;
+                    _textEditingControllerImagePath.text = Utils.getFilenameFromPath(filePath);
                   });
                 }
               },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: ImageDisplay(file),
+              child: ImageDisplay(filePath),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 24.0),
@@ -198,10 +199,10 @@ class _WallFormState extends State<WallForm> {
                             widget.wall!.title = title!;
                             widget.wall!.description = description;
                             widget.wall!.location = location;
-                            widget.wall!.fileUpdated = file;
+                            widget.wall!.filePathUpdated = filePath;
                             wallViewModel.updateWall(widget.wall!);
                           } else {
-                            Wall wall = Wall(title: title!, description: description, location: location, file: file);
+                            Wall wall = Wall(title: title!, description: description, location: location, filePathUpdated: filePath);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);

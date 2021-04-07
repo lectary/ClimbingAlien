@@ -1,25 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:climbing_alien/data/api/climbr_api.dart';
+import 'package:climbing_alien/data/entity/wall.dart';
+import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
-class ImagePreview extends StatelessWidget {
-  final String imageName;
+class WallImagePreview extends StatelessWidget {
+  final Wall wall;
 
-  ImagePreview(this.imageName);
+  WallImagePreview(this.wall);
 
-  static Future<void> asDialog(BuildContext context, String imageName) {
+  static Future<void> asDialog(BuildContext context, Wall wall) {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Preview of " + imageName),
+          title: Text("Preview of " + wall.fileName!),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ImagePreview(imageName),
+              WallImagePreview(wall),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -40,23 +43,27 @@ class ImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: ClimbrApi.urlApiEndpoint + imageName,
-      progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-          child: CircularProgressIndicator(
-        value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
-      )),
-      errorWidget: (context, url, error) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error),
-          SizedBox(height: 10),
-          Text(
-            "Error loading thumbnail:\n" + (error.toString().contains('404') ? "Not found" : error.toString()),
-            textAlign: TextAlign.center,
-          )
-        ],
-      ),
-    );
+    if (wall.status == WallStatus.persisted) {
+      return ImageDisplay(wall.filePath);
+    } else {
+      return CachedNetworkImage(
+        imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.fileName!),
+        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+            child: CircularProgressIndicator(
+              value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
+            )),
+        errorWidget: (context, url, error) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error),
+            SizedBox(height: 10),
+            Text(
+              "Error loading thumbnail:\n" + (error.toString().contains('404') ? "Not found" : error.toString()),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      );
+    }
   }
 }
