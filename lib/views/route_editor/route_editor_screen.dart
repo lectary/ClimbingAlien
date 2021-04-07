@@ -68,9 +68,6 @@ class RouteEditorScreen extends StatelessWidget {
                         ? [
                             _buildTapAction(context, initMode),
                             _buildMoreOptionsAction(context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
-                            // _buildJoystickToggleAction(context, initMode, joystickOn),
-                            // _buildOptionHeaderAction(context, initMode),
-                            // _buildDeleteGraspAction(context, initMode),
                             _toggleEditModeAction(context, false),
                           ]
                         : [
@@ -158,6 +155,7 @@ class RouteEditorScreen extends StatelessWidget {
       },
     );
   }
+
   bool _checkIsEnabled(bool editMode, int step, List<Grasp> graspList, bool climaxMoved) {
     if (editMode) {
       return step > graspList.length && !climaxMoved;
@@ -252,6 +250,7 @@ class RouteEditorScreen extends StatelessWidget {
           final step = context.select((RouteEditorViewModel model) => model.step);
           final graspList = context.select((RouteEditorViewModel model) => model.graspList);
           return PopupMenuButton(
+              offset: Offset(0, 25),
               itemBuilder: (context) => [
                     PopupMenuItem(
                       enabled: initAllowed,
