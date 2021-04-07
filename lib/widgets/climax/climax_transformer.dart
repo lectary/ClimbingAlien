@@ -98,10 +98,10 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
         });
         if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
       },
-      child: Transform.translate(
-        offset: isTranslating ? -newDeltaTranslateAll : -followerCameraOffset,
-        child: Transform.scale(
-          scale: scaleAll,
+      child: Transform.scale(
+        scale: scaleAll,
+        child: Transform.translate(
+          offset: isTranslating ? -newDeltaTranslateAll : -followerCameraOffset,
           child: Stack(fit: StackFit.expand, children: [
             Transform.translate(
                 offset: -deltaTranslateBackground,
