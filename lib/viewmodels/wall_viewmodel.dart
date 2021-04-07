@@ -114,7 +114,7 @@ class WallViewModel extends ChangeNotifier {
         // therefore remove this entry from the result, since it got already added in the loop before.
         if (remote.isCustom) {
           resultList.remove(remote);
-        } else {
+        } else if (remote.status != WallStatus.removed) {
           // Update id to null, if wall was previously persisted and then deleted
           if (remote.id != null) {
             remote.id = null;

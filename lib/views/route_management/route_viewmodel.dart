@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:climbing_alien/data/api/climbr_api.dart';
@@ -56,26 +57,36 @@ class RouteViewModel extends ChangeNotifier {
   }
 
   Future<bool> deleteRoute(Route route, {bool forceDelete = false}) async {
-    // Deletes all grasps from route
-    List<Grasp> graspByRoute = await _climbingRepository.findAllGraspsByRouteId(route.id!);
-    await Future.forEach(graspByRoute, (Grasp grasp) => _climbingRepository.deleteGrasp(grasp));
-    await _climbingRepository.deleteRoute(route);
-    // Check whether route's wall has other routes anymore
+    // Check whether route's wall has still other routes
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(route.wallId);
-    // Delete locally persisted wall if it has no routes
+    routesOfWall.remove(route);
     if (routesOfWall.isEmpty) {
       if (!forceDelete) {
         return true;
       }
-      print("deleting empty wall");
+      await _deleteRoute(route);
+      // TODO simplify by dedicated db-query
+      // Delete locally persisted wall if it has no routes
       Wall emptyWallToDelete = await _climbingRepository
           .fetchAllWalls()
           .then((List<Wall> wallList) => wallList.firstWhere((Wall wall) => wall.id == route.wallId));
+      log("Delete empty wall ${emptyWallToDelete.title}");
       await StorageService.deleteFromDevice(emptyWallToDelete.filePath);
       await StorageService.deleteFromDevice(emptyWallToDelete.thumbnailPath);
       await _climbingRepository.deleteWall(emptyWallToDelete);
+    } else {
+      await _deleteRoute(route);
     }
+
     return false;
+  }
+
+  Future<void> _deleteRoute(Route route) async {
+    log("Delete route ${route.title}");
+    // Deletes all grasps from route first
+    List<Grasp> graspByRoute = await _climbingRepository.findAllGraspsByRouteId(route.id!);
+    await Future.forEach(graspByRoute, (Grasp grasp) => _climbingRepository.deleteGrasp(grasp));
+    await _climbingRepository.deleteRoute(route);
   }
 
   Future<void> insertRouteWithWall(Route route, Wall wall) async {
