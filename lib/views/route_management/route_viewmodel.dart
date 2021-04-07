@@ -68,8 +68,8 @@ class RouteViewModel extends ChangeNotifier {
       Wall emptyWallToDelete = await _climbingRepository
           .fetchAllWalls()
           .then((List<Wall> wallList) => wallList.firstWhere((Wall wall) => wall.id == route.wallId));
-      await StorageService.deleteFromDevice(emptyWallToDelete.filePath!);
-      await StorageService.deleteFromDevice(emptyWallToDelete.thumbnailPath!);
+      await StorageService.deleteFromDevice(emptyWallToDelete.filePath);
+      await StorageService.deleteFromDevice(emptyWallToDelete.thumbnailPath);
       await _climbingRepository.deleteWall(emptyWallToDelete);
     } else {
       return;

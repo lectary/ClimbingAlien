@@ -147,9 +147,7 @@ class WallViewModel extends ChangeNotifier {
 
   Future<void> updateWall(Wall wall) async {
     if (basename(wall.filePath ?? "") != basename(wall.filePathUpdated ?? "")) {
-      if (wall.filePath != null) {
-        await StorageService.deleteFromDevice(wall.filePath!);
-      }
+      await StorageService.deleteFromDevice(wall.filePath);
       String? newPath = await StorageService.saveToDevice(wall.filePathUpdated!);
       wall.fileName = basename(newPath);
       wall.filePath = newPath;
@@ -160,7 +158,7 @@ class WallViewModel extends ChangeNotifier {
   Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
     print("Deleting wall with name: " + wall.title.toString());
 
-    await StorageService.deleteFromDevice(wall.fileName!);
+    await StorageService.deleteFromDevice(wall.filePath);
 
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(wall.id!);
     if (routesOfWall.isNotEmpty) {
