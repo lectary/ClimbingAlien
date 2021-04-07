@@ -23,7 +23,7 @@ class WallImagePreview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              WallImagePreview(wall),
+              Flexible(child: SingleChildScrollView(child: WallImagePreview(wall))),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
