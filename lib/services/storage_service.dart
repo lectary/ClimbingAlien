@@ -17,7 +17,7 @@ class StorageService {
   }
 
   static Future<void> deleteFromDevice(String? filePath) async {
-    if (filePath == null) return;
+    if (filePath == null || filePath.isEmpty) return;
 
     try {
       await File(filePath).delete();

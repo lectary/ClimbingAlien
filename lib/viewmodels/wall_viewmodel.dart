@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:climbing_alien/data/climbing_repository.dart';
@@ -31,7 +32,7 @@ class WallViewModel extends ChangeNotifier {
   List<Wall> _wallList = List.empty();
 
   WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository {
-    print("Created WallViewModel");
+    log("Created WallViewModel");
     loadAllWalls();
     listenToLocalWalls();
   }
@@ -129,11 +130,13 @@ class WallViewModel extends ChangeNotifier {
 
   Future<int> insertWall(Wall wall) async {
     if (wall.filePathUpdated != null) {
+      // Create and save thumbnail from selected image
       String thumbnailPath = await _createThumbnailFromImage(wall.filePathUpdated!);
       String? newPathThumbnail = await StorageService.saveToDevice(thumbnailPath);
       wall.thumbnailName = basename(newPathThumbnail);
       wall.thumbnailPath = newPathThumbnail;
 
+      // Save selected image to app storage
       String? newPath = await StorageService.saveToDevice(wall.filePathUpdated!);
       wall.fileName = basename(newPath);
       wall.filePath = newPath;
@@ -144,23 +147,28 @@ class WallViewModel extends ChangeNotifier {
 
   Future<void> updateWall(Wall wall) async {
     if (basename(wall.filePath ?? "") != basename(wall.filePathUpdated ?? "")) {
+      // Delete old thumbnail, and create and save new one
       await StorageService.deleteFromDevice(wall.thumbnailPath);
       String thumbnailPath = await _createThumbnailFromImage(wall.filePathUpdated!);
       String? newPathThumbnail = await StorageService.saveToDevice(thumbnailPath);
       wall.thumbnailName = basename(newPathThumbnail);
       wall.thumbnailPath = newPathThumbnail;
 
+      // Delete old image, and save new one
       await StorageService.deleteFromDevice(wall.filePath);
       String? newPath = await StorageService.saveToDevice(wall.filePathUpdated!);
       wall.fileName = basename(newPath);
       wall.filePath = newPath;
     }
+
     return _climbingRepository.updateWall(wall);
   }
 
   Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
-    print("Deleting wall with name: " + wall.title.toString());
+    log("Deleting wall with name: " + wall.title.toString());
 
+    // Delete thumbnail and image if available
+    await StorageService.deleteFromDevice(wall.thumbnailPath);
     await StorageService.deleteFromDevice(wall.filePath);
 
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(wall.id!);
