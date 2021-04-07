@@ -75,7 +75,8 @@ class WallViewModel extends ChangeNotifier {
   List<Location> groupWalls(List<Wall> wallList) {
     return groupBy(wallList, (Wall wall) => wall.location)
         .entries
-        .map((MapEntry<String?, List<Wall>> entry) => Location(entry.key ?? "<no-name>", entry.value))
+        .map((MapEntry<String?, List<Wall>> entry) =>
+            Location(entry.key ?? "<no-name>", entry.value..sort((w1, w2) => w1.title.compareTo(w2.title))))
         .toList();
   }
 
