@@ -74,7 +74,20 @@ class RouteScreen extends StatelessWidget {
                         context: context,
                         title: 'Möchten Sie wirklich diese Route samt allen Griffen löschen?',
                         submitText: 'Löschen',
-                        submitFunc: () => routeModel.deleteRoute(route)))
+                        submitFunc: () async {
+                          bool isLastRoute = await routeModel.deleteRoute(route);
+                          // TODO re-query status of wall!
+                          if (isLastRoute && wall.status == WallStatus.removed) {
+                            await Dialogs.showAlertDialog(
+                                context: context,
+                                // TODO review usability
+                                title: wall.isCustom
+                                    ? 'Wenn Sie die letzte Route löschen, wird auch die Wand gelöscht!'
+                                    : 'Diese Wand ist am Server nicht mehr vorhanden! Wenn Sie die letzte Route löschen, wird die Wand nicht mehr verfügbar sein!',
+                                submitText: 'Löschen',
+                                submitFunc: () => routeModel.deleteRoute(route, forceDelete: true));
+                          }
+                        }))
               ],
             ),
             onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),

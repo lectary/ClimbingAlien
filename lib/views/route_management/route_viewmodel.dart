@@ -55,7 +55,7 @@ class RouteViewModel extends ChangeNotifier {
     return _climbingRepository.updateRoute(route);
   }
 
-  Future<void> deleteRoute(Route route) async {
+  Future<bool> deleteRoute(Route route, {bool forceDelete = false}) async {
     // Deletes all grasps from route
     List<Grasp> graspByRoute = await _climbingRepository.findAllGraspsByRouteId(route.id!);
     await Future.forEach(graspByRoute, (Grasp grasp) => _climbingRepository.deleteGrasp(grasp));
@@ -64,6 +64,9 @@ class RouteViewModel extends ChangeNotifier {
     List<Route> routesOfWall = await _climbingRepository.findAllRoutesByWallId(route.wallId);
     // Delete locally persisted wall if it has no routes
     if (routesOfWall.isEmpty) {
+      if (!forceDelete) {
+        return true;
+      }
       print("deleting empty wall");
       Wall emptyWallToDelete = await _climbingRepository
           .fetchAllWalls()
@@ -71,9 +74,8 @@ class RouteViewModel extends ChangeNotifier {
       await StorageService.deleteFromDevice(emptyWallToDelete.filePath);
       await StorageService.deleteFromDevice(emptyWallToDelete.thumbnailPath);
       await _climbingRepository.deleteWall(emptyWallToDelete);
-    } else {
-      return;
     }
+    return false;
   }
 
   Future<void> insertRouteWithWall(Route route, Wall wall) async {
