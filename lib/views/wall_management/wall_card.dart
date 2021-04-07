@@ -21,9 +21,6 @@ class WallCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallModel = Provider.of<WallViewModel>(context, listen: false);
-    if (wall.title =="CustomWall") {
-      print("Test");
-    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
