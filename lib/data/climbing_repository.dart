@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/database.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/route_option.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
+import 'package:http/http.dart';
 
 class ClimbingRepository {
   final ClimbingDatabase _climbingDatabase;
@@ -24,6 +27,14 @@ class ClimbingRepository {
 
   Future<List<Wall>> fetchAllWallsFromApi() {
     return _climbrApi.fetchWalls();
+  }
+
+  Future<File> downloadFile(String fileName) {
+    return _climbrApi.downloadFile(fileName);
+  }
+
+  Future<StreamedResponse> downloadFileAsStream(String fileName) {
+    return _climbrApi.downloadFileAsStream(fileName);
   }
 
   Future<int> insertWall(Wall wall) {
