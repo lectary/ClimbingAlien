@@ -92,6 +92,10 @@ class RouteEditorViewModel extends ChangeNotifier {
         resetClimax(size);
       }
     });
+
+    // initMode or empty graspList always implies editMode
+    editMode = editMode || graspList.isEmpty || initMode;
+
     state = ModelState.IDLE;
     // Keep watching db stream of grasps
     _graspStreamSubscription = _climbingRepository.watchAllGraspsByRouteId(route.id!).listen(_graspListener);
