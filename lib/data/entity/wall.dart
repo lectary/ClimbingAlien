@@ -11,12 +11,17 @@ class Wall extends BaseObject {
 
   String? location;
 
-  String? file;
+  String? fileName;
 
+  String? filePath;
+
+  /// Used for checking whether a custom image was updated by comparing [fileName] with [filePathUpdated]
   @ignore
-  String? fileUpdated;
+  String? filePathUpdated;
 
-  String? thumbnail;
+  String? thumbnailName;
+
+  String? thumbnailPath;
 
   /// Used for showing corresponding status information and providing further actions in the wall management list
   @ignore
@@ -29,9 +34,11 @@ class Wall extends BaseObject {
       {required this.title,
       this.description,
       this.location,
-      this.file,
-      this.fileUpdated,
-      this.thumbnail,
+      this.fileName,
+      this.filePath,
+      this.filePathUpdated,
+      this.thumbnailName,
+      this.thumbnailPath,
       this.isCustom = true,
       int? id,
       DateTime? modifiedAt,
@@ -43,8 +50,10 @@ class Wall extends BaseObject {
       "title": title,
       "description": description,
       "location": location,
-      "file": file,
-      "thumbnail": thumbnail,
+      "fileName": fileName,
+      "filePath": filePath,
+      "thumbnailName": thumbnailName,
+      "thumbnailPath": thumbnailPath,
       "isCustom": isCustom,
       "id": id,
       "modified_at": modifiedAt?.millisecondsSinceEpoch,
@@ -56,8 +65,8 @@ class Wall extends BaseObject {
     return Wall(
       title: _titleFromJson(json['wall']),
       location: json['location'],
-      file: json['file'],
-      thumbnail: json['thumbnail'],
+      fileName: json['file'],
+      thumbnailName: json['thumbnail'],
     )..isCustom = false;
   }
 
@@ -73,6 +82,6 @@ class Wall extends BaseObject {
 
   @override
   String toString() {
-    return 'Wall{title: $title, description: $description, location: $location, file: $file, thumbnail: $thumbnail, fileUpdated: $fileUpdated, wallStatus: $status, isCustom: $isCustom}';
+    return 'Wall{title: $title, description: $description, location: $location, fileName: $fileName, filePath: $filePath, fileNameUpdated: $filePathUpdated, thumbnailName: $thumbnailName, thumbnailPath: $thumbnailPath, status: $status, isCustom: $isCustom}';
   }
 }
