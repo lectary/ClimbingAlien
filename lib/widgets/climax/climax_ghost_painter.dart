@@ -34,8 +34,10 @@ class ClimaxGhostPainter extends CustomPainter {
       ..color = Colors.red;
 
     limbsWithGhosts.forEach((Tuple2<Rect, Rect> tuple) {
+      // Draws the ghost limb
       canvas.drawOval(tuple.item2, ghostPaint);
 
+      // Calculate the offsets for a line between limb and ghost with some margin to them - simple vector math
       Offset offsetGhostToLimb = (tuple.item1.center - tuple.item2.center) / _marginToPoint + tuple.item2.center;
       Offset offsetLimbToGhost = (tuple.item2.center - tuple.item1.center) / _marginToPoint + tuple.item1.center;
 
@@ -43,7 +45,9 @@ class ClimaxGhostPainter extends CustomPainter {
       Offset startOfArrowHead = (tuple.item1.center - tuple.item2.center) / _marginToPoint * 1.025 + tuple.item2.center;
       Offset endOfArrowHead = (tuple.item1.center - tuple.item2.center) / _marginToPoint / 1.05 + tuple.item2.center;
 
+      // Draws the arrow shaft
       canvas.drawLine(offsetGhostToLimb, offsetLimbToGhost, arrowPaint);
+      // Draws the arrow head
       canvas.drawPath(getTrianglePath(startOfArrowHead, endOfArrowHead), arrowHeadPaint);
     });
   }
@@ -55,6 +59,7 @@ class ClimaxGhostPainter extends CustomPainter {
     double y0 = source.dy;
     double angle = 135;
 
+    // Rotating (x,y) around the (x0, y0) - normal rotation matrix formula with translation to the rotation angle
     double x1 = math.cos(vec.radians(angle)) * (x - x0) - math.sin(vec.radians(angle)) * (y0 - y);
     x1 = x1 + x0;
     double y1 = math.sin(vec.radians(angle)) * (x - x0) + math.cos(vec.radians(angle)) * (y0 - y);
