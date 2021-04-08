@@ -5,6 +5,6 @@ class ServerResponseException implements Exception {
 
   @override
   String toString() {
-    return 'ServerResponseException{_message: $_message}';
+    return _message;
   }
 }

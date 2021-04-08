@@ -5,6 +5,6 @@ class InternetException implements Exception {
 
   @override
   String toString() {
-    return 'InternetException{_message: $_message}';
+    return _message;
   }
 }
