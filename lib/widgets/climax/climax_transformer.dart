@@ -132,8 +132,35 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
           final offset = details.localPosition;
           final limb = limbs!.entries.lastWhereOrNull((entry) {
             if (entry.key != ClimaxLimbEnum.BODY) {
-              Offset relativeTapPosition = offset + followerCameraOffset / scaleAll;
-              return entry.value.contains(relativeTapPosition);
+              final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
+              final Offset screenCenter = Provider.of<ClimaxViewModel>(context, listen: false).screenCenter;
+              final Size size = MediaQuery.of(context).size;
+              final double scaleAll = Provider.of<ClimaxViewModel>(context, listen: false).scaleAll;
+              final Offset deltaTranslateAll = Provider.of<ClimaxViewModel>(context, listen: false).deltaTranslateAll;
+              // Due to the adjustments of followerCamera, its offset has to be added to the tap position, since the
+              // positions (offsets) of the grasps are saved before applying the followerCamera related transformations.
+              final scaleDiff = (screenCenter - (screenCenter * scaleAll));
+              Offset relativeTapPosition = offset + followerCameraOffset * scaleAll;
+              late double dx;
+              late double dy;
+              // Calculating the ratio of the limbs' distance to the center compared to half of the screen size, which yields
+              // the ratio how much scaling affects this limb, i.e. nearer elements to the scaling center are scaled lesser, than
+              // values more far away.
+              double ratioX = (entry.value.center.dx - screenCenter.dx).abs() / screenCenter.dx;
+              double ratioY = (entry.value.center.dy - screenCenter.dy).abs() / screenCenter.dy;
+              if (relativeTapPosition.dx > screenCenter.dx) {
+                dx = relativeTapPosition.dx + (scaleDiff.dx * ratioX);
+              }
+              if (relativeTapPosition.dx < screenCenter.dx) {
+                dx = relativeTapPosition.dx - (scaleDiff.dx * ratioX);
+              }
+              if (relativeTapPosition.dy > screenCenter.dy) {
+                dy = relativeTapPosition.dy + (scaleDiff.dy * ratioY);
+              }
+              if (relativeTapPosition.dy < screenCenter.dy) {
+                dy = relativeTapPosition.dy - (scaleDiff.dy * ratioY);
+              }
+              return entry.value.contains(Offset(dx, dy));
             }
             return false;
           });
