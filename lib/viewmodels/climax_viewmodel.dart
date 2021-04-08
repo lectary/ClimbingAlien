@@ -120,6 +120,9 @@ class ClimaxViewModel extends ChangeNotifier {
     _rightArmOffset = grasp.rightArm;
     _leftLegOffset = grasp.leftLeg;
     _rightLegOffset = grasp.rightLeg;
+
+    // Deselect current limb
+    _selectedLimb = null;
   }
 
   /// Computing the four sides/points of the AABB (axis aligned bounding box) of climax
@@ -366,9 +369,5 @@ class ClimaxViewModel extends ChangeNotifier {
     }
 
     _updateClimax();
-  }
-
-  void unselectAll() {
-    _selectedLimb = null;
   }
 }

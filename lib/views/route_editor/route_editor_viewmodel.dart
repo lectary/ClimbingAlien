@@ -48,7 +48,6 @@ class RouteEditorViewModel extends ChangeNotifier {
         ..order = graspList[step - 1].order
         ..routeId = graspList[step - 1].routeId;
       _updateGrasp(graspToUpdate);
-      climaxViewModel.unselectAll();
     }
   }
 
