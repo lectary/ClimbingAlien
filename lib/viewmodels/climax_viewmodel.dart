@@ -76,7 +76,6 @@ class ClimaxViewModel extends ChangeNotifier {
 
   ClimaxViewModel({required Size size}) : _size = size {
     resetClimax();
-    maxThreshold = Offset(_size.width, _size.height);
   }
 
   Grasp getCurrentPosition() {
@@ -129,65 +128,11 @@ class ClimaxViewModel extends ChangeNotifier {
 
   bool isTranslating = false;
 
-  Offset minThreshold = Offset.zero;
-  Offset maxThreshold = Offset.zero;
-
   _refreshFollowerCamera() {
     Offset climaxCenter = _computeClimaxCenter();
     Offset screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
 
     deltaTranslateAll = climaxCenter - screenCenter;
-
-    // Check whether limbs exceed screen border and adjust scale
-    scaleAll = _calculateScaleBasedOnClimaxPosition(scaleAll, climaxCenter, screenCenter);
-  }
-
-  double _calculateScaleBasedOnClimaxPosition(double scale, Offset climaxCenter, Offset screenCenter) {
-    double scaleAll = scale;
-
-    double threshold = 0.10;
-    Offset thresholdOffset = Offset(threshold * _size.width, threshold * (_size.height - kToolbarHeight));
-    Offset halfScreenSize = screenCenter;
-
-    //--------------------------------------------------------------------------------------
-    // Check whether the limbs are running under the threshold to increase scale (zoom out)
-    //--------------------------------------------------------------------------------------
-
-    // Calculate the relative border offsets based on the current climaxCenter
-    Offset minThreshold = climaxCenter - (halfScreenSize - thresholdOffset) / scaleAll;
-    Offset maxThreshold = climaxCenter + (halfScreenSize + thresholdOffset) / scaleAll;
-
-    bool leftArmOutOfBorder = _leftArmOffset.dx <= minThreshold.dx || _leftArmOffset.dy <= minThreshold.dy || _leftArmOffset.dx >= maxThreshold.dx || _leftArmOffset.dy >= maxThreshold.dy;
-    bool rightArmOutOfBorder = _rightArmOffset.dx <= minThreshold.dx || _rightArmOffset.dy <= minThreshold.dy || _rightArmOffset.dx >= maxThreshold.dx || _rightArmOffset.dy >= maxThreshold.dy;
-    bool leftLegOutOfBorder = _leftLegOffset.dx <= minThreshold.dx || _leftLegOffset.dy <= minThreshold.dy || _leftLegOffset.dx >= maxThreshold.dx || _leftLegOffset.dy >= maxThreshold.dy;
-    bool rightLegOutOfBorder = _rightLegOffset.dx <= minThreshold.dx || _rightLegOffset.dy <= minThreshold.dy || _rightLegOffset.dx >= maxThreshold.dx || _rightLegOffset.dy >= maxThreshold.dy;
-
-    if (leftArmOutOfBorder || rightArmOutOfBorder || leftLegOutOfBorder || rightLegOutOfBorder) {
-      scaleAll = scaleAll - 0.025;
-    }
-
-    //--------------------------------------------------------------------------------------
-    // Check whether the limbs are running over the threshold to decrease scale (zoom in)
-    //--------------------------------------------------------------------------------------
-
-    // Calculate the relative border offsets based on the current climaxCenter
-    Offset minMaxThreshold = climaxCenter - (halfScreenSize - thresholdOffset - thresholdOffset) / scaleAll;
-    Offset maxMinThreshold = climaxCenter + (halfScreenSize + thresholdOffset + thresholdOffset) / scaleAll;
-
-    bool leftArmInOfBorder = _leftArmOffset.dx <= maxMinThreshold.dx && _leftArmOffset.dy <= maxMinThreshold.dy && _leftArmOffset.dx >= minMaxThreshold.dx && _leftArmOffset.dy >= minMaxThreshold.dy;
-    bool rightArmInOfBorder = _rightArmOffset.dx <= maxMinThreshold.dx && _rightArmOffset.dy <= maxMinThreshold.dy && _rightArmOffset.dx >= minMaxThreshold.dx && _rightArmOffset.dy >= minMaxThreshold.dy;
-    bool leftLegInOfBorder = _leftLegOffset.dx <= maxMinThreshold.dx && _leftLegOffset.dy <= maxMinThreshold.dy && _leftLegOffset.dx >= minMaxThreshold.dx && _leftLegOffset.dy >= minMaxThreshold.dy;
-    bool rightLegInOfBorder = _rightLegOffset.dx <= maxMinThreshold.dx && _rightLegOffset.dy <= maxMinThreshold.dy && _rightLegOffset.dx >= minMaxThreshold.dx && _rightLegOffset.dy >= minMaxThreshold.dy;
-
-    if (leftArmInOfBorder && rightArmInOfBorder && leftLegInOfBorder && rightLegInOfBorder) {
-      if (scaleAll + 0.025 >= 1) {
-        scaleAll = 1;
-      } else {
-        scaleAll = scaleAll + 0.025;
-      }
-    }
-
-    return scaleAll;
   }
 
   /// Updates climax' rectangles data for redrawing.
