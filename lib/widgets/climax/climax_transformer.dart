@@ -20,13 +20,19 @@ class ClimaxTransformer extends StatefulWidget {
 }
 
 class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProviderStateMixin {
+  // Translations
   late AnimationController _animationXController;
   late AnimationController _animationYController;
   late Animation<double> _offsetXAnimation;
   late Animation<double> _offsetYAnimation;
-
   Offset deltaTranslateAll = Offset.zero;
   Offset newDeltaTranslateAll = Offset.zero;
+
+  // Scaling
+  late AnimationController _animationScaleController;
+  late Animation<double> _scaleAnimation;
+  double scaleAll = 1;
+  double newScaleAll = 1;
 
   bool init = true;
 
@@ -35,7 +41,9 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     super.initState();
     _animationXController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     _animationYController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    _animationScaleController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     _updateTranslateAnimation();
+    _updateScaleAnimation();
     init = false;
   }
 
@@ -43,8 +51,28 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
   void dispose() {
     _animationXController.dispose();
     _animationYController.dispose();
+    _animationScaleController.dispose();
     super.dispose();
   }
+
+  _updateScaleAnimation() {
+    if (scaleAll == newScaleAll && !init) {
+      return;
+    }
+
+    _animationScaleController.reset();
+
+    _scaleAnimation = Tween<double>(begin: scaleAll, end: newScaleAll)
+        .animate(CurvedAnimation(parent: _animationXController, curve: Curves.fastOutSlowIn))
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _animationScaleController.forward();
+
+    scaleAll = newScaleAll;
+  }
+
 
   _updateTranslateAnimation() {
     if (deltaTranslateAll == newDeltaTranslateAll && !init) {
@@ -74,40 +102,57 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
   @override
   Widget build(BuildContext context) {
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
-    final scaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
     final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+    // Used for disabling animations temporarily
     final bool isTranslating = context.select((ClimaxViewModel model) => model.isTranslating);
+    final bool isScaling = context.select((ClimaxViewModel model) => model.isScaling);
+
+    // >>> Run translationAnimation before scalingAnimation, otherwise some weird frame jumping occurs!
+    // Translation
     newDeltaTranslateAll = context.select((ClimaxViewModel model) => model.deltaTranslateAll);
     _updateTranslateAnimation();
-    final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     final followerCameraOffset = Offset(_offsetXAnimation.value, _offsetYAnimation.value);
+
+    // Scaling
+    newScaleAll = context.select((ClimaxViewModel model) => model.scaleAll);
+    _updateScaleAnimation();
+    final followerCameraScale = _scaleAnimation.value;
+
+    final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     // Check whether view or edit mode
     final isEditMode = Provider.of<RouteEditorViewModel>(context, listen: false).editMode;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (details) {
-        if (!isEditMode) return;
-        final offset = details.localPosition;
-        final limb = limbs!.entries.lastWhereOrNull((entry) {
-          if (entry.key != ClimaxLimbEnum.BODY) {
-            // Due to the adjustments of followerCamera, its offset has to be added to the tap position, since the
-            // positions (offsets) of the grasps are saved before applying the followerCamera related transformations.
-            return entry.value.contains(offset + followerCameraOffset);
-          }
-          return false;
-        });
-        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
-      },
-      child: Transform.scale(
-        scale: scaleAll,
-        child: Transform.translate(
-          offset: isTranslating ? -newDeltaTranslateAll : -followerCameraOffset,
-          child: Stack(fit: StackFit.expand, children: [
-            Transform.translate(
-                offset: -deltaTranslateBackground,
-                child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
-            Container(color: Colors.transparent, child: Climax()),
-          ]),
+    final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
+    final Offset screenCenter = Provider.of<ClimaxViewModel>(context, listen: false).screenCenter;
+    return Container(
+      color: Colors.green,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (details) {
+          if (!isEditMode) return;
+          final offset = details.localPosition;
+          final limb = limbs!.entries.lastWhereOrNull((entry) {
+            if (entry.key != ClimaxLimbEnum.BODY) {
+              Offset relativeTapPosition = offset + followerCameraOffset / scaleAll;
+              return entry.value.contains(relativeTapPosition);
+            }
+            return false;
+          });
+          if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
+        },
+        child: Transform.scale(
+          scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,
+          child: Transform.translate(
+            offset: isTranslating || isScaling ? -newDeltaTranslateAll : -followerCameraOffset,
+            child: Container(
+              color: Colors.lightBlue,
+              child: Stack(fit: StackFit.expand, children: [
+                // Transform.translate(
+                //     offset: -deltaTranslateBackground,
+                //     child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
+                Container(color: Colors.transparent, child: Climax()),
+              ]),
+            ),
+          ),
         ),
       ),
     );

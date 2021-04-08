@@ -51,7 +51,9 @@ class ClimaxViewModel extends ChangeNotifier {
   double _strength = 0.0;
 
   bool transformAll = false;
+
   bool isTranslating = false;
+  bool isScaling = false;
 
   // scale
   double baseScaleBackground = 1.0;
@@ -109,10 +111,12 @@ class ClimaxViewModel extends ChangeNotifier {
   /// ****************************************************************************************************************
   /// Logic for followerCamera and automatic scaling
   /// ****************************************************************************************************************
+  Offset climaxCenter = Offset.zero;
+  Offset screenCenter = Offset.zero;
 
   _refreshFollowerCamera() {
-    Offset climaxCenter = _computeClimaxCenter();
-    Offset screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
+    climaxCenter = _computeClimaxCenter();
+    screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
 
     deltaTranslateAll = climaxCenter - screenCenter;
 
@@ -251,7 +255,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    if (!isTranslating) {
+    if (!isTranslating && !isScaling) {
       _refreshFollowerCamera();
     }
 
