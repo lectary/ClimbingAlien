@@ -45,7 +45,7 @@ class _ClimaxState extends State<Climax> {
       fit: StackFit.expand,
       children: [
         CustomPaint(
-          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: climaxGhostingColor, opacity: 0.5),
+          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: climaxGhostingColor, isGhost: true),
         ),
         CustomPaint(
           painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection, color: climaxMainColor),

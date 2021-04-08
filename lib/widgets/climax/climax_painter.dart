@@ -10,33 +10,50 @@ class ClimaxPainter extends CustomPainter {
   final double? radius;
   final ClimaxLimbEnum? selectedLimb;
   final Color color;
-  final double opacity;
+  final bool isGhost;
 
-  ClimaxPainter({this.limbs, this.radius, this.selectedLimb, this.color = Colors.amber, this.opacity = 1});
+  final double _ghostingOpacity = 0.5;
+
+  ClimaxPainter({this.limbs, this.radius, this.selectedLimb, this.color = Colors.amber, this.isGhost = false});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint defaultColorPaint = Paint()
       ..style = PaintingStyle.stroke // obstacles are not filled
       ..strokeWidth = 3.0
-      ..color = color.withOpacity(opacity);
+      ..color = isGhost ? color.withOpacity(_ghostingOpacity) : color;
+
+    Paint bodyColorPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = isGhost ? color.withOpacity(_ghostingOpacity) : color;
 
     Paint selectedColorPaint = Paint()
-      ..style = PaintingStyle.stroke // obstacles are not filled
+      ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0
       ..color = Colors.red;
 
     if (limbs == null) return;
 
     limbs!.entries.forEach((entry) {
-      canvas.drawOval(entry.value, entry.key == selectedLimb ? selectedColorPaint : defaultColorPaint);
+      if (entry.key == ClimaxLimbEnum.BODY && !isGhost) {
+        final body = entry;
+        // Check whether body is overlapping with a limb to make it transparent
+        if (limbs!.entries.any((limb) => limb.key != ClimaxLimbEnum.BODY && limb.value.overlaps(body.value))) {
+          canvas.drawOval(entry.value, bodyColorPaint..color = bodyColorPaint.color.withOpacity(0.5));
+        } else {
+          canvas.drawOval(entry.value, bodyColorPaint..color = bodyColorPaint.color.withOpacity(1));
+        }
+      } else {
+        canvas.drawOval(entry.value, entry.key == selectedLimb ? selectedColorPaint : defaultColorPaint);
+      }
     });
 
     var position = limbs![ClimaxLimbEnum.BODY]!.center;
 
     Offset offsetForPointOnBorderTopLeft =
         Offset(cos(Utils.degreesToRadians(45)) * radius!, cos(Utils.degreesToRadians(45)) * radius!);
-    canvas.drawLine(limbs![ClimaxLimbEnum.LEFT_ARM]!.center + offsetForPointOnBorderTopLeft, position, defaultColorPaint);
+    canvas.drawLine(
+        limbs![ClimaxLimbEnum.LEFT_ARM]!.center + offsetForPointOnBorderTopLeft, position, defaultColorPaint);
 
     Offset offsetForPointOnBorderTopRight =
         Offset(-cos(Utils.degreesToRadians(45)) * radius!, cos(Utils.degreesToRadians(45)) * radius!);
