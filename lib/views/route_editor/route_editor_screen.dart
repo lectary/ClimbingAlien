@@ -3,8 +3,10 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/views/route_editor/color_row_picker.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
+import 'package:climbing_alien/widgets/color_picker.dart';
 import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
@@ -13,6 +15,9 @@ enum MenuOption {
   DELETE,
   BACK_TO_INIT,
   TOGGLE_JOYSTICK,
+  COLOR_ROW_PICKER,
+  COLOR_PICKER_MAIN,
+  COLOR_PICKER_GHOSTING,
 }
 
 /// Screen for creating and editing grasps for a route.
@@ -294,9 +299,66 @@ class RouteEditorScreen extends StatelessWidget {
                             ),
                             Text('Toggle Joystick'),
                           ],
+                        )),
+                    PopupMenuItem(
+                        enabled: (step <= graspList.length),
+                        value: MenuOption.COLOR_ROW_PICKER,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text("Color picker Version1", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            ChangeNotifierProvider.value(
+                                value: Provider.of<ClimaxViewModel>(context, listen: false), child: ColorRowPicker()),
+                          ],
+                        )),
+                    PopupMenuItem(
+                        enabled: (step <= graspList.length),
+                        value: MenuOption.COLOR_PICKER_MAIN,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text("Color picker Version2", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Container(
+                                      height: 18,
+                                      width: 18,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Provider.of<ClimaxViewModel>(context, listen: false).climaxMainColor)),
+                                ),
+                                Text("Choose main color"),
+                              ],
+                            ),
+                          ],
+                        )),
+                    PopupMenuItem(
+                        enabled: (step <= graspList.length),
+                        value: MenuOption.COLOR_PICKER_GHOSTING,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                  height: 18,
+                                  width: 18,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Provider.of<ClimaxViewModel>(context, listen: false).climaxGhostingColor)),
+                            ),
+                            Text("Choose ghosting color"),
+                          ],
                         ))
                   ],
-              onSelected: (MenuOption option) {
+              onSelected: (MenuOption option) async {
                 switch (option) {
                   case MenuOption.DELETE:
                     Provider.of<RouteEditorViewModel>(context, listen: false).deleteCurrentGrasp();
@@ -306,6 +368,22 @@ class RouteEditorScreen extends StatelessWidget {
                     break;
                   case MenuOption.TOGGLE_JOYSTICK:
                     Provider.of<RouteEditorViewModel>(context, listen: false).joystickOn = !joystickOn;
+                    break;
+                  case MenuOption.COLOR_ROW_PICKER:
+                    break;
+                  case MenuOption.COLOR_PICKER_MAIN:
+                    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxMainColor);
+                    if (selectedColor != null) {
+                      climaxModel.climaxMainColor = selectedColor;
+                    }
+                    break;
+                  case MenuOption.COLOR_PICKER_GHOSTING:
+                    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxGhostingColor);
+                    if (selectedColor != null) {
+                      climaxModel.climaxGhostingColor = selectedColor;
+                    }
                     break;
                 }
               });

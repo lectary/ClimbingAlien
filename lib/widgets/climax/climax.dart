@@ -39,14 +39,16 @@ class _ClimaxState extends State<Climax> {
     final previousLimbs = context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
     final double radius = context.select((ClimaxViewModel model) => model.radius);
     ClimaxLimbEnum? selection = context.select((ClimaxViewModel model) => model.selectedLimb);
+    final climaxGhostingColor = context.select((ClimaxViewModel model) => model.climaxGhostingColor);
+    final climaxMainColor = context.select((ClimaxViewModel model) => model.climaxMainColor);
     return Stack(
       fit: StackFit.expand,
       children: [
         CustomPaint(
-          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: Colors.grey, opacity: 0.5),
+          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: climaxGhostingColor, opacity: 0.5),
         ),
         CustomPaint(
-          painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection),
+          painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection, color: climaxMainColor),
         ),
       ],
     );

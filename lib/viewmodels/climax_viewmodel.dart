@@ -74,6 +74,23 @@ class ClimaxViewModel extends ChangeNotifier {
 
   Size _size;
 
+  /// Colors
+  Color climaxMainColor = _defaultMainColor;
+  Color climaxGhostingColor = _defaultGhostingColor;
+  static const Color _defaultMainColor = Colors.amber;
+  static const Color _defaultGhostingColor = Colors.grey;
+  static final List<Color> colorsMain = List.of({
+    Colors.cyan,
+    Colors.green,
+    Colors.amber,
+  });
+  static final List<Color> colorsGhosting = List.of({
+    Colors.pink,
+    Colors.brown,
+    Colors.grey,
+  });
+
+
   ClimaxViewModel({required Size size}) : _size = size {
     resetClimax();
   }
