@@ -10,22 +10,19 @@ class ClimaxPainter extends CustomPainter {
   final double? radius;
   final ClimaxLimbEnum? selectedLimb;
   final Color color;
-  final bool isGhost;
 
-  final double _ghostingOpacity = 0.5;
-
-  ClimaxPainter({this.limbs, this.radius, this.selectedLimb, this.color = Colors.amber, this.isGhost = false});
+  ClimaxPainter({this.limbs, this.radius, this.selectedLimb, this.color = Colors.amber});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint defaultColorPaint = Paint()
       ..style = PaintingStyle.stroke // obstacles are not filled
       ..strokeWidth = 3.0
-      ..color = isGhost ? color.withOpacity(_ghostingOpacity) : color;
+      ..color = color;
 
     Paint bodyColorPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = isGhost ? color.withOpacity(_ghostingOpacity) : color;
+      ..color = color;
 
     Paint selectedColorPaint = Paint()
       ..style = PaintingStyle.stroke
@@ -35,7 +32,7 @@ class ClimaxPainter extends CustomPainter {
     if (limbs == null) return;
 
     limbs!.entries.forEach((entry) {
-      if (entry.key == ClimaxLimbEnum.BODY && !isGhost) {
+      if (entry.key == ClimaxLimbEnum.BODY) {
         final body = entry;
         // Check whether body is overlapping with a limb to make it transparent
         if (limbs!.entries.any((limb) => limb.key != ClimaxLimbEnum.BODY && limb.value.overlaps(body.value))) {
