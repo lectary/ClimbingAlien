@@ -162,17 +162,8 @@ class ClimaxViewModel extends ChangeNotifier {
     bool leftLegOutOfBorder = _leftLegOffset.dx <= minThreshold.dx || _leftLegOffset.dy <= minThreshold.dy || _leftLegOffset.dx >= maxThreshold.dx || _leftLegOffset.dy >= maxThreshold.dy;
     bool rightLegOutOfBorder = _rightLegOffset.dx <= minThreshold.dx || _rightLegOffset.dy <= minThreshold.dy || _rightLegOffset.dx >= maxThreshold.dx || _rightLegOffset.dy >= maxThreshold.dy;
 
-    while (leftArmOutOfBorder || rightArmOutOfBorder || leftLegOutOfBorder || rightLegOutOfBorder) {
-      print("zooming out");
+    if (leftArmOutOfBorder || rightArmOutOfBorder || leftLegOutOfBorder || rightLegOutOfBorder) {
       scaleAll = scaleAll - 0.025;
-
-      minThreshold = climaxCenter - (halfScreenSize - thresholdOffset) / scaleAll;
-      maxThreshold = climaxCenter + (halfScreenSize + thresholdOffset) / scaleAll;
-
-      leftArmOutOfBorder = _leftArmOffset.dx <= minThreshold.dx || _leftArmOffset.dy <= minThreshold.dy || _leftArmOffset.dx >= maxThreshold.dx || _leftArmOffset.dy >= maxThreshold.dy;
-      rightArmOutOfBorder = _rightArmOffset.dx <= minThreshold.dx || _rightArmOffset.dy <= minThreshold.dy || _rightArmOffset.dx >= maxThreshold.dx || _rightArmOffset.dy >= maxThreshold.dy;
-      leftLegOutOfBorder = _leftLegOffset.dx <= minThreshold.dx || _leftLegOffset.dy <= minThreshold.dy || _leftLegOffset.dx >= maxThreshold.dx || _leftLegOffset.dy >= maxThreshold.dy;
-      rightLegOutOfBorder = _rightLegOffset.dx <= minThreshold.dx || _rightLegOffset.dy <= minThreshold.dy || _rightLegOffset.dx >= maxThreshold.dx || _rightLegOffset.dy >= maxThreshold.dy;
     }
 
     //--------------------------------------------------------------------------------------
@@ -188,22 +179,12 @@ class ClimaxViewModel extends ChangeNotifier {
     bool leftLegInOfBorder = _leftLegOffset.dx <= maxMinThreshold.dx && _leftLegOffset.dy <= maxMinThreshold.dy && _leftLegOffset.dx >= minMaxThreshold.dx && _leftLegOffset.dy >= minMaxThreshold.dy;
     bool rightLegInOfBorder = _rightLegOffset.dx <= maxMinThreshold.dx && _rightLegOffset.dy <= maxMinThreshold.dy && _rightLegOffset.dx >= minMaxThreshold.dx && _rightLegOffset.dy >= minMaxThreshold.dy;
 
-    while (leftArmInOfBorder && rightArmInOfBorder && leftLegInOfBorder && rightLegInOfBorder) {
-      print("zooming in");
+    if (leftArmInOfBorder && rightArmInOfBorder && leftLegInOfBorder && rightLegInOfBorder) {
       if (scaleAll + 0.025 >= 1) {
         scaleAll = 1;
-        break;
       } else {
         scaleAll = scaleAll + 0.025;
       }
-
-      minMaxThreshold = climaxCenter - (halfScreenSize - thresholdOffset - thresholdOffset) / scaleAll;
-      maxMinThreshold = climaxCenter + (halfScreenSize + thresholdOffset + thresholdOffset) / scaleAll;
-
-      leftArmInOfBorder = _leftArmOffset.dx <= maxMinThreshold.dx && _leftArmOffset.dy <= maxMinThreshold.dy && _leftArmOffset.dx >= minMaxThreshold.dx && _leftArmOffset.dy >= minMaxThreshold.dy;
-      rightArmInOfBorder = _rightArmOffset.dx <= maxMinThreshold.dx && _rightArmOffset.dy <= maxMinThreshold.dy && _rightArmOffset.dx >= minMaxThreshold.dx && _rightArmOffset.dy >= minMaxThreshold.dy;
-      leftLegInOfBorder = _leftLegOffset.dx <= maxMinThreshold.dx && _leftLegOffset.dy <= maxMinThreshold.dy && _leftLegOffset.dx >= minMaxThreshold.dx && _leftLegOffset.dy >= minMaxThreshold.dy;
-      rightLegInOfBorder = _rightLegOffset.dx <= maxMinThreshold.dx && _rightLegOffset.dy <= maxMinThreshold.dy && _rightLegOffset.dx >= minMaxThreshold.dx && _rightLegOffset.dy >= minMaxThreshold.dy;
     }
 
     return scaleAll;
