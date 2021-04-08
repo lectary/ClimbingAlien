@@ -7,6 +7,7 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
+import 'package:climbing_alien/model/model_state.dart';
 import 'package:climbing_alien/services/storage_service.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -14,12 +15,11 @@ import 'package:image/image.dart' as image;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum ModelState { IDLE, LOADING }
 
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
-  ModelState _modelState = ModelState.IDLE;
+  ModelState _modelState = ModelState.completed();
 
   ModelState get modelState => _modelState;
 
@@ -61,15 +61,21 @@ class WallViewModel extends ChangeNotifier {
   /// Loads all walls, local and remote ones.
   /// Returns a [List] of [Location] grouped by [Wall.location].
   Future<void> loadAllWalls() async {
-    modelState = ModelState.LOADING;
+    modelState = ModelState.loading("Loading walls from server...");
 
-    final localWalls = await _climbingRepository.fetchAllWalls();
-    List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
-    _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: remoteWalls);
+    try {
+      final localWalls = await _climbingRepository.fetchAllWalls();
+      List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
+      _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: remoteWalls);
 
-    locationList = groupWalls(_wallList);
+      locationList = groupWalls(_wallList);
+    } catch(e) {
+      log("Error: $e");
+      modelState = ModelState.error("Error loading walls from server:\n$e");
+      return;
+    }
 
-    modelState = ModelState.IDLE;
+    modelState = ModelState.completed();
   }
 
   List<Location> groupWalls(List<Wall> wallList) {
