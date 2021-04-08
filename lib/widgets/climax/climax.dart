@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/widgets/climax/climax_ghost_painter.dart';
 import 'package:climbing_alien/widgets/climax/climax_painter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class Climax extends StatefulWidget {
   Climax({Key? key}) : super(key: key);
@@ -35,17 +37,27 @@ class _ClimaxState extends State<Climax> {
 
   @override
   Widget build(BuildContext context) {
-    final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
-    final previousLimbs = context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
+    final Map<ClimaxLimbEnum, Rect>? limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
+    final Map<ClimaxLimbEnum, Rect>? previousLimbs =
+        context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
     final double radius = context.select((ClimaxViewModel model) => model.radius);
     ClimaxLimbEnum? selection = context.select((ClimaxViewModel model) => model.selectedLimb);
     final climaxGhostingColor = context.select((ClimaxViewModel model) => model.climaxGhostingColor);
     final climaxMainColor = context.select((ClimaxViewModel model) => model.climaxMainColor);
+    List<Tuple2<Rect, Rect>> limbWithGhost = [];
+    limbs?.entries.forEach((entry1) {
+      previousLimbs?.entries.forEach((entry2) {
+        if (entry1.key != ClimaxLimbEnum.BODY && entry1.key == entry2.key && entry1.value != entry2.value) {
+          limbWithGhost.add(Tuple2(entry1.value, entry2.value));
+        }
+      });
+    });
     return Stack(
       fit: StackFit.expand,
       children: [
         CustomPaint(
-          painter: ClimaxPainter(limbs: previousLimbs, radius: radius, color: climaxGhostingColor, isGhost: true),
+          painter: ClimaxGhostPainter(
+              limbsWithGhosts: limbWithGhost, radius: radius, ghostColor: climaxGhostingColor),
         ),
         CustomPaint(
           painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection, color: climaxMainColor),
