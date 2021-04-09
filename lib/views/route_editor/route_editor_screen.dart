@@ -72,17 +72,20 @@ class RouteEditorScreen extends StatelessWidget {
                       : editMode
                           ? "Edit ${route.title}"
                           : route.title),
-                  actions: [
-                    ...editMode
-                        ? [
-                            _buildTapAction(context, initMode),
-                            _buildMoreOptionsAction(context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
-                            _toggleEditModeAction(context, false),
-                          ]
-                        : [
-                            _toggleEditModeAction(context, true),
-                          ],
-                  ],
+                  actions: initMode
+                      ? null
+                      : [
+                          ...editMode
+                              ? [
+                                  _buildTapAction(context, initMode),
+                                  _buildMoreOptionsAction(
+                                      context, initMode, joystickOn, route.graspList?.isEmpty ?? true),
+                                  _toggleEditModeAction(context, false),
+                                ]
+                              : [
+                                  _toggleEditModeAction(context, true),
+                                ],
+                        ],
                 ),
                 body: Builder(builder: (context) {
                   final joystickOn = context.select((RouteEditorViewModel model) => model.joystickOn);
