@@ -63,9 +63,39 @@ class WallScreen extends StatelessWidget {
                               selector: (context, model) => model.locationList,
                               shouldRebuild: (oldValue, newValue) => oldValue != newValue,
                               builder: (context, locations, child) {
-                                return locations.isEmpty
-                                    ? Center(child: Text("No walls available"))
-                                    : LocationPanelList(locations, size);
+                                final List<Widget> bodyWidgets = [];
+                                if (Provider.of<WallViewModel>(context, listen: false).offlineMode) {
+                                  bodyWidgets.add(Container(
+                                    color: Theme.of(context).colorScheme.error,
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text("Keine Internetverbindung!",
+                                            style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+                                        Text(
+                                          "OFFLINE MODUS",
+                                          style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onError),
+                                        ),
+                                      ],
+                                    ),
+                                  ));
+                                }
+                                bodyWidgets.add(locations.isEmpty
+                                    ? Expanded(child: Center(child: Text("No walls available")))
+                                    : LocationPanelList(locations, size));
+                                return Container(
+                                  // Using a container with `viewportConstraints.maxHeight` to be able to use [Expanded] widget in the column in case of OfflineMode and empty wall list.
+                                  // Otherwise the height is not constrained and [Expanded] cannot be used.
+                                  height: Provider.of<WallViewModel>(context, listen: false).offlineMode
+                                      ? viewportConstraints.maxHeight
+                                      : null,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: bodyWidgets,
+                                  ),
+                                );
                               },
                             );
                           case Status.error:

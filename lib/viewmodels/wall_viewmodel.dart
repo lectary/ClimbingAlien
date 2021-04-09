@@ -9,6 +9,7 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/model/model_state.dart';
 import 'package:climbing_alien/services/storage_service.dart';
+import 'package:climbing_alien/utils/exceptions/internet_exception.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as image;
@@ -30,6 +31,9 @@ class WallViewModel extends ChangeNotifier {
 
   List<Location> locationList = List.empty();
   List<Wall> _wallList = List.empty();
+
+  bool _offlineMode = false;
+  bool get offlineMode => _offlineMode;
 
   WallViewModel({required ClimbingRepository climbingRepository}) : _climbingRepository = climbingRepository {
     log("Created WallViewModel");
@@ -65,17 +69,30 @@ class WallViewModel extends ChangeNotifier {
 
     try {
       final localWalls = await _climbingRepository.fetchAllWalls();
-      List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
-      _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: remoteWalls);
+
+      try {
+        List<Wall> remoteWalls = await _climbingRepository.fetchAllWallsFromApi();
+        _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: remoteWalls);
+        _offlineMode = false;
+      } on InternetException {
+        log("No internet!");
+        _wallList = _mergeWalls(localWalls: localWalls, remoteWalls: []);
+        _offlineMode = true;
+      }
 
       locationList = groupWalls(_wallList);
-    } catch(e) {
-      log("Error: $e");
-      modelState = ModelState.error("Error loading walls from server:\n$e");
-      return;
-    }
 
-    modelState = ModelState.completed();
+      _sortLocationsAndWalls(locationList);
+
+      modelState = ModelState.completed();
+    } catch (e) {
+      modelState = ModelState.error("Error loading walls from server:\n$e");
+    }
+  }
+
+  void _sortLocationsAndWalls(List<Location> locations) {
+    locationList.forEach((location) => location.walls.sort((wall1, wall2) => wall1.title.compareTo(wall2.title)));
+    locationList.sort((loc1, loc2) => loc1.name.compareTo(loc2.name));
   }
 
   List<Location> groupWalls(List<Wall> wallList) {
@@ -129,8 +146,6 @@ class WallViewModel extends ChangeNotifier {
         }
       }
     });
-
-    resultList.sort((wall1, wall2) => wall1.location!.compareTo(wall2.location!));
 
     return resultList;
   }
