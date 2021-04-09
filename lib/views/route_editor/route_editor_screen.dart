@@ -67,7 +67,11 @@ class RouteEditorScreen extends StatelessWidget {
               final joystickOn = context.select((RouteEditorViewModel model) => model.joystickOn);
               return Scaffold(
                 appBar: AppBar(
-                  title: Text(editMode ? "Edit ${route.title}" : route.title),
+                  title: Text(initMode
+                      ? "Route image setup"
+                      : editMode
+                          ? "Edit ${route.title}"
+                          : route.title),
                   actions: [
                     ...editMode
                         ? [
@@ -177,9 +181,34 @@ class RouteEditorScreen extends StatelessWidget {
         bottom: 0,
         child: Column(
           children: [
-            Text(
-              'Adjust the size and position of the background',
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, fontSize: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Adjust the size and position of the background',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Tooltip(
+                          padding: const EdgeInsets.all(8.0),
+                          message: "Adjust the background position by dragging and the size by pinching",
+                          child: Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onPrimary)),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
