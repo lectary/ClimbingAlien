@@ -59,6 +59,7 @@ class WallViewModel extends ChangeNotifier {
   void updateCachedWallsAndLocations(List<Wall> newLocalList) {
     _wallList = _mergeWalls(localWalls: newLocalList, remoteWalls: _wallList);
     locationList = groupWalls(_wallList);
+    _sortLocationsAndWalls(locationList);
     notifyListeners();
   }
 
