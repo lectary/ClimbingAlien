@@ -16,6 +16,16 @@ class StorageService {
     return newPath;
   }
 
+  static Future<String> saveBytesToDevice(String filePath, List<int> bytes) async {
+    String fileName = basename(filePath);
+
+    final directory = await getApplicationDocumentsDirectory();
+    String newPath = '${directory.path}/$fileName';
+
+    File(newPath).writeAsBytesSync(bytes);
+    return newPath;
+  }
+
   static Future<void> deleteFromDevice(String? filePath) async {
     if (filePath == null || filePath.isEmpty) return;
 
