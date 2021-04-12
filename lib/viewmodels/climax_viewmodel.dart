@@ -293,6 +293,9 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Updates the offset of the currently selected limb.
   updateSelectedLimbPosition(Offset newPosition) {
+
+    final newPos =  (newPosition + deltaTranslateAll - climaxCenter) / scaleAll + climaxCenter;
+
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
         Offset diff = _computeClimaxCenter() - newPosition;
@@ -306,19 +309,19 @@ class ClimaxViewModel extends ChangeNotifier {
       // Add translation offset to newPosition to get the local, tapped position and not the translated one.
       // Divide through scale parameter, to get the local, tapped position and not the scaled one.
       case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _leftArmOffset = newPos;
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _rightArmOffset = newPos;
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _rightLegOffset = newPos;
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _leftLegOffset = newPos;
         break;
     }
 
