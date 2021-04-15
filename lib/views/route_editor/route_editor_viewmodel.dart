@@ -244,6 +244,7 @@ class RouteEditorViewModel extends ChangeNotifier {
     // TODO review - necessary? just rely on db stream propagation?
     graspList.add(newGrasp);
     _insertGrasp(newGrasp);
+    climaxViewModel.deselectLimb();
   }
 
   Future<void> _insertGrasp(Grasp grasp) {

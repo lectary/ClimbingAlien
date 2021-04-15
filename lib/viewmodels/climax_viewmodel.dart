@@ -98,6 +98,10 @@ class ClimaxViewModel extends ChangeNotifier {
     resetClimax();
   }
 
+  void deselectLimb() {
+    _selectedLimb = null;
+  }
+
   Grasp getCurrentPosition() {
     Grasp newGrasp = Grasp(
       leftArm: _leftArmOffset,
@@ -125,7 +129,7 @@ class ClimaxViewModel extends ChangeNotifier {
     _rightLegOffset = grasp.rightLeg;
 
     // Deselect current limb
-    _selectedLimb = null;
+    deselectLimb();
   }
 
   /// ****************************************************************************************************************
