@@ -15,11 +15,12 @@ import 'package:flutter/material.dart';
 /// default text [_errorTextDefault].
 class ImageDisplay extends StatelessWidget {
   final String? imagePath;
-  final String? emptyText;
+  final String emptyText;
   final String errorText;
+  static const _emptyTextDefault = 'No image found.';
   static const _errorTextDefault = 'Failed to load image 😢';
 
-  ImageDisplay(this.imagePath, {this.emptyText, this.errorText = _errorTextDefault});
+  ImageDisplay(this.imagePath, {this.emptyText = _emptyTextDefault, this.errorText = _errorTextDefault});
 
   Widget _errorBuilderFunction(BuildContext context, Object exception, StackTrace? stackTrace) {
     log(exception.toString());
@@ -29,7 +30,7 @@ class ImageDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imagePath == null || imagePath!.isEmpty) {
-      return emptyText == null ? Container() : Center(child: Text(emptyText!));
+      return Text(emptyText);
     } else {
       return Image.file(File(imagePath!), errorBuilder: _errorBuilderFunction);
     }

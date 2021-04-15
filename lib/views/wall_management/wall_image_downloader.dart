@@ -2,15 +2,17 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
+
 
 class WallImageDownloader extends StatefulWidget {
   final Wall wall;
 
   WallImageDownloader(this.wall);
 
-  static Future<bool?> asDialog(BuildContext context, Wall wall) async {
+  static Future<Tuple2<bool, Exception?>?> asDialog(BuildContext context, Wall wall) async {
     final model = Provider.of<WallViewModel>(context, listen: false);
-    return await showDialog<bool>(
+    return await showDialog<Tuple2<bool, Exception?>>(
         context: context,
         barrierDismissible: true,
         builder: (context) => ChangeNotifierProvider.value(
@@ -22,7 +24,7 @@ class WallImageDownloader extends StatefulWidget {
                   ElevatedButton(
                       onPressed: () async {
                         await model.cancelWallImageDownload();
-                        Navigator.pop(context);
+                        _navigatorPop(context);
                       },
                       child: Text(
                         "Cancel",
@@ -45,7 +47,13 @@ class _WallImageDownloaderState extends State<WallImageDownloader> {
   void initState() {
     super.initState();
     wallModel = Provider.of<WallViewModel>(context, listen: false);
-    WidgetsBinding.instance?.addPostFrameCallback((_) => wallModel.downloadWallImage(widget.wall));
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      try {
+        await wallModel.downloadWallImage(widget.wall);
+      } on Exception catch (e) {
+        _navigatorPop(context, error: e);
+      }
+    });
   }
 
   @override
@@ -54,7 +62,7 @@ class _WallImageDownloaderState extends State<WallImageDownloader> {
       selector: (context, model) => model.downloadProgress,
       builder: (context, progress, child) {
         if (progress == -1) {
-          WidgetsBinding.instance?.addPostFrameCallback((_) => Navigator.pop(context));
+          WidgetsBinding.instance?.addPostFrameCallback((_) => _navigatorPop(context));
           wallModel.downloadProgress = null;
         }
         return Column(
@@ -77,23 +85,37 @@ class _WallImageDownloaderState extends State<WallImageDownloader> {
 class CircularProgressIndicatorWithNumber extends StatelessWidget {
   final double? progress;
 
-  final double _indicatorSize = 48;
+  final double _indicatorHeight = 48;
 
   CircularProgressIndicatorWithNumber(this.progress);
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.center, children: [
-      LinearProgressIndicator(value: progress,),
-      // Container(height: _indicatorSize, width: _indicatorSize, child: CircularProgressIndicator(value: progress)),
-      (progress == null || progress! == -1 ) ? Container() : Padding(
-        padding: const EdgeInsets.only(top: 32.0),
-        child: Text("${_getPercentage(progress!)} %"),
-      )
-    ]);
+    return Container(
+      height: _indicatorHeight,
+      child: Stack(alignment: Alignment.center, children: [
+        LinearProgressIndicator(
+          value: progress,
+        ),
+        (progress == null || progress! == -1)
+            ? Container()
+            : Padding(
+                padding: const EdgeInsets.only(top: 32.0),
+                child: Text("${_getPercentage(progress!)} %"),
+              )
+      ]),
+    );
   }
 
   String _getPercentage(double progress) {
     return (progress * 100).floor().toString();
+  }
+}
+
+void _navigatorPop(BuildContext context, {Exception? error}) {
+  if (error != null) {
+    Navigator.pop(context, Tuple2(false, error));
+  } else {
+    Navigator.pop(context, Tuple2(true, null));
   }
 }

@@ -71,7 +71,7 @@ class WallCard extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         icon: Icon(Icons.remove_red_eye_outlined),
                         onPressed: () => WallImagePreview.asDialog(context, wall)),
-                    ...wall.isCustom
+                    ...!wall.isCustom
                         ? [
                             IconButton(
                                 padding: EdgeInsets.zero,
@@ -140,7 +140,7 @@ class WallCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
             aspectRatio: 4 / 3,
-            child: wall.status == WallStatus.persisted
+            child: wall.status == WallStatus.persisted && wall.filePath != null
                 ? ImageDisplay(
                     // TODO create some thumbnail for custom made images for consistent image size
                     // wall.isCustom ? wall.filePath : wall.thumbnailPath,

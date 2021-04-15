@@ -10,17 +10,24 @@ class Dialogs {
     return showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
-  static Future<bool?> showAlertDialog(
+  static Future<dynamic> showAlertDialog(
       {required BuildContext context,
       required String title,
+      String body = "",
       required String submitText,
-      required Function submitFunc}) async {
-    return showDialog<bool?>(
+      Function? submitFunc}) async {
+    return showDialog<dynamic>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              body.isNotEmpty ? Text(body) : Container()
+            ],
+          ),
           actions: <Widget>[
             TextButton(
                 style: TextButton.styleFrom(
@@ -38,8 +45,15 @@ class Dialogs {
                 submitText,
               ),
               onPressed: () {
-                submitFunc();
-                Navigator.of(context).pop(true);
+                if (submitFunc != null) {
+                  final result = submitFunc();
+                  if (result != null) {
+                    return Navigator.of(context).pop(result);
+                  } else {
+                    return Navigator.of(context).pop(true);
+                  }
+                }
+                return Navigator.of(context).pop(true);
               },
             ),
           ],

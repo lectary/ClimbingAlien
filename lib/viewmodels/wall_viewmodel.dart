@@ -274,6 +274,7 @@ class WallViewModel extends ChangeNotifier {
 
   Future<void> cancelWallImageDownload() async {
     selectedWall?.status = WallStatus.persisted;
+    downloadProgress = null;
     await streamSubscriptionWallImageDownload?.cancel();
   }
 
@@ -284,14 +285,22 @@ class WallViewModel extends ChangeNotifier {
 
     bytes = [];
 
-    // TODO download wall image file
+    http.StreamedResponse response;
+    try {
+      // Download thumbnail
+      File fileThumbnail = await _climbingRepository.downloadFile(wall.thumbnailName!);
+      String newPathThumbnail = await StorageService.saveToDevice(fileThumbnail.path);
+      wall.thumbnailPath = newPathThumbnail;
 
-    File fileThumbnail = await _climbingRepository.downloadFile(wall.thumbnailName!);
-    String newPathThumbnail = await StorageService.saveToDevice(fileThumbnail.path);
-    wall.thumbnailPath = newPathThumbnail;
+      // Download highRes image
+      response = await _climbingRepository.downloadFileAsStream(wall.fileName!);
+    } catch (e) {
+      _progress = null;
+      selectedWall?.status = WallStatus.persisted;
+      notifyListeners();
+      throw e;
+    }
 
-    // File file = await _climbingRepository.downloadFile(wall.fileName!);
-    http.StreamedResponse response = await _climbingRepository.downloadFileAsStream(wall.fileName!);
     final contentLength = response.contentLength ?? 0;
     streamSubscriptionWallImageDownload = response.stream.listen((List<int> newBytes) {
       bytes.addAll(newBytes);
@@ -309,7 +318,11 @@ class WallViewModel extends ChangeNotifier {
 
       notifyListeners();
     }, onError: (e) {
+      _progress = null;
+      selectedWall?.status = WallStatus.persisted;
       log("Error downloading file by stream: $e");
+      notifyListeners();
+      throw e;
     }, cancelOnError: true);
   }
 

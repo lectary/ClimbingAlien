@@ -3,6 +3,7 @@ import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
+import 'package:climbing_alien/utils/exceptions/internet_exception.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
@@ -20,9 +21,10 @@ class RouteScreen extends StatelessWidget {
       create: (context) => RouteViewModel(climbingRepository: climbingRepository, wall: Provider.of<WallViewModel>(context, listen: false).selectedWall),
       child: Consumer<RouteViewModel>(
         builder: (context, routeModel, child) {
-          final wall = context.select((WallViewModel model) => model.selectedWall!);
+          final wall = context.select((WallViewModel model) => model.selectedWall);
+          if (wall == null) return Container();
           if (wall.status == WallStatus.persisted && wall.filePath == null) {
-            WidgetsBinding.instance?.addPostFrameCallback((_) => WallImageDownloader.asDialog(context, wall));
+            WidgetsBinding.instance?.addPostFrameCallback((_) => _startImageDownloader(context, wall));
           }
           return Scaffold(
           appBar: AppBar(
@@ -100,11 +102,42 @@ class RouteScreen extends StatelessWidget {
                 ],
               ),
               onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route))),
+              onTap: () async {
+                if (wall.filePath == null) {
+                  final shallDownload = await Dialogs.showAlertDialog(context: context, title: "Wall Image needed", body: "You need to download the wall image first, before you can edit a route.", submitText: "Download") ?? false;
+                  if (shallDownload is bool && shallDownload) {
+                    WidgetsBinding.instance?.addPostFrameCallback((_) => _startImageDownloader(context, wall));
+                  }
+                  return;
+                }
+
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RouteEditorScreen(wall, route)));
+              },
             );
           });
       },
     );
+  }
+
+  _startImageDownloader(BuildContext context, Wall wall) async {
+    final result = await WallImageDownloader.asDialog(context, wall);
+    if (result != null) {
+      if (!result.item1) {
+        if (result.item2 is InternetException) {
+          Dialogs.showInfoDialog(
+            context: context,
+            title: "Error downloading Wall Image",
+            content: "It seems like you are not connected to the internet. Please check your connection and try again.",
+            // submitFunc: () async => await _startImageDownloader(context, wall)
+          );
+        } else {
+          Dialogs.showInfoDialog(
+            context: context,
+            title: "Error downloading Wall Image",
+            content: "During downloading the following error occurred:\n${result.item2}",
+          );
+        }
+      }
+    }
   }
 }
