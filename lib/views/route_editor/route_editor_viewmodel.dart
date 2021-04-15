@@ -89,6 +89,7 @@ class RouteEditorViewModel extends ChangeNotifier {
         climaxViewModel.setupByGrasp(graspList[step - 1]);
       } else {
         resetClimax(size);
+        climaxViewModel.updateGhost();
       }
     });
 
@@ -245,6 +246,9 @@ class RouteEditorViewModel extends ChangeNotifier {
     graspList.add(newGrasp);
     _insertGrasp(newGrasp);
     climaxViewModel.deselectLimb();
+    if (graspList.length > 0) {
+      climaxViewModel.updateGhost(previousGrasp: graspList[step-2]);
+    }
   }
 
   Future<void> _insertGrasp(Grasp grasp) {
