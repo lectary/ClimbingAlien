@@ -120,11 +120,11 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
 
     final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     // Check whether view or edit mode
-    final isEditMode = Provider.of<RouteEditorViewModel>(context, listen: false).editMode;
+    final initMode = Provider.of<RouteEditorViewModel>(context, listen: false).initMode;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (details) {
-        if (!isEditMode) return;
+        if (initMode) return;
         final offset = details.localPosition;
         final limb = limbs!.entries.lastWhereOrNull((entry) {
           if (entry.key != ClimaxLimbEnum.BODY) {
