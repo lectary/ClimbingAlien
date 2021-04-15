@@ -71,7 +71,7 @@ class WallCard extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         icon: Icon(Icons.remove_red_eye_outlined),
                         onPressed: () => WallImagePreview.asDialog(context, wall)),
-                    ...!wall.isCustom
+                    ...wall.isCustom
                         ? [
                             IconButton(
                                 padding: EdgeInsets.zero,

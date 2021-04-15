@@ -128,7 +128,6 @@ class RouteScreen extends StatelessWidget {
             context: context,
             title: "Error downloading Wall Image",
             content: "It seems like you are not connected to the internet. Please check your connection and try again.",
-            // submitFunc: () async => await _startImageDownloader(context, wall)
           );
         } else {
           Dialogs.showInfoDialog(
