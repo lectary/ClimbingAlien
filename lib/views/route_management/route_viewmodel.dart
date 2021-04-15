@@ -90,17 +90,7 @@ class RouteViewModel extends ChangeNotifier {
   }
 
   Future<void> insertRouteWithWall(Route route, Wall wall) async {
-    // TODO download wall image file
-    wall.status = WallStatus.downloading;
-
-    File fileThumbnail = await _climbingRepository.downloadFile(wall.thumbnailName!);
-    String newPathThumbnail = await StorageService.saveToDevice(fileThumbnail.path);
-    wall.thumbnailPath = newPathThumbnail;
-
-    File file = await _climbingRepository.downloadFile(wall.fileName!);
-    String newPath = await StorageService.saveToDevice(file.path);
-    wall.filePath = newPath;
-
+    // TODO merge and delegate to wallViewModel
     int newWallId = await _climbingRepository.insertWall(wall);
 
     await _climbingRepository.insertRoute(route..wallId = newWallId);
