@@ -90,6 +90,7 @@ class _RouteEditorState extends State<RouteEditor> {
           }
 
           if (isScale) {
+            climaxModel.isScaling = true;
             if (details.scale == 1) return;
             if (editAll) {
               climaxModel.scaleAll = climaxModel.baseScaleAll * details.scale;
@@ -101,6 +102,7 @@ class _RouteEditorState extends State<RouteEditor> {
       },
       onScaleEnd: (details) {
         climaxModel.isTranslating = false;
+        climaxModel.isScaling = false;
       },
       onTapDown: (details) {
         if (climaxModel.tapOn) {

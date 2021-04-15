@@ -52,6 +52,9 @@ class ClimaxViewModel extends ChangeNotifier {
 
   bool transformAll = false;
 
+  bool isTranslating = false;
+  bool isScaling = false;
+
   // scale
   double baseScaleBackground = 1.0;
   double scaleBackground = 1.0;
@@ -125,6 +128,22 @@ class ClimaxViewModel extends ChangeNotifier {
     _selectedLimb = null;
   }
 
+  /// ****************************************************************************************************************
+  /// Logic for followerCamera and automatic scaling
+  /// ****************************************************************************************************************
+  Offset climaxCenter = Offset.zero;
+  Offset screenCenter = Offset.zero;
+
+  _refreshFollowerCamera() {
+    climaxCenter = _computeClimaxCenter();
+    screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
+
+    deltaTranslateAll = climaxCenter - screenCenter;
+
+    // Check whether limbs exceed screen border and adjust scale
+    scaleAll = _calculateScaleBasedOnClimaxPosition(scaleAll, climaxCenter, screenCenter);
+  }
+
   /// Computing the four sides/points of the AABB (axis aligned bounding box) of climax
   _computeClimaxCenter() {
     double minXArm = _math.min(_leftArmOffset.dx, _rightArmOffset.dx);
@@ -146,18 +165,117 @@ class ClimaxViewModel extends ChangeNotifier {
     return Rect.fromLTRB(minX, minY, maxX, maxY).center;
   }
 
-  bool isTranslating = false;
+  /// Calculates the scale value based on the current positions of climax' limbs.
+  /// Uses [threshold] as percentage of the screen distance to the borders at which scaling will be triggered.
+  /// [scaleAccuracy] determines the percentage of the screen size as accuracy at which the scaling will be increased and decreased.
+  /// The lower end of scaling (zooming in) is limited by [defaultScale].
+  double _calculateScaleBasedOnClimaxPosition(double scale, Offset climaxCenter, Offset screenCenter) {
+    double scaleAll = scale;
 
-  _refreshFollowerCamera() {
-    Offset climaxCenter = _computeClimaxCenter();
-    Offset screenCenter = Offset(_size.width / 2, (_size.height - kToolbarHeight) / 2);
+    double threshold = 0.10;
+    double scaleAccuracy = 0.025;
+    double defaultScale = 1;
 
-    deltaTranslateAll = climaxCenter - screenCenter;
+    Offset thresholdOffset = Offset(threshold * _size.width, threshold * (_size.height - kToolbarHeight));
+    Offset halfScreenSize = screenCenter;
+
+    //--------------------------------------------------------------------------------------
+    // Check whether the limbs are running under the threshold to increase scale (zoom out)
+    //--------------------------------------------------------------------------------------
+
+    // Calculate the relative border offsets based on the current climaxCenter
+    Offset minThreshold = climaxCenter - (halfScreenSize - thresholdOffset) / scaleAll;
+    Offset maxThreshold = climaxCenter + (halfScreenSize + thresholdOffset) / scaleAll;
+
+    bool zoomOut = _checkZoomOut(minThreshold, maxThreshold);
+
+    while (zoomOut) {
+      scaleAll = scaleAll - scaleAccuracy;
+
+      minThreshold = climaxCenter - (halfScreenSize - thresholdOffset) / scaleAll;
+      maxThreshold = climaxCenter + (halfScreenSize + thresholdOffset) / scaleAll;
+
+      zoomOut = _checkZoomOut(minThreshold, maxThreshold);
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Check whether the limbs are running over the threshold to decrease scale (zoom in)
+    //--------------------------------------------------------------------------------------
+
+    // Calculate the relative border offsets based on the current climaxCenter
+    Offset minMaxThreshold = climaxCenter - (halfScreenSize - thresholdOffset - thresholdOffset) / scaleAll;
+    Offset maxMinThreshold = climaxCenter + (halfScreenSize + thresholdOffset + thresholdOffset) / scaleAll;
+
+    bool zoomIn = _checkZoomIn(minMaxThreshold, maxMinThreshold);
+
+    while (zoomIn) {
+      if (scaleAll + scaleAccuracy >= defaultScale) {
+        scaleAll = defaultScale;
+        break;
+      } else {
+        scaleAll = scaleAll + scaleAccuracy;
+      }
+
+      minMaxThreshold = climaxCenter - (halfScreenSize - thresholdOffset - thresholdOffset) / scaleAll;
+      maxMinThreshold = climaxCenter + (halfScreenSize + thresholdOffset + thresholdOffset) / scaleAll;
+
+      zoomIn = _checkZoomIn(minMaxThreshold, maxMinThreshold);
+    }
+
+    return scaleAll;
   }
+
+
+  /// Checks whether one of climax's limbs is lower than [minThreshold] or bigger than [maxThreshold].
+  bool _checkZoomOut(Offset minThreshold, Offset maxThreshold) {
+    bool leftArmOutOfBorder = _leftArmOffset.dx <= minThreshold.dx ||
+        _leftArmOffset.dy <= minThreshold.dy ||
+        _leftArmOffset.dx >= maxThreshold.dx ||
+        _leftArmOffset.dy >= maxThreshold.dy;
+    bool rightArmOutOfBorder = _rightArmOffset.dx <= minThreshold.dx ||
+        _rightArmOffset.dy <= minThreshold.dy ||
+        _rightArmOffset.dx >= maxThreshold.dx ||
+        _rightArmOffset.dy >= maxThreshold.dy;
+    bool leftLegOutOfBorder = _leftLegOffset.dx <= minThreshold.dx ||
+        _leftLegOffset.dy <= minThreshold.dy ||
+        _leftLegOffset.dx >= maxThreshold.dx ||
+        _leftLegOffset.dy >= maxThreshold.dy;
+    bool rightLegOutOfBorder = _rightLegOffset.dx <= minThreshold.dx ||
+        _rightLegOffset.dy <= minThreshold.dy ||
+        _rightLegOffset.dx >= maxThreshold.dx ||
+        _rightLegOffset.dy >= maxThreshold.dy;
+
+    return leftArmOutOfBorder || rightArmOutOfBorder || leftLegOutOfBorder || rightLegOutOfBorder;
+  }
+
+  /// Checks whether all of climax' limbs are bigger than [minMaxThreshold] and lower than [maxMinThreshold].
+  bool _checkZoomIn(Offset minMaxThreshold, Offset maxMinThreshold) {
+    bool leftArmInOfBorder = _leftArmOffset.dx <= maxMinThreshold.dx &&
+        _leftArmOffset.dy <= maxMinThreshold.dy &&
+        _leftArmOffset.dx >= minMaxThreshold.dx &&
+        _leftArmOffset.dy >= minMaxThreshold.dy;
+    bool rightArmInOfBorder = _rightArmOffset.dx <= maxMinThreshold.dx &&
+        _rightArmOffset.dy <= maxMinThreshold.dy &&
+        _rightArmOffset.dx >= minMaxThreshold.dx &&
+        _rightArmOffset.dy >= minMaxThreshold.dy;
+    bool leftLegInOfBorder = _leftLegOffset.dx <= maxMinThreshold.dx &&
+        _leftLegOffset.dy <= maxMinThreshold.dy &&
+        _leftLegOffset.dx >= minMaxThreshold.dx &&
+        _leftLegOffset.dy >= minMaxThreshold.dy;
+    bool rightLegInOfBorder = _rightLegOffset.dx <= maxMinThreshold.dx &&
+        _rightLegOffset.dy <= maxMinThreshold.dy &&
+        _rightLegOffset.dx >= minMaxThreshold.dx &&
+        _rightLegOffset.dy >= minMaxThreshold.dy;
+
+    return leftArmInOfBorder && rightArmInOfBorder && leftLegInOfBorder && rightLegInOfBorder;
+  }
+
+  /// ****************************************************************************************************************
+  /// ****************************************************************************************************************
 
   /// Updates climax' rectangles data for redrawing.
   _updateClimax() {
-    if (!isTranslating) {
+    if (!isTranslating && !isScaling) {
       _refreshFollowerCamera();
     }
 
@@ -195,6 +313,9 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Updates the offset of the currently selected limb.
   updateSelectedLimbPosition(Offset newPosition) {
+
+    final newPos =  (newPosition + deltaTranslateAll - climaxCenter) / scaleAll + climaxCenter;
+
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
         Offset diff = _computeClimaxCenter() - newPosition;
@@ -208,19 +329,19 @@ class ClimaxViewModel extends ChangeNotifier {
       // Add translation offset to newPosition to get the local, tapped position and not the translated one.
       // Divide through scale parameter, to get the local, tapped position and not the scaled one.
       case ClimaxLimbEnum.LEFT_ARM:
-        _leftArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _leftArmOffset = newPos;
         break;
 
       case ClimaxLimbEnum.RIGHT_ARM:
-        _rightArmOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _rightArmOffset = newPos;
         break;
 
       case ClimaxLimbEnum.RIGHT_LEG:
-        _rightLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _rightLegOffset = newPos;
         break;
 
       case ClimaxLimbEnum.LEFT_LEG:
-        _leftLegOffset = (newPosition + deltaTranslateAll) / scaleAll;
+        _leftLegOffset = newPos;
         break;
     }
 
