@@ -51,10 +51,9 @@ class Route extends BaseObject {
           title == other.title &&
           description == other.description &&
           wallId == other.wallId &&
-          routeOptionId == other.routeOptionId &&
-          graspList == other.graspList;
+          routeOptionId == other.routeOptionId;
 
   @override
   int get hashCode =>
-      title.hashCode ^ description.hashCode ^ wallId.hashCode ^ routeOptionId.hashCode ^ graspList.hashCode;
+      title.hashCode ^ description.hashCode ^ wallId.hashCode ^ routeOptionId.hashCode;
 }
