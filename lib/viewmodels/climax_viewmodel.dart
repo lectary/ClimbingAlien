@@ -440,6 +440,10 @@ class ClimaxViewModel extends ChangeNotifier {
   /// moves climax based on the parameter passed to this function [moveLimbFree].
   moveLimbFree(double degrees, double strength, {ClimaxLimbEnum? limb}) {
     if (limb != null) this._selectedLimb = limb;
+
+    // Return if no limb is selected
+    if (this.selectedLimb == null) return;
+
     this._degrees = degrees;
     this._strength = strength;
 
