@@ -30,7 +30,14 @@ class WallCard extends StatelessWidget {
             _buildHeader(context, wallModel),
             _buildBody(context),
           ]),
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RouteScreen(wall))),
+          onTap: () async {
+            wallModel.selectedWall = wall;
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider.value(value: wallModel, child: RouteScreen())));
+            wallModel.selectedWall = null;
+          },
         ),
       ),
     );

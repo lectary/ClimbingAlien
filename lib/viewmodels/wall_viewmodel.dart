@@ -16,6 +16,8 @@ import 'package:image/image.dart' as image;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:http/http.dart' as http;
+
 
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
@@ -60,7 +62,16 @@ class WallViewModel extends ChangeNotifier {
     _wallList = _mergeWalls(localWalls: newLocalList, remoteWalls: _wallList);
     locationList = groupWalls(_wallList);
     _sortLocationsAndWalls(locationList);
-    notifyListeners();
+
+     if (selectedWall != null /*  && selectedWall!.status == WallStatus.notPersisted */) {
+       Wall? wall = _wallList.firstWhereOrNull((element) =>
+       element.title == selectedWall!.title && element.location == selectedWall!.location);
+       if (wall != null) {
+          selectedWall = wall;
+       }
+     }
+
+     notifyListeners();
   }
 
   /// Loads all walls, local and remote ones.
@@ -142,6 +153,8 @@ class WallViewModel extends ChangeNotifier {
           // Update id to null, if wall was previously persisted and then deleted
           if (remote.id != null) {
             remote.id = null;
+            remote.filePath = null;
+            remote.thumbnailPath = null;
           }
           resultList.add(remote..status = WallStatus.notPersisted);
         }
@@ -249,4 +262,55 @@ class WallViewModel extends ChangeNotifier {
 
     return newPath;
   }
+
+  double? _progress;
+  double? get downloadProgress => _progress;
+  set downloadProgress(double? progress) {
+    _progress = progress;
+  }
+  StreamSubscription<List<int>>? streamSubscriptionWallImageDownload;
+  List<int> bytes = [];
+  Wall? selectedWall;
+
+  Future<void> cancelWallImageDownload() async {
+    selectedWall?.status = WallStatus.persisted;
+    await streamSubscriptionWallImageDownload?.cancel();
+  }
+
+  Future<void> downloadWallImage(Wall wall) async {
+    selectedWall?.status = WallStatus.downloading;
+    _progress = null;
+    notifyListeners();
+
+    bytes = [];
+
+    // TODO download wall image file
+
+    File fileThumbnail = await _climbingRepository.downloadFile(wall.thumbnailName!);
+    String newPathThumbnail = await StorageService.saveToDevice(fileThumbnail.path);
+    wall.thumbnailPath = newPathThumbnail;
+
+    // File file = await _climbingRepository.downloadFile(wall.fileName!);
+    http.StreamedResponse response = await _climbingRepository.downloadFileAsStream(wall.fileName!);
+    final contentLength = response.contentLength ?? 0;
+    streamSubscriptionWallImageDownload = response.stream.listen((List<int> newBytes) {
+      bytes.addAll(newBytes);
+      final downloadedLength = bytes.length;
+      _progress = downloadedLength / contentLength;
+      notifyListeners();
+    }, onDone: () async {
+      _progress = -1;
+
+      String newPath = await StorageService.saveBytesToDevice(wall.fileName!, bytes);
+      wall.filePath = newPath;
+
+      await _climbingRepository.updateWall(wall);
+      selectedWall?.status = WallStatus.persisted;
+
+      notifyListeners();
+    }, onError: (e) {
+      log("Error downloading file by stream: $e");
+    }, cancelOnError: true);
+  }
+
 }
