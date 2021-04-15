@@ -121,65 +121,42 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     // Check whether view or edit mode
     final isEditMode = Provider.of<RouteEditorViewModel>(context, listen: false).editMode;
-    final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
-    final Offset screenCenter = Provider.of<ClimaxViewModel>(context, listen: false).screenCenter;
-    return Container(
-      color: Colors.green,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: (details) {
-          if (!isEditMode) return;
-          final offset = details.localPosition;
-          final limb = limbs!.entries.lastWhereOrNull((entry) {
-            if (entry.key != ClimaxLimbEnum.BODY) {
-              final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
-              final Offset screenCenter = Provider.of<ClimaxViewModel>(context, listen: false).screenCenter;
-              final Size size = MediaQuery.of(context).size;
-              final double scaleAll = Provider.of<ClimaxViewModel>(context, listen: false).scaleAll;
-              final Offset deltaTranslateAll = Provider.of<ClimaxViewModel>(context, listen: false).deltaTranslateAll;
-              // Due to the adjustments of followerCamera, its offset has to be added to the tap position, since the
-              // positions (offsets) of the grasps are saved before applying the followerCamera related transformations.
-              final scaleDiff = (screenCenter - (screenCenter * scaleAll));
-              Offset relativeTapPosition = offset + followerCameraOffset * scaleAll;
-              late double dx;
-              late double dy;
-              // Calculating the ratio of the limbs' distance to the center compared to half of the screen size, which yields
-              // the ratio how much scaling affects this limb, i.e. nearer elements to the scaling center are scaled lesser, than
-              // values more far away.
-              double ratioX = (entry.value.center.dx - screenCenter.dx).abs() / screenCenter.dx;
-              double ratioY = (entry.value.center.dy - screenCenter.dy).abs() / screenCenter.dy;
-              if (relativeTapPosition.dx > screenCenter.dx) {
-                dx = relativeTapPosition.dx + (scaleDiff.dx * ratioX);
-              }
-              if (relativeTapPosition.dx < screenCenter.dx) {
-                dx = relativeTapPosition.dx - (scaleDiff.dx * ratioX);
-              }
-              if (relativeTapPosition.dy > screenCenter.dy) {
-                dy = relativeTapPosition.dy + (scaleDiff.dy * ratioY);
-              }
-              if (relativeTapPosition.dy < screenCenter.dy) {
-                dy = relativeTapPosition.dy - (scaleDiff.dy * ratioY);
-              }
-              return entry.value.contains(Offset(dx, dy));
-            }
-            return false;
-          });
-          if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
-        },
-        child: Transform.scale(
-          scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,
-          child: Transform.translate(
-            offset: isTranslating || isScaling ? -newDeltaTranslateAll : -followerCameraOffset,
-            child: Container(
-              color: Colors.lightBlue,
-              child: Stack(fit: StackFit.expand, children: [
-                // Transform.translate(
-                //     offset: -deltaTranslateBackground,
-                //     child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
-                Container(color: Colors.transparent, child: Climax()),
-              ]),
-            ),
-          ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (details) {
+        if (!isEditMode) return;
+        final offset = details.localPosition;
+        final limb = limbs!.entries.lastWhereOrNull((entry) {
+          if (entry.key != ClimaxLimbEnum.BODY) {
+            final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
+            final double scaleAll = Provider.of<ClimaxViewModel>(context, listen: false).scaleAll;
+            final Offset deltaTranslateAll = Provider.of<ClimaxViewModel>(context, listen: false).deltaTranslateAll;
+
+            // TODO review and fix
+            // Trying to inverse the translation and scaling of the screen.
+            // Starting by the gestures tap offset, add the global translation and divide throught the global scale.
+            // Because scaling is applied from the screen center, translate everything to the origin before scaling,
+            // and back after.
+            // This approach is kinda suitable for the use cases, but is not totally correct! There is a slight error
+            // in the position calculation.
+            Offset relativeTapPosition = ((offset + deltaTranslateAll - climaxCenter) / scaleAll) + climaxCenter;
+
+            return entry.value.contains(relativeTapPosition);
+          }
+          return false;
+        });
+        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
+      },
+      child: Transform.scale(
+        scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,
+        child: Transform.translate(
+          offset: isTranslating || isScaling ? -newDeltaTranslateAll : -followerCameraOffset,
+          child: Stack(fit: StackFit.expand, children: [
+            Transform.translate(
+                offset: -deltaTranslateBackground,
+                child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
+            Container(color: Colors.transparent, child: Climax()),
+          ]),
         ),
       ),
     );
