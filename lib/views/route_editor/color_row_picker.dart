@@ -17,6 +17,17 @@ class _ColorRowPickerState extends State<ColorRowPicker> {
   late Color selectedMainColor;
   late Color selectedGhostingColor;
 
+  static final List<Color> colorsMain = List.of({
+    Colors.cyan,
+    Colors.green,
+    Colors.amber,
+  });
+  static final List<Color> colorsGhosting = List.of({
+    Colors.pink,
+    Colors.brown,
+    Colors.grey,
+  });
+
   @override
   void initState() {
     climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
@@ -45,7 +56,7 @@ class _ColorRowPickerState extends State<ColorRowPicker> {
   _buildColorsMain(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: ClimaxViewModel.colorsMain
+      children: colorsMain
           .map((color) => GestureDetector(
                 child: Container(
                   decoration: BoxDecoration(
@@ -83,7 +94,7 @@ class _ColorRowPickerState extends State<ColorRowPicker> {
   _buildColorsGhosting(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: ClimaxViewModel.colorsGhosting
+      children: colorsGhosting
           .map((color) => GestureDetector(
                 child: Container(
                   decoration: BoxDecoration(
