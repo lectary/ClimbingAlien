@@ -208,15 +208,15 @@ class RouteEditorViewModel extends ChangeNotifier {
     if (step == graspList.length + 1) {
       print('Creating new grasp');
       climaxViewModel.climaxMoved = false;
-      notifyListeners(); // for step
+      _setupGrasp(newGrasp: true); // for step
     } else if (step > graspList.length) {
       print('Saving new grasp');
       climaxViewModel.climaxMoved = false;
       _saveNewGrasp();
     } else {
-      _setupGrasp();
-      notifyListeners(); // for step
+      _setupGrasp(); // for step
     }
+    notifyListeners();
   }
 
   deleteCurrentGrasp() async {
@@ -233,8 +233,8 @@ class RouteEditorViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  _setupGrasp() {
-    final currentGrasp = graspList[step - 1];
+  _setupGrasp({bool newGrasp = false}) {
+    final currentGrasp = newGrasp ? graspList.last : graspList[step - 1];
     climaxViewModel.setupByGrasp(currentGrasp);
   }
 
