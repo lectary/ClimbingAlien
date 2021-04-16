@@ -80,8 +80,10 @@ class ClimaxViewModel extends ChangeNotifier {
   /// Colors
   Color climaxMainColor = _defaultMainColor;
   Color climaxGhostingColor = _defaultGhostingColor;
+  Color climaxSelectionColor = _defaultSelectionColor;
   static const Color _defaultMainColor = Colors.amber;
   static const Color _defaultGhostingColor = Colors.grey;
+  static const Color _defaultSelectionColor = Colors.red;
   static final List<Color> colorsMain = List.of({
     Colors.cyan,
     Colors.green,

@@ -16,6 +16,7 @@ enum MenuOption {
   TOGGLE_JOYSTICK,
   COLOR_PICKER_MAIN,
   COLOR_PICKER_GHOSTING,
+  COLOR_PICKER_SELECTION,
 }
 
 /// Screen for creating and editing grasps for a route.
@@ -362,6 +363,22 @@ class RouteEditorScreen extends StatelessWidget {
                             ),
                             Text("Ghosting color"),
                           ],
+                        )),
+                    PopupMenuItem(
+                        value: MenuOption.COLOR_PICKER_SELECTION,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                  height: 18,
+                                  width: 18,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Provider.of<ClimaxViewModel>(context, listen: false).climaxSelectionColor)),
+                            ),
+                            Text("Selection color"),
+                          ],
                         ))
                   ],
               onSelected: (dynamic selected) async {
@@ -391,6 +408,14 @@ class RouteEditorScreen extends StatelessWidget {
                       climaxModel.climaxGhostingColor = selectedColor;
                     }
                     break;
+                  case MenuOption.COLOR_PICKER_SELECTION:
+                    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
+                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxSelectionColor);
+                    if (selectedColor != null) {
+                      climaxModel.climaxSelectionColor = selectedColor;
+                    }
+                    break;
+
                 }
               }
               );

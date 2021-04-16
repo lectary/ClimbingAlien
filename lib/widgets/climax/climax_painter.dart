@@ -9,25 +9,26 @@ class ClimaxPainter extends CustomPainter {
   final Map<ClimaxLimbEnum, Rect>? limbs;
   final double? radius;
   final ClimaxLimbEnum? selectedLimb;
-  final Color color;
+  final Color climaxColor;
+  final Color selectionColor;
 
-  ClimaxPainter({this.limbs, this.radius, this.selectedLimb, this.color = Colors.amber});
+  ClimaxPainter({this.limbs, this.radius, this.climaxColor = Colors.amber, this.selectedLimb, this.selectionColor = Colors.red});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint defaultColorPaint = Paint()
       ..style = PaintingStyle.stroke // obstacles are not filled
       ..strokeWidth = 3.0
-      ..color = color;
+      ..color = climaxColor;
 
     Paint bodyColorPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = color;
+      ..color = climaxColor;
 
     Paint selectedColorPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0
-      ..color = Colors.red;
+      ..color = selectionColor;
 
     if (limbs == null) return;
 

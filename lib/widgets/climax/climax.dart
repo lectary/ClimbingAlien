@@ -42,8 +42,11 @@ class _ClimaxState extends State<Climax> {
         context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
     final double radius = context.select((ClimaxViewModel model) => model.radius);
     ClimaxLimbEnum? selection = context.select((ClimaxViewModel model) => model.selectedLimb);
+    // Colors
     final climaxGhostingColor = context.select((ClimaxViewModel model) => model.climaxGhostingColor);
     final climaxMainColor = context.select((ClimaxViewModel model) => model.climaxMainColor);
+    final climaxSelectionColor = context.select((ClimaxViewModel model) => model.climaxSelectionColor);
+    // Ghost limbs
     List<Tuple2<Rect, Rect>> limbWithGhost = [];
     limbs?.entries.forEach((entry1) {
       previousLimbs?.entries.forEach((entry2) {
@@ -60,7 +63,7 @@ class _ClimaxState extends State<Climax> {
               limbsWithGhosts: limbWithGhost, radius: radius, ghostColor: climaxGhostingColor),
         ),
         CustomPaint(
-          painter: ClimaxPainter(limbs: limbs, radius: radius, selectedLimb: selection, color: climaxMainColor),
+          painter: ClimaxPainter(limbs: limbs, radius: radius, climaxColor: climaxMainColor, selectedLimb: selection, selectionColor: climaxSelectionColor),
         ),
       ],
     );
