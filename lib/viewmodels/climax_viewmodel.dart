@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math' as _math;
 
 import 'package:climbing_alien/data/entity/grasp.dart';
+import 'package:climbing_alien/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
 
 enum ClimaxLimbEnum {
@@ -77,27 +78,40 @@ class ClimaxViewModel extends ChangeNotifier {
 
   Size _size;
 
-  /// Colors
-  Color climaxMainColor = _defaultMainColor;
-  Color climaxGhostingColor = _defaultGhostingColor;
-  Color climaxSelectionColor = _defaultSelectionColor;
-  static const Color _defaultMainColor = Colors.amber;
-  static const Color _defaultGhostingColor = Colors.grey;
-  static const Color _defaultSelectionColor = Colors.red;
-  static final List<Color> colorsMain = List.of({
-    Colors.cyan,
-    Colors.green,
-    Colors.amber,
-  });
-  static final List<Color> colorsGhosting = List.of({
-    Colors.pink,
-    Colors.brown,
-    Colors.grey,
-  });
 
+  /// Colors
+
+  Color _climaxMainColor = SharedPrefsService.DEFAULT_CLIMAX_COLOR;
+  Color get climaxMainColor => _climaxMainColor;
+  set climaxMainColor(Color climaxMainColor) {
+    _climaxMainColor = climaxMainColor;
+    SharedPrefsService.saveClimaxColor(climaxMainColor);
+  }
+
+  Color _climaxGhostingColor = SharedPrefsService.DEFAULT_GHOSTING_COLOR;
+  Color get climaxGhostingColor => _climaxGhostingColor;
+  set climaxGhostingColor(Color climaxGhostingColor) {
+    _climaxGhostingColor = climaxGhostingColor;
+    SharedPrefsService.saveGhostingColor(climaxGhostingColor);
+  }
+
+  Color _climaxSelectionColor = SharedPrefsService.DEFAULT_SELECTION_COLOR;
+  Color get climaxSelectionColor => _climaxSelectionColor;
+  set climaxSelectionColor(Color climaxSelectionColor) {
+    _climaxSelectionColor = climaxSelectionColor;
+    SharedPrefsService.saveSelectionColor(climaxSelectionColor);
+  }
 
   ClimaxViewModel({required Size size}) : _size = size {
     resetClimax();
+    _setupColors();
+  }
+
+  void _setupColors() async {
+    _climaxMainColor = await SharedPrefsService.getClimaxColor();
+    _climaxGhostingColor = await SharedPrefsService.getGhostingColor();
+    _climaxSelectionColor = await SharedPrefsService.getSelectionColor();
+    notifyListeners();
   }
 
   void deselectLimb() {
