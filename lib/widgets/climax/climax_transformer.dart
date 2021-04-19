@@ -63,7 +63,7 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     _animationScaleController.reset();
 
     _scaleAnimation = Tween<double>(begin: scaleAll, end: newScaleAll)
-        .animate(CurvedAnimation(parent: _animationXController, curve: Curves.fastOutSlowIn))
+        .animate(CurvedAnimation(parent: _animationScaleController, curve: Curves.fastOutSlowIn))
       ..addListener(() {
         setState(() {});
       });
