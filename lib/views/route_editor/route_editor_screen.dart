@@ -396,21 +396,21 @@ class RouteEditorScreen extends StatelessWidget {
                     break;
                   case MenuOption.COLOR_PICKER_MAIN:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxMainColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Climax", color: climaxModel.climaxMainColor);
                     if (selectedColor != null) {
                       climaxModel.climaxMainColor = selectedColor;
                     }
                     break;
                   case MenuOption.COLOR_PICKER_GHOSTING:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxGhostingColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Ghosting", color: climaxModel.climaxGhostingColor);
                     if (selectedColor != null) {
                       climaxModel.climaxGhostingColor = selectedColor;
                     }
                     break;
                   case MenuOption.COLOR_PICKER_SELECTION:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, color: climaxModel.climaxSelectionColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Selection", color: climaxModel.climaxSelectionColor);
                     if (selectedColor != null) {
                       climaxModel.climaxSelectionColor = selectedColor;
                     }

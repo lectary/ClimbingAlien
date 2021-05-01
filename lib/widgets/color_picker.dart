@@ -1,18 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
+/// Custom widget for selecting a color from [_ColorPickerState._colors].
+///
+/// Meant to be displayed as a dialog via [showDialog].
+/// Default dialog title is `Choose color`. By passing a value to [titleAddendum], title will be `Choose color for <titleAddendum>.
+/// Passing a [color] that exists in [_ColorPickerState._colors], will result in that this color is preselected when the dialog opens.
 class ColorPicker extends StatefulWidget {
   final Color? color;
 
   ColorPicker(this.color);
 
   /// Static function for calling [CategoryForm] wrapped in an [AlertDialog].
-  static Future<Color?> asDialog(BuildContext context, {Color? color}) async {
+  static Future<Color?> asDialog(BuildContext context,{String? titleAddendum, Color? color}) async {
     return await showDialog<Color>(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text("Farbe auswählen"),
+        title: Text(titleAddendum == null ? "Choose color" : "Choose color for $titleAddendum"),
         content: ColorPicker(color),
       ),
     );
@@ -105,7 +111,7 @@ class _ColorPickerState extends State<ColorPicker> {
               Expanded(
                 flex: 4,
                 child: ElevatedButton(
-                  child: Text("Ok"),
+                  child: Text("OK"),
                   onPressed: () {
                     Navigator.pop(context, selectedColor);
                   },
