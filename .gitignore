@@ -120,3 +120,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Flutter version management CLI-tool
+.fvm
