@@ -1,11 +1,17 @@
 import 'package:camera/camera.dart';
-import 'package:climbing_alien/views/drawer/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../main.dart';
 import 'display_image_screen.dart';
+
+/// Custom widget for taking a picture with the camera.
+///
+/// ATTENTION:
+/// For making the widget work,
+/// `late List<CameraDescription> cameras;` have to be specified globally in `main.dart`. as well as the cameras queried by `cameras = await availableCameras();`.
+/// Then remove the following line: `final cameras = [];`.
+final cameras = [];
 
 class CameraScreen extends StatefulWidget {
   static const routeName = "/camera";
@@ -47,7 +53,6 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Camera")),
-        drawer: AppDrawer(),
         body: !controller.value.isInitialized
             ? Container()
             : AspectRatio(
