@@ -87,9 +87,7 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
     double distance = (offset - center).distance;
     double normalizedDistance = _math.min(distance / (bigRadius - smallRadius), 1.0);
 
-    if (widget.onDirectionChanged != null) {
-      widget.onDirectionChanged(degrees, normalizedDistance);
-    }
+    widget.onDirectionChanged(degrees, normalizedDistance);
   }
 
   /// Calculates the new position of the control stick.
