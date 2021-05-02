@@ -88,8 +88,8 @@ class WallCard extends StatelessWidget {
                                     await Dialogs.showAlertDialog(
                                         context: context,
                                         title:
-                                            'Diese Wand hat bereits Routen gespeichert! Wenn Sie die Wand löschen, werden auch alle Routen gelöscht!',
-                                        submitText: 'Löschen',
+                                            'This wall already has saved routes! When you delete the wall, its routes will be deleted as well!',
+                                        submitText: 'Delete',
                                         submitFunc: () => wallViewModel.deleteWall(wall, cascade: true));
                                   }
                                 })
@@ -133,7 +133,6 @@ class WallCard extends StatelessWidget {
     }
   }
 
-
   Widget _buildBody(BuildContext context) {
     return Expanded(
       child: Padding(
@@ -142,37 +141,35 @@ class WallCard extends StatelessWidget {
             aspectRatio: 4 / 3,
             child: wall.status == WallStatus.persisted && wall.filePath != null
                 ? ImageDisplay(
-                    // TODO create some thumbnail for custom made images for consistent image size
-                    // wall.isCustom ? wall.filePath : wall.thumbnailPath,
                     wall.thumbnailPath,
                     emptyText: 'No image found',
                   )
                 : (wall.status == WallStatus.downloading
-            ? Center(child: CircularProgressIndicator())
-            : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
-                isExpanded
-                    ? CachedNetworkImage(
-                  imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.thumbnailName!),
-                  progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                      child: CircularProgressIndicator(
-                        value: downloadProgress.totalSize != null
-                            ? downloadProgress.downloaded / downloadProgress.totalSize!
-                            : null,
-                      )),
-                  errorWidget: (context, url, error) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error),
-                      SizedBox(height: 10),
-                      Text(
-                        "Error loading thumbnail:\n" +
-                            (error.toString().contains('404') ? "Not found" : error.toString()),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                )
-                    : Container()))),
+                    ? Center(child: CircularProgressIndicator())
+                    : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
+                        isExpanded
+                            ? CachedNetworkImage(
+                                imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.thumbnailName!),
+                                progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+                                    child: CircularProgressIndicator(
+                                  value: downloadProgress.totalSize != null
+                                      ? downloadProgress.downloaded / downloadProgress.totalSize!
+                                      : null,
+                                )),
+                                errorWidget: (context, url, error) => Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      "Error loading thumbnail:\n" +
+                                          (error.toString().contains('404') ? "Not found" : error.toString()),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  ],
+                                ),
+                              )
+                            : Container()))),
       ),
     );
   }

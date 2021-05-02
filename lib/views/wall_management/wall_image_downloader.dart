@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
-
+/// Widget for displaying the download process of a wall's image download.
+/// Triggers the download process from [WallViewModel.downloadWallImage].
+/// This widget is meant to be called as a dialog via [asDialog], which returns a [Tuple2] of either ([False], [Exception]) or ([True], [Null])
+/// When called as dialog, the download gets cancelled when the negative button is pressed.
 class WallImageDownloader extends StatefulWidget {
   final Wall wall;
 

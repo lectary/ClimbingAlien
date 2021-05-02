@@ -4,7 +4,7 @@ import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:flutter/material.dart';
 
-/// Class for drawing Climax, the Cli-mbing max-erl.
+/// [CustomPainter] class for drawing Climax, the Cli-mbing max-erl.
 class ClimaxPainter extends CustomPainter {
   final Map<ClimaxLimbEnum, Rect>? limbs;
   final double? radius;
@@ -12,7 +12,8 @@ class ClimaxPainter extends CustomPainter {
   final Color climaxColor;
   final Color selectionColor;
 
-  ClimaxPainter({this.limbs, this.radius, this.climaxColor = Colors.amber, this.selectedLimb, this.selectionColor = Colors.red});
+  ClimaxPainter(
+      {this.limbs, this.radius, this.climaxColor = Colors.amber, this.selectedLimb, this.selectionColor = Colors.red});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -48,6 +49,9 @@ class ClimaxPainter extends CustomPainter {
 
     var position = limbs![ClimaxLimbEnum.BODY]!.center;
 
+    // Calculates and draws the line from climax body center to the edge of the corresponding limb.
+    // The corresponding point on the edge, is the point that is, based on the original limb position (which means, that subsequent position updates does NOT affect this),
+    // on the circle with an angular of 45 degrees.
     Offset offsetForPointOnBorderTopLeft =
         Offset(cos(Utils.degreesToRadians(45)) * radius!, cos(Utils.degreesToRadians(45)) * radius!);
     canvas.drawLine(

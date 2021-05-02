@@ -4,6 +4,10 @@ import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:flutter/material.dart';
 
+/// ViewModel used by [WallForm] to query all saved locations.
+///
+/// As long as the viewModel exists, i.e. during the duration of a wall form, it listens to the DB-stream of walls,
+/// and creates a list of locations, from which suggestions are build by calling [getSuggestionsByString].
 class WallFormViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
   late StreamSubscription<List<Wall>> _wallStreamSubscription;
@@ -21,13 +25,16 @@ class WallFormViewModel extends ChangeNotifier {
 
   void wallStreamListener(List<Wall> wallList) {
     walls = wallList.where((Wall wall) => wall.location != null && wall.location!.isNotEmpty).toList();
-    suggestions = walls.map((e) {
-      if (e.location == null) {
-        return "<no-location>";
-      } else {
-        return e.location!;
-      }
-    }).toSet().toList();
+    suggestions = walls
+        .map((e) {
+          if (e.location == null) {
+            return "<no-location>";
+          } else {
+            return e.location!;
+          }
+        })
+        .toSet()
+        .toList();
   }
 
   List<Wall> walls = List.empty();

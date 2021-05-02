@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 typedef JoystickDirectionCallback = void Function(double degrees, double distance);
 typedef JoystickSliderCallback = void Function(double speed);
+typedef JoystickButtonCallback = void Function();
 
 const defaultSize = 100.0;
 const defaultStickSize = 50.0;
@@ -13,7 +14,11 @@ const defaultStickSize = 50.0;
 /// Specifies on which side of the joystick the slider will be displayed
 enum SliderSide { LEFT, RIGHT, TOP, BOTTOM }
 
-/// A joystick with directional buttons and a slider for adjusting speed.
+/// A joystick with directional buttons and a slider, attached on the side, for adjusting speed.
+///
+/// [JoystickDirectionCallback] provides the user with the current direction in degrees as well as the drag distance of the joystick.
+/// [JoystickSliderCallback] gets called when the slider is used and returns the speed value.
+/// [JoystickButtonCallback] can be used to call a function when a directional button is used.
 class JoystickWithButtonAndSlider extends StatefulWidget {
   final double size;
   final double sizeControlStick;
@@ -24,10 +29,10 @@ class JoystickWithButtonAndSlider extends StatefulWidget {
   final Color colorIcon;
   final SliderSide sliderSide;
 
-  final Function onClickedUp;
-  final Function onClickedDown;
-  final Function onClickedLeft;
-  final Function onClickedRight;
+  final JoystickButtonCallback onClickedUp;
+  final JoystickButtonCallback onClickedDown;
+  final JoystickButtonCallback onClickedLeft;
+  final JoystickButtonCallback onClickedRight;
 
   JoystickWithButtonAndSlider(
       {this.size = defaultSize,
@@ -200,28 +205,28 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
                         child: InkResponse(
                             radius: widget.sizeControlStick / 4,
                             splashColor: widget.colorControlStick,
-                            onTap: widget.onClickedUp as void Function()? ?? () {},
+                            onTap: widget.onClickedUp,
                             child: Icon(Icons.keyboard_arrow_up, color: widget.colorIcon))),
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: InkResponse(
                             radius: widget.sizeControlStick / 4,
                             splashColor: widget.colorControlStick,
-                            onTap: widget.onClickedDown as void Function()? ?? () {},
+                            onTap: widget.onClickedDown,
                             child: Icon(Icons.keyboard_arrow_down, color: widget.colorIcon))),
                     Align(
                         alignment: Alignment.centerLeft,
                         child: InkResponse(
                             radius: widget.sizeControlStick / 4,
                             splashColor: widget.colorControlStick,
-                            onTap: widget.onClickedLeft as void Function()? ?? () {},
+                            onTap: widget.onClickedLeft,
                             child: Icon(Icons.keyboard_arrow_left, color: widget.colorIcon))),
                     Align(
                         alignment: Alignment.centerRight,
                         child: InkResponse(
                             radius: widget.sizeControlStick / 4,
                             splashColor: widget.colorControlStick,
-                            onTap: widget.onClickedRight as void Function()? ?? () {},
+                            onTap: widget.onClickedRight,
                             child: Icon(Icons.keyboard_arrow_right, color: widget.colorIcon))),
                   ],
                 ),

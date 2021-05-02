@@ -8,6 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
+/// Widget responsible for listening and triggering the update process of Climax as well as its Ghost.
+///
+/// This widgets uses [Timer] to periodically trigger [ClimaxViewModel.updateLimbFree], which updates Climax' movement.
+/// It further listens to the various climax variables, like its limbs, selection or colors to update climax state.
+/// The drawing process is delegated to [ClimaxPainter] and [ClimaxGhostPainter].
+/// By using a stack, climax' ghost is drawn first and then climax to achieve that climax is on top of its ghost.
 class Climax extends StatefulWidget {
   Climax({Key? key}) : super(key: key);
 
@@ -37,6 +43,7 @@ class _ClimaxState extends State<Climax> {
 
   @override
   Widget build(BuildContext context) {
+    // Get limbs, selection and other values
     final Map<ClimaxLimbEnum, Rect>? limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     final Map<ClimaxLimbEnum, Rect>? previousLimbs =
         context.select((ClimaxViewModel model) => model.previousClimaxLimbs);
@@ -59,11 +66,15 @@ class _ClimaxState extends State<Climax> {
       fit: StackFit.expand,
       children: [
         CustomPaint(
-          painter: ClimaxGhostPainter(
-              limbsWithGhosts: limbWithGhost, radius: radius, ghostColor: climaxGhostingColor),
+          painter: ClimaxGhostPainter(limbsWithGhosts: limbWithGhost, radius: radius, ghostColor: climaxGhostingColor),
         ),
         CustomPaint(
-          painter: ClimaxPainter(limbs: limbs, radius: radius, climaxColor: climaxMainColor, selectedLimb: selection, selectionColor: climaxSelectionColor),
+          painter: ClimaxPainter(
+              limbs: limbs,
+              radius: radius,
+              climaxColor: climaxMainColor,
+              selectedLimb: selection,
+              selectionColor: climaxSelectionColor),
         ),
       ],
     );

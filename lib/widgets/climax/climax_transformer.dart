@@ -6,6 +6,8 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Widget responsible for applying transformations like translation or scaling to Climax as well as handling Climax' limb selection.
+/// Further contains animations to apply transformations gradually instead of instantly.
 class ClimaxTransformer extends StatefulWidget {
   /// File path of the image that should be used as background
   final String? background;
@@ -64,15 +66,14 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
 
     _scaleAnimation = Tween<double>(begin: scaleAll, end: newScaleAll)
         .animate(CurvedAnimation(parent: _animationScaleController, curve: Curves.fastOutSlowIn))
-      ..addListener(() {
-        setState(() {});
-      });
+          ..addListener(() {
+            setState(() {});
+          });
 
     _animationScaleController.forward();
 
     scaleAll = newScaleAll;
   }
-
 
   _updateTranslateAnimation() {
     if (deltaTranslateAll == newDeltaTranslateAll && !init) {

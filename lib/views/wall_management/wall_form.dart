@@ -8,6 +8,9 @@ import 'package:climbing_alien/widgets/simple_image_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// [Form] widget for creating a custom [Wall] entity.
+/// The [TextFormField] for the property [Wall.location] shows suggestions based on all already saved locations.
+/// Uses [SimpleImagePicker] for choosing an image for the wall.
 class WallForm extends StatefulWidget {
   final Wall? wall;
 

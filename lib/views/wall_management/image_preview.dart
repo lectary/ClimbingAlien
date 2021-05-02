@@ -6,6 +6,9 @@ import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
+/// Simple widget for displaying the image of the passed [Wall].
+/// If the wall is already persisted, the saved image is displayed via [Wall.filePath], otherwise the image is
+/// downloaded from the API server by [Wall.fileName].
 class WallImagePreview extends StatelessWidget {
   final Wall wall;
 
@@ -23,12 +26,13 @@ class WallImagePreview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Flexible(child: Scrollbar(isAlwaysShown: true, child: SingleChildScrollView(child: WallImagePreview(wall)))),
+              Flexible(
+                  child: Scrollbar(isAlwaysShown: true, child: SingleChildScrollView(child: WallImagePreview(wall)))),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  "Abbrechen",
+                  "Cancel",
                   style: TextStyle(color: Theme.of(context).colorScheme.onError),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -51,8 +55,8 @@ class WallImagePreview extends StatelessWidget {
         imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.fileName!),
         progressIndicatorBuilder: (context, url, downloadProgress) => Center(
             child: CircularProgressIndicator(
-              value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
-            )),
+          value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
+        )),
         errorWidget: (context, url, error) => Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

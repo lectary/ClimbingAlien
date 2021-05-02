@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// A custom slider widget with a top label.
+///
+/// Uses a normal [Slider] widget but with a custom [RoundedRectSliderTrackShape] to adjust the margin and width of the slider for the app's needs.
 class CustomSliderWithLabel extends StatelessWidget {
   final String labelText;
   final double size;

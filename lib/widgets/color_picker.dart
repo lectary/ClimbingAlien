@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 
 /// Custom widget for selecting a color from [_ColorPickerState._colors].
 ///
@@ -13,7 +11,7 @@ class ColorPicker extends StatefulWidget {
   ColorPicker(this.color);
 
   /// Static function for calling [CategoryForm] wrapped in an [AlertDialog].
-  static Future<Color?> asDialog(BuildContext context,{String? titleAddendum, Color? color}) async {
+  static Future<Color?> asDialog(BuildContext context, {String? titleAddendum, Color? color}) async {
     return await showDialog<Color>(
       context: context,
       barrierDismissible: false,

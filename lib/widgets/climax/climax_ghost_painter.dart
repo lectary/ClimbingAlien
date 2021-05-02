@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:vector_math/vector_math.dart' as vec;
 
+/// [CustomPainter] class for drawing Climax' ghost as well as the arrows from the ghost limb to the real limb.
 class ClimaxGhostPainter extends CustomPainter {
   final List<Tuple2<Rect, Rect>> limbsWithGhosts;
   final double? radius;
@@ -41,6 +42,7 @@ class ClimaxGhostPainter extends CustomPainter {
       Offset offsetGhostToLimb = (tuple.item1.center - tuple.item2.center) / _marginToPoint + tuple.item2.center;
       Offset offsetLimbToGhost = (tuple.item2.center - tuple.item1.center) / _marginToPoint + tuple.item1.center;
 
+      // Calculate start and end point of the triangle arrow head. `Start` and `End` just two points on the arrow line.
       // TODO review - percentage is not ideal if the ghost is near the limb
       Offset startOfArrowHead = (tuple.item1.center - tuple.item2.center) / _marginToPoint * 1.025 + tuple.item2.center;
       Offset endOfArrowHead = (tuple.item1.center - tuple.item2.center) / _marginToPoint / 1.05 + tuple.item2.center;
@@ -52,6 +54,8 @@ class ClimaxGhostPainter extends CustomPainter {
     });
   }
 
+  /// Calculates the path for drawing a triangle
+  /// [Target] is the the  apex and [Source] the corresponding center of the opposing line.
   Path getTrianglePath(Offset target, Offset source) {
     double x = target.dx;
     double y = target.dy;

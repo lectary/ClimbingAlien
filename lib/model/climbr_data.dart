@@ -1,5 +1,6 @@
 import 'package:climbing_alien/data/entity/wall.dart';
 
+/// Represents the data obtained by the ClimbrApi.
 class ClimbrData {
   List<Wall> walls;
 

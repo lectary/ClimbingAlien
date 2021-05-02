@@ -2,6 +2,9 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Custom image picker dialog using the [ImagePicker] package.
+/// User can choose between [ImageSource.camera] and [ImageSource.gallery] as source for picking an image.
+/// Taking image with the camera or picking image from gallery is delegated to [ImagePicker] package.
 class SimpleImagePicker extends StatelessWidget {
   final Wall? wall;
   final ImagePicker picker = ImagePicker();
@@ -18,6 +21,7 @@ class SimpleImagePicker extends StatelessWidget {
             ));
   }
 
+  /// Method for getting an image via [ImagePicker] based on the [ImageSource].
   Future getImage(BuildContext context, ImageSource imageSource) async {
     final pickedFile = await picker.getImage(source: imageSource);
     if (pickedFile != null) {

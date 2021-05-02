@@ -72,10 +72,10 @@ class WallScreen extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
-                                        Text("Keine Internetverbindung!",
+                                        Text("No Internet connection!",
                                             style: TextStyle(color: Theme.of(context).colorScheme.onError)),
                                         Text(
-                                          "OFFLINE MODUS",
+                                          "OFFLINE MODE",
                                           style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onError),
                                         ),
                                       ],
