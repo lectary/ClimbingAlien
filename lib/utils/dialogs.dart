@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Helper class with custom static dialogs.
 class Dialogs {
   static Future<DateTime?> showDatePickerDialog(BuildContext context) async {
     return showDatePicker(
@@ -10,6 +11,11 @@ class Dialogs {
     return showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
+  /// Custom alert dialog with [title], optional [body], [submitText] and [submitFunc].
+  /// Has a negative `Cancel` button.
+  /// The positive button has as its label [submitText] and as its callback [submitFunc].
+  /// Returns either [False] in case the negative button is pressed or when the positive button is pressed,
+  /// either the result of [submitFunc], or in case [submitFunc] is missing or returns [Null], [True].
   static Future<dynamic> showAlertDialog(
       {required BuildContext context,
       required String title,
@@ -24,9 +30,7 @@ class Dialogs {
           title: Text(title),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              body.isNotEmpty ? Text(body) : Container()
-            ],
+            children: [body.isNotEmpty ? Text(body) : Container()],
           ),
           actions: <Widget>[
             TextButton(
@@ -34,7 +38,7 @@ class Dialogs {
                   primary: Colors.red,
                 ),
                 child: Text(
-                  "Abbrechen",
+                  "Cancel",
                 ),
                 onPressed: () => Navigator.of(context).pop(false)),
             TextButton(
@@ -62,9 +66,10 @@ class Dialogs {
     );
   }
 
-  static Future<bool?> showInfoDialog(
+  /// Custom info dialog with mandatory [title] and [content] and a positive `OK` button.
+  static Future<void> showInfoDialog(
       {required BuildContext context, required String title, required String content}) async {
-    return showDialog<bool?>(
+    return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -73,23 +78,13 @@ class Dialogs {
           content: Text(content),
           actions: <Widget>[
             TextButton(
-                style: TextButton.styleFrom(
-                  primary: Colors.red,
-                ),
-                child: Text(
-                  "Abbrechen",
-                ),
-                onPressed: () => Navigator.of(context).pop(false)),
-            TextButton(
               style: TextButton.styleFrom(
                 primary: Theme.of(context).colorScheme.primaryVariant,
               ),
               child: Text(
                 'OK',
               ),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
