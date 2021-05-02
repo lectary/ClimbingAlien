@@ -6,7 +6,7 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/color_picker.dart';
-import 'package:climbing_alien/widgets/controls/joystick_extended.dart';
+import 'package:climbing_alien/widgets/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 

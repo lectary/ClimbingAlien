@@ -182,11 +182,7 @@ class RouteEditorViewModel extends ChangeNotifier {
 
   /// Represents the current number of grasp to edit/display.
   /// This is NOT the index of the array, but rather `x of y Grasps`.
-  int _step = 1;
-  int get step => _step;
-  set step(int step) {
-    _step = step;
-  }
+  int step = 1;
 
   resetClimax(Size size) {
     Offset screenCenter = Offset(size.width / 2.0, (size.height - kToolbarHeight) / 2.0);

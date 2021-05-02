@@ -377,6 +377,8 @@ class ClimaxViewModel extends ChangeNotifier {
       case ClimaxLimbEnum.LEFT_LEG:
         _leftLegOffset = newPos;
         break;
+      default:
+        break;
     }
 
     climaxMoved = true;
@@ -524,6 +526,8 @@ class ClimaxViewModel extends ChangeNotifier {
 
       case ClimaxLimbEnum.RIGHT_LEG:
         _rightLegOffset = _rightLegOffset + Offset(moveX, moveY);
+        break;
+      default:
         break;
     }
 

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:climbing_alien/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class AssetImagePicker extends StatelessWidget {
@@ -30,27 +29,32 @@ class AssetImagePicker extends StatelessWidget {
             return pathList.isEmpty
                 ? Center(child: Text('No images available'))
                 : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text('Choose an image by tapping on it!', style: TextStyle(fontStyle: FontStyle.italic, fontSize: 20)),
-                    ),
-                    Expanded(
-                      child: ListView.separated(
-                          itemCount: pathList.length,
-                          separatorBuilder: (context, index) => Divider(thickness: 1, color: Theme.of(context).colorScheme.primary,),
-                          itemBuilder: (context, index) => ListTile(
-                                title: Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(pathList[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text('Choose an image by tapping on it!',
+                            style: TextStyle(fontStyle: FontStyle.italic, fontSize: 20)),
+                      ),
+                      Expanded(
+                        child: ListView.separated(
+                            itemCount: pathList.length,
+                            separatorBuilder: (context, index) => Divider(
+                                  thickness: 1,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
-                                subtitle: Image.asset(pathList[index], fit: BoxFit.fill),
-                                onTap: () => pickImage(context, pathList[index]),
-                              )),
-                    ),
-                  ],
-                );
+                            itemBuilder: (context, index) => ListTile(
+                                  title: Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Text(pathList[index],
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                  ),
+                                  subtitle: Image.asset(pathList[index], fit: BoxFit.fill),
+                                  onTap: () => pickImage(context, pathList[index]),
+                                )),
+                      ),
+                    ],
+                  );
           } else {
             return Center(child: CircularProgressIndicator());
           }

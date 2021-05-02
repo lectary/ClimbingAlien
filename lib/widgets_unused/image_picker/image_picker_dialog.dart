@@ -113,6 +113,8 @@ class _RadioImagePickerState extends State<RadioImagePicker> {
                       case SelectedImageSource.GALLERY:
                         getImage(ImageSource.gallery);
                         break;
+                      default:
+                        break;
                     }
                   })
             ],

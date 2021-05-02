@@ -4,9 +4,8 @@ import 'package:climbing_alien/utils/utils.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
 import 'package:climbing_alien/views/wall_management/wall_form_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
-import 'package:climbing_alien/widgets/image_picker/simple_image_picker_dialog.dart';
+import 'package:climbing_alien/widgets/simple_image_picker_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 class WallForm extends StatefulWidget {
@@ -202,7 +201,8 @@ class _WallFormState extends State<WallForm> {
                             widget.wall!.filePathUpdated = filePath;
                             wallViewModel.updateWall(widget.wall!);
                           } else {
-                            Wall wall = Wall(title: title!, description: description, location: location, filePathUpdated: filePath);
+                            Wall wall = Wall(
+                                title: title!, description: description, location: location, filePathUpdated: filePath);
                             wallViewModel.insertWall(wall);
                           }
                           Navigator.pop(context);

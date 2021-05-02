@@ -1,4 +1,3 @@
-import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/views/route_management/route_viewmodel.dart';
