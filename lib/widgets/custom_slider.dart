@@ -11,30 +11,41 @@ class CustomSliderWithLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text("Slider for speed"),
-        ),
-        Container(
-          width: size,
-          height: 30,
-          child: SliderTheme(
-            data: SliderThemeData(
-              trackShape: CustomTrackShape(),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+      ),
+      child: Column(
+        children: [
+          Container(
+              child: Padding(
+            padding: const EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
+            child: Text(
+              "Movement speed",
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
             ),
-            child: Slider(
-              min: 0,
-              max: max,
-              divisions: 10,
-              label: "$speed",
-              value: speed,
-              onChanged: onChanged as void Function(double)?,
+          )),
+          Container(
+            width: size,
+            height: 30,
+            child: SliderTheme(
+              data: SliderThemeData(
+                trackShape: CustomTrackShape(),
+              ),
+              child: Slider(
+                activeColor: Theme.of(context).colorScheme.primaryVariant,
+                min: 0,
+                max: max,
+                divisions: 10,
+                label: "$speed",
+                value: speed,
+                onChanged: onChanged as void Function(double)?,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

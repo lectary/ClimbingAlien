@@ -166,9 +166,7 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
 
   Widget _buildSlider() {
     return CustomSliderWithLabel(widget.size, maxSpeed, speed, (double value) {
-      if (widget.onSliderChanged != null) {
-        widget.onSliderChanged(value);
-      }
+      widget.onSliderChanged(value);
       setState(() {
         speed = value;
       });
@@ -176,67 +174,70 @@ class _JoystickWithButtonAndSliderState extends State<JoystickWithButtonAndSlide
   }
 
   Widget _buildJoystick() {
-    return Container(
-      width: outerSize,
-      height: outerSize,
-      child: Material(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50.0), side: BorderSide(width: 2.0, color: widget.colorControlStick)),
-        color: widget.colorBackground,
-        child: GestureDetector(
-          behavior: HitTestBehavior.deferToChild,
-          onPanUpdate: (details) => setState(() {
-            controlStickPosition = calculateControlStickPosition(details.localPosition);
-            processCallback(details.localPosition);
-          }),
-          onPanEnd: (details) => setState(() {
-            controlStickPosition = calculateControlStickPosition(center);
-            processCallback(center);
-          }),
-          child: Stack(
-            children: [
-              Stack(
-                children: [
-                  Align(
-                      alignment: Alignment.topCenter,
-                      child: InkResponse(
-                          radius: widget.sizeControlStick / 4,
-                          splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedUp as void Function()? ?? () {},
-                          child: Icon(Icons.keyboard_arrow_up, color: widget.colorIcon))),
-                  Align(
-                      alignment: Alignment.bottomCenter,
-                      child: InkResponse(
-                          radius: widget.sizeControlStick / 4,
-                          splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedDown as void Function()? ?? () {},
-                          child: Icon(Icons.keyboard_arrow_down, color: widget.colorIcon))),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: InkResponse(
-                          radius: widget.sizeControlStick / 4,
-                          splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedLeft as void Function()? ?? () {},
-                          child: Icon(Icons.keyboard_arrow_left, color: widget.colorIcon))),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: InkResponse(
-                          radius: widget.sizeControlStick / 4,
-                          splashColor: widget.colorControlStick,
-                          onTap: widget.onClickedRight as void Function()? ?? () {},
-                          child: Icon(Icons.keyboard_arrow_right, color: widget.colorIcon))),
-                ],
-              ),
-              Positioned(
-                top: controlStickPosition.dy,
-                left: controlStickPosition.dx,
-                child: Container(
-                  width: controlStickSize,
-                  height: controlStickSize,
-                  decoration: BoxDecoration(color: widget.colorControlStick, shape: BoxShape.circle),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4.0),
+      child: Container(
+        width: outerSize,
+        height: outerSize,
+        child: Material(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50.0), side: BorderSide(width: 2.0, color: widget.colorControlStick)),
+          color: widget.colorBackground,
+          child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onPanUpdate: (details) => setState(() {
+              controlStickPosition = calculateControlStickPosition(details.localPosition);
+              processCallback(details.localPosition);
+            }),
+            onPanEnd: (details) => setState(() {
+              controlStickPosition = calculateControlStickPosition(center);
+              processCallback(center);
+            }),
+            child: Stack(
+              children: [
+                Stack(
+                  children: [
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: InkResponse(
+                            radius: widget.sizeControlStick / 4,
+                            splashColor: widget.colorControlStick,
+                            onTap: widget.onClickedUp as void Function()? ?? () {},
+                            child: Icon(Icons.keyboard_arrow_up, color: widget.colorIcon))),
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: InkResponse(
+                            radius: widget.sizeControlStick / 4,
+                            splashColor: widget.colorControlStick,
+                            onTap: widget.onClickedDown as void Function()? ?? () {},
+                            child: Icon(Icons.keyboard_arrow_down, color: widget.colorIcon))),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkResponse(
+                            radius: widget.sizeControlStick / 4,
+                            splashColor: widget.colorControlStick,
+                            onTap: widget.onClickedLeft as void Function()? ?? () {},
+                            child: Icon(Icons.keyboard_arrow_left, color: widget.colorIcon))),
+                    Align(
+                        alignment: Alignment.centerRight,
+                        child: InkResponse(
+                            radius: widget.sizeControlStick / 4,
+                            splashColor: widget.colorControlStick,
+                            onTap: widget.onClickedRight as void Function()? ?? () {},
+                            child: Icon(Icons.keyboard_arrow_right, color: widget.colorIcon))),
+                  ],
                 ),
-              ),
-            ],
+                Positioned(
+                  top: controlStickPosition.dy,
+                  left: controlStickPosition.dx,
+                  child: Container(
+                    width: controlStickSize,
+                    height: controlStickSize,
+                    decoration: BoxDecoration(color: widget.colorControlStick, shape: BoxShape.circle),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
