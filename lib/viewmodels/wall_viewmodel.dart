@@ -267,6 +267,7 @@ class WallViewModel extends ChangeNotifier {
   double? get downloadProgress => _progress;
   set downloadProgress(double? progress) {
     _progress = progress;
+    notifyListeners();
   }
   StreamSubscription<List<int>>? streamSubscriptionWallImageDownload;
   List<int> bytes = [];
@@ -280,10 +281,9 @@ class WallViewModel extends ChangeNotifier {
 
   Future<void> downloadWallImage(Wall wall) async {
     selectedWall?.status = WallStatus.downloading;
-    _progress = null;
-    notifyListeners();
-
     bytes = [];
+
+    downloadProgress = null;
 
     http.StreamedResponse response;
     try {
@@ -295,9 +295,9 @@ class WallViewModel extends ChangeNotifier {
       // Download highRes image
       response = await _climbingRepository.downloadFileAsStream(wall.fileName!);
     } catch (e) {
-      _progress = null;
       selectedWall?.status = WallStatus.persisted;
-      notifyListeners();
+
+      downloadProgress = null;
       throw e;
     }
 
@@ -305,23 +305,21 @@ class WallViewModel extends ChangeNotifier {
     streamSubscriptionWallImageDownload = response.stream.listen((List<int> newBytes) {
       bytes.addAll(newBytes);
       final downloadedLength = bytes.length;
-      _progress = downloadedLength / contentLength;
-      notifyListeners();
-    }, onDone: () async {
-      _progress = -1;
 
+      downloadProgress = downloadedLength / contentLength;
+    }, onDone: () async {
       String newPath = await StorageService.saveBytesToDevice(wall.fileName!, bytes);
       wall.filePath = newPath;
 
       await _climbingRepository.updateWall(wall);
       selectedWall?.status = WallStatus.persisted;
 
-      notifyListeners();
+      downloadProgress = -1;
     }, onError: (e) {
-      _progress = null;
       selectedWall?.status = WallStatus.persisted;
       log("Error downloading file by stream: $e");
-      notifyListeners();
+
+      downloadProgress = null;
       throw e;
     }, cancelOnError: true);
   }
