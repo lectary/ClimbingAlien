@@ -41,6 +41,11 @@ class _RouteEditorState extends State<RouteEditor> {
     return _buildGestureDetector(transformAll, child: ClimaxTransformer(background: widget.wall.filePath));
   }
 
+  /// Builds the gesture detector responsible for Climax' transformations requests.
+  /// Gestures are only processed if [climaxModel.tapOn] is [True].
+  /// Uses the `onScale*` callbacks of the [GestureDetector] to implement Translations and Scaling, where the former is performed
+  /// with one Finger (Pointer) and the latter is performed through two Fingers (Pointers). The two transformations are mutually exclusive.
+  /// Further, tapping is allowed through [onTapDown].
   GestureDetector _buildGestureDetector(bool editAll, {Widget? child}) {
     return GestureDetector(
       onScaleStart: (ScaleStartDetails details) {

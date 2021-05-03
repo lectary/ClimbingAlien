@@ -20,6 +20,7 @@ enum Direction {
   RIGHT,
 }
 
+/// ViewModel for all operations related to Climax.
 class ClimaxViewModel extends ChangeNotifier {
   static const _defaultSpeed = 10.0;
 
@@ -27,43 +28,53 @@ class ClimaxViewModel extends ChangeNotifier {
   final bodyWidth = 50.0;
   final bodyHeight = 80.0;
 
+  /// Center positions of Climax' limbs
   late Offset _leftArmOffset;
   late Offset _rightArmOffset;
   late Offset _leftLegOffset;
   late Offset _rightLegOffset;
 
+  /// [Rect] of Climax' limbs, ready to be painted by a [CustomPainter].
   Rect? _bodyRect;
   Rect? _leftArmRect;
   Rect? _rightArmRect;
   Rect? _leftLegRect;
   Rect? _rightLegRect;
 
+  /// A [Map] with assignments of Climax' limbs of type [Rect], with the corresponding [ClimaxLimbEnum].
   Map<ClimaxLimbEnum, Rect>? _climaxLimbs;
+
   Map<ClimaxLimbEnum, Rect>? get climaxLimbs => _climaxLimbs;
 
   ClimaxLimbEnum? _selectedLimb;
+
   ClimaxLimbEnum? get selectedLimb => _selectedLimb;
 
+  /// A [Map] with assignments of Climax' previous limbs of type [Rect], with the corresponding [ClimaxLimbEnum].
+  /// Used for ghosting.
   Map<ClimaxLimbEnum, Rect>? _previousClimaxLimbs;
+
   Map<ClimaxLimbEnum, Rect>? get previousClimaxLimbs => _previousClimaxLimbs;
 
   double _degrees = 0.0; // direction, analogues to clock
   double _speed = _defaultSpeed;
   double _strength = 0.0;
 
+  // Indicates whether transformations affect Climax and the background image or only the image. Corresponds to `initMode`.
   bool transformAll = false;
 
+  // Indicating whether translation or scaling is currently performed by the user
   bool isTranslating = false;
   bool isScaling = false;
 
-  // scale
+  // Scaling
   double baseScaleBackground = 1.0;
   double scaleBackground = 1.0;
 
   double baseScaleAll = 1.0;
   double scaleAll = 1.0;
 
-  // translate
+  // Translation
   Offset lastTranslateBackground = Offset(1.0, 1.0);
   Offset deltaTranslateBackground = Offset(1.0, 1.0);
 
@@ -73,35 +84,44 @@ class ClimaxViewModel extends ChangeNotifier {
   bool tapOn = false;
   bool climaxMoved = false;
   Function? updateCallback;
+
   // TODO remove?
   int order = 0;
 
   Size _size;
 
-
   /// Colors
+  /// The color of Climax, its Ghost and of the limb selection is taken from and saved to the locally persisted users preferences.
 
   Color _climaxMainColor = SharedPrefsService.DEFAULT_CLIMAX_COLOR;
+
   Color get climaxMainColor => _climaxMainColor;
+
   set climaxMainColor(Color climaxMainColor) {
     _climaxMainColor = climaxMainColor;
     SharedPrefsService.saveClimaxColor(climaxMainColor);
   }
 
   Color _climaxGhostingColor = SharedPrefsService.DEFAULT_GHOSTING_COLOR;
+
   Color get climaxGhostingColor => _climaxGhostingColor;
+
   set climaxGhostingColor(Color climaxGhostingColor) {
     _climaxGhostingColor = climaxGhostingColor;
     SharedPrefsService.saveGhostingColor(climaxGhostingColor);
   }
 
   Color _climaxSelectionColor = SharedPrefsService.DEFAULT_SELECTION_COLOR;
+
   Color get climaxSelectionColor => _climaxSelectionColor;
+
   set climaxSelectionColor(Color climaxSelectionColor) {
     _climaxSelectionColor = climaxSelectionColor;
     SharedPrefsService.saveSelectionColor(climaxSelectionColor);
   }
 
+  /// ViewModel Constructor
+  /// Reset climax position and load color preferences.
   ClimaxViewModel({required Size size}) : _size = size {
     resetClimax();
     _setupColors();
@@ -123,11 +143,14 @@ class ClimaxViewModel extends ChangeNotifier {
       leftArm: _leftArmOffset,
       rightArm: _rightArmOffset,
       leftLeg: _leftLegOffset,
-      rightLeg: _rightLegOffset, routeId: 0,
+      rightLeg: _rightLegOffset,
+      routeId: 0, // placeholder
     );
     return newGrasp;
   }
 
+  /// Updates Climax' ghost positions by setting [_previousClimaxLimbs] either to the current position, or in case [previousGrasp] is not null,
+  /// calculates the position from the passed [Grasp].
   void updateGhost({Grasp? previousGrasp}) {
     if (previousGrasp != null) {
       _previousClimaxLimbs = HashMap.from({
@@ -259,7 +282,6 @@ class ClimaxViewModel extends ChangeNotifier {
     return scaleAll;
   }
 
-
   /// Checks whether one of climax's limbs is lower than [minThreshold] or bigger than [maxThreshold].
   bool _checkZoomOut(Offset minThreshold, Offset maxThreshold) {
     bool leftArmOutOfBorder = _leftArmOffset.dx <= minThreshold.dx ||
@@ -333,7 +355,7 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   /// Resets the position of climax to an optional offset. Default is [Offset.zero], i.e. left-top screen dorner.
-  resetClimax({Offset position = const Offset(75,100)}) {
+  resetClimax({Offset position = const Offset(75, 100)}) {
     _leftArmOffset = position + Offset(-50, -75);
     _rightArmOffset = position + Offset(50, -75);
     _leftLegOffset = position + Offset(-50, 75);
@@ -347,8 +369,7 @@ class ClimaxViewModel extends ChangeNotifier {
 
   /// Updates the offset of the currently selected limb.
   updateSelectedLimbPosition(Offset newPosition) {
-
-    final newPos =  (newPosition + deltaTranslateAll - climaxCenter) / scaleAll + climaxCenter;
+    final newPos = (newPosition + deltaTranslateAll - climaxCenter) / scaleAll + climaxCenter;
 
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
@@ -389,7 +410,7 @@ class ClimaxViewModel extends ChangeNotifier {
   }
 
   selectNextLimb() {
-    _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb?.index ?? 1  + 1) % 5];
+    _selectedLimb = ClimaxLimbEnum.values[(_selectedLimb?.index ?? 1 + 1) % 5];
     notifyListeners();
   }
 

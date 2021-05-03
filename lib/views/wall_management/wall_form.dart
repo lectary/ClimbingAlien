@@ -19,7 +19,7 @@ class WallForm extends StatefulWidget {
   @override
   _WallFormState createState() => _WallFormState();
 
-  static Future<bool?> showWallFormDialog(BuildContext context, {Wall? wall}) async {
+  static Future<bool?> asDialog(BuildContext context, {Wall? wall}) async {
     final model = Provider.of<WallViewModel>(context, listen: false);
     final repo = Provider.of<ClimbingRepository>(context, listen: false);
     return await showDialog<bool>(

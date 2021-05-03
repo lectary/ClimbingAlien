@@ -8,6 +8,8 @@ import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/services/storage_service.dart';
 import 'package:flutter/foundation.dart';
 
+
+/// ViewModel for managing routes.
 class RouteViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 

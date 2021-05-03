@@ -10,6 +10,7 @@ import 'package:climbing_alien/widgets/joystick_extended.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
+/// Available options of the appBar `more`-icon.
 enum MenuOption {
   DELETE,
   BACK_TO_INIT,
@@ -34,7 +35,7 @@ class RouteEditorScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => ClimaxViewModel(size: size),
       child: ChangeNotifierProvider(
-        /// Init viewModel for routeEditor
+        // Init viewModel for routeEditor
         create: (context) => RouteEditorViewModel(
             route: route,
             size: size,
@@ -42,7 +43,7 @@ class RouteEditorScreen extends StatelessWidget {
             climaxViewModel: Provider.of<ClimaxViewModel>(context, listen: false)),
         child: Builder(
           builder: (context) {
-            /// Build based on viewModel state, i.e. initialization is done
+            // Build based on viewModel state, i.e. initialization is done
             final state = context.select((RouteEditorViewModel model) => model.state);
             if (state == ModelState.LOADING) {
               // Scaffold with loading indicators
@@ -331,8 +332,8 @@ class RouteEditorScreen extends StatelessWidget {
                             Text('Toggle Joystick'),
                           ],
                         )),
-                PopupMenuDivider(),
-                PopupMenuItem(
+                    PopupMenuDivider(),
+                    PopupMenuItem(
                         value: MenuOption.COLOR_PICKER_MAIN,
                         child: Row(
                           children: [
@@ -375,14 +376,15 @@ class RouteEditorScreen extends StatelessWidget {
                                   width: 18,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Provider.of<ClimaxViewModel>(context, listen: false).climaxSelectionColor)),
+                                      color:
+                                          Provider.of<ClimaxViewModel>(context, listen: false).climaxSelectionColor)),
                             ),
                             Text("Selection color"),
                           ],
                         ))
                   ],
               onSelected: (dynamic selected) async {
-                if (!(selected is MenuOption))  return;
+                if (!(selected is MenuOption)) return;
                 MenuOption option = selected;
                 switch (option) {
                   case MenuOption.DELETE:
@@ -396,29 +398,30 @@ class RouteEditorScreen extends StatelessWidget {
                     break;
                   case MenuOption.COLOR_PICKER_MAIN:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Climax", color: climaxModel.climaxMainColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context,
+                        titleAddendum: "Climax", color: climaxModel.climaxMainColor);
                     if (selectedColor != null) {
                       climaxModel.climaxMainColor = selectedColor;
                     }
                     break;
                   case MenuOption.COLOR_PICKER_GHOSTING:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Ghosting", color: climaxModel.climaxGhostingColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context,
+                        titleAddendum: "Ghosting", color: climaxModel.climaxGhostingColor);
                     if (selectedColor != null) {
                       climaxModel.climaxGhostingColor = selectedColor;
                     }
                     break;
                   case MenuOption.COLOR_PICKER_SELECTION:
                     final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-                    Color? selectedColor = await ColorPicker.asDialog(context, titleAddendum: "Selection", color: climaxModel.climaxSelectionColor);
+                    Color? selectedColor = await ColorPicker.asDialog(context,
+                        titleAddendum: "Selection", color: climaxModel.climaxSelectionColor);
                     if (selectedColor != null) {
                       climaxModel.climaxSelectionColor = selectedColor;
                     }
                     break;
-
                 }
-              }
-              );
+              });
         },
       );
     }

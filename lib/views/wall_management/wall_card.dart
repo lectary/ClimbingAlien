@@ -77,7 +77,7 @@ class WallCard extends StatelessWidget {
                                 padding: EdgeInsets.zero,
                                 visualDensity: VisualDensity.compact,
                                 icon: Icon(Icons.edit),
-                                onPressed: () => WallForm.showWallFormDialog(context, wall: wall)),
+                                onPressed: () => WallForm.asDialog(context, wall: wall)),
                             IconButton(
                                 padding: EdgeInsets.zero,
                                 visualDensity: VisualDensity.compact,

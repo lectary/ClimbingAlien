@@ -4,6 +4,7 @@ import 'package:climbing_alien/views/route_management/route_viewmodel.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
+/// Custom [Form] for creating and updating [Route].
 class RouteForm extends StatefulWidget {
   final Wall wall;
   final Route? route;
@@ -13,7 +14,7 @@ class RouteForm extends StatefulWidget {
   @override
   _RouteFormState createState() => _RouteFormState();
 
-  static Future<bool?> showRouteFormDialog(BuildContext context, Wall wall, {Route? route}) async {
+  static Future<bool?> asDialog(BuildContext context, Wall wall, {Route? route}) async {
     final model = Provider.of<RouteViewModel>(context, listen: false);
     return await showDialog<bool>(
         context: context,

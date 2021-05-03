@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
+import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/model/model_state.dart';
 import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
@@ -8,6 +9,7 @@ import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Screen for [Wall] management.
 class WallScreen extends StatelessWidget {
   static String routeName = '/walls';
 
@@ -23,7 +25,7 @@ class WallScreen extends StatelessWidget {
         builder: (context, modelState, child) => Scaffold(
             appBar: AppBar(
               title: Text("Climbing Walls"),
-              actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.showWallFormDialog(context))],
+              actions: [IconButton(icon: Icon(Icons.add), onPressed: () => WallForm.asDialog(context))],
             ),
             body: RefreshIndicator(
               onRefresh: () async {
@@ -42,64 +44,11 @@ class WallScreen extends StatelessWidget {
                       builder: (context) {
                         switch (modelState.status) {
                           case Status.loading:
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16.0),
-                                    child: Text(modelState.message!),
-                                  ),
-                                ),
-                                Center(child: CircularProgressIndicator())
-                              ],
-                            );
+                            return _buildLoadingState(modelState.message);
                           case Status.completed:
-                            // Second selector for the locationList directly, to react to wall list updates (add, remove) or other actions like sorting
-                            // Those changes are displayed as soon as they finished, no need for a loading indicator
-                            return Selector<WallViewModel, List<Location>>(
-                              selector: (context, model) => model.locationList,
-                              shouldRebuild: (oldValue, newValue) => oldValue != newValue,
-                              builder: (context, locations, child) {
-                                final List<Widget> bodyWidgets = [];
-                                if (Provider.of<WallViewModel>(context, listen: false).offlineMode) {
-                                  bodyWidgets.add(Container(
-                                    color: Theme.of(context).colorScheme.error,
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text("No Internet connection!",
-                                            style: TextStyle(color: Theme.of(context).colorScheme.onError)),
-                                        Text(
-                                          "OFFLINE MODE",
-                                          style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onError),
-                                        ),
-                                      ],
-                                    ),
-                                  ));
-                                }
-                                bodyWidgets.add(locations.isEmpty
-                                    ? Expanded(child: Center(child: Text("No walls available")))
-                                    : LocationPanelList(locations, size));
-                                return Container(
-                                  // Using a container with `viewportConstraints.maxHeight` to be able to use [Expanded] widget in the column in case of OfflineMode and empty wall list.
-                                  // Otherwise the height is not constrained and [Expanded] cannot be used.
-                                  height: Provider.of<WallViewModel>(context, listen: false).offlineMode
-                                      ? viewportConstraints.maxHeight
-                                      : null,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: bodyWidgets,
-                                  ),
-                                );
-                              },
-                            );
+                            return _buildCompletedState(size, viewportConstraints);
                           case Status.error:
-                            return Center(child: Text(modelState.message!, textAlign: TextAlign.center));
+                            return _buildErrorState(modelState.message);
                         }
                       },
                     ),
@@ -110,8 +59,75 @@ class WallScreen extends StatelessWidget {
       ),
     );
   }
+
+  Column _buildLoadingState(String? loadingMessage) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        loadingMessage == null
+            ? Container()
+            : Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(loadingMessage),
+                ),
+              ),
+        Center(child: CircularProgressIndicator())
+      ],
+    );
+  }
+
+  /// Second selector for the locationList directly, to react to wall list updates (add, remove) or other actions like sorting
+  /// Those changes are displayed as soon as they finished, no need for a loading indicator
+  Selector<WallViewModel, List<Location>> _buildCompletedState(Size size, BoxConstraints viewportConstraints) {
+    return Selector<WallViewModel, List<Location>>(
+      selector: (context, model) => model.locationList,
+      shouldRebuild: (oldValue, newValue) => oldValue != newValue,
+      builder: (context, locations, child) {
+        final List<Widget> bodyWidgets = [];
+        if (Provider.of<WallViewModel>(context, listen: false).offlineMode) {
+          bodyWidgets.add(Container(
+            color: Theme.of(context).colorScheme.error,
+            padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("No Internet connection!", style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+                Text(
+                  "OFFLINE MODE",
+                  style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onError),
+                ),
+              ],
+            ),
+          ));
+        }
+        bodyWidgets.add(locations.isEmpty
+            ? Expanded(child: Center(child: Text("No walls available")))
+            : LocationPanelList(locations, size));
+        return Container(
+          // Using a container with `viewportConstraints.maxHeight` to be able to use [Expanded] widget in the column in case of OfflineMode and empty wall list.
+          // Otherwise the height is not constrained and [Expanded] cannot be used.
+          height: Provider.of<WallViewModel>(context, listen: false).offlineMode ? viewportConstraints.maxHeight : null,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: bodyWidgets,
+          ),
+        );
+      },
+    );
+  }
+
+  Center _buildErrorState(String? errorMessage) {
+    return errorMessage == null
+        ? Center(child: Text("Unknown error occurred.", textAlign: TextAlign.center))
+        : Center(child: Text(errorMessage, textAlign: TextAlign.center));
+  }
 }
 
+/// Custom widget using [ExpansionPanelList] for building a list of [ExpansionPanelRadio] of a list of [Wall] grouped by [Wall.location].
 class LocationPanelList extends StatefulWidget {
   final List<Location> locations;
   final Size size;

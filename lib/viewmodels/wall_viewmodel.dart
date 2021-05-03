@@ -12,13 +12,14 @@ import 'package:climbing_alien/services/storage_service.dart';
 import 'package:climbing_alien/utils/exceptions/internet_exception.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as image;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:http/http.dart' as http;
-
-
+/// ViewModel for [Wall] management, selection and interactions with the ClimbrApi server.
+///
+/// Uses [ModelState] for operations with the api server (e.g. [loadAllWalls]) to handle the async state.
 class WallViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
 
@@ -33,6 +34,7 @@ class WallViewModel extends ChangeNotifier {
 
   List<Location> locationList = List.empty();
   List<Wall> _wallList = List.empty();
+  Wall? selectedWall;
 
   bool _offlineMode = false;
   bool get offlineMode => _offlineMode;
@@ -45,6 +47,8 @@ class WallViewModel extends ChangeNotifier {
 
   late StreamSubscription<List<Wall>> _wallStreamSubscription;
 
+  /// Starts a [StreamSubscription] on the list of persisted [Wall].
+  /// Updates [_wallList] and [locationList] when new values are yielded.
   listenToLocalWalls() {
     _wallStreamSubscription = _climbingRepository.watchAllWalls().listen((wallList) {
       updateCachedWallsAndLocations(wallList);
@@ -63,19 +67,22 @@ class WallViewModel extends ChangeNotifier {
     locationList = groupWalls(_wallList);
     _sortLocationsAndWalls(locationList);
 
-     if (selectedWall != null /*  && selectedWall!.status == WallStatus.notPersisted */) {
-       Wall? wall = _wallList.firstWhereOrNull((element) =>
-       element.title == selectedWall!.title && element.location == selectedWall!.location);
-       if (wall != null) {
-          selectedWall = wall;
-       }
-     }
+    // Update wall selection
+    if (selectedWall != null /*  && selectedWall!.status == WallStatus.notPersisted */) {
+      Wall? wall = _wallList.firstWhereOrNull(
+          (element) => element.title == selectedWall!.title && element.location == selectedWall!.location);
+      if (wall != null) {
+        selectedWall = wall;
+      }
+    }
 
-     notifyListeners();
+    notifyListeners();
   }
 
-  /// Loads all walls, local and remote ones.
-  /// Returns a [List] of [Location] grouped by [Wall.location].
+  /// Function for loading all walls, local and remote ones.
+  /// While loading, [modelState] is [ModelState.loading] with a loading message.
+  /// On success, [locationList] is updated and [modelState] is set to [ModelState.completed].
+  /// If an error occurs, [modelState] will be set to [ModelState.error] with an appropriate error message.
   Future<void> loadAllWalls() async {
     modelState = ModelState.loading("Loading walls from server...");
 
@@ -107,6 +114,8 @@ class WallViewModel extends ChangeNotifier {
     locationList.sort((loc1, loc2) => loc1.name.compareTo(loc2.name));
   }
 
+  /// Group walls by [Wall.location].
+  /// Returns a list of [Location].
   List<Location> groupWalls(List<Wall> wallList) {
     return groupBy(wallList, (Wall wall) => wall.location)
         .entries
@@ -117,6 +126,7 @@ class WallViewModel extends ChangeNotifier {
 
   /// Merges two lists of [Wall].
   /// This function can handle the case, that [remoteWalls] is a previous merged list (the result of this function).
+  /// Returns a list of [Wall].
   List<Wall> _mergeWalls({required List<Wall> localWalls, required List<Wall> remoteWalls}) {
     List<Wall> resultList = [];
 
@@ -165,6 +175,9 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<int> insertWall(Wall wall) async {
+    log("Insert wall with name: " + wall.title.toString());
+
+    // Check whether image has to be saved locally
     if (wall.filePathUpdated != null) {
       // Create and save thumbnail from selected image
       String thumbnailPath = await _createThumbnailFromImage(wall.filePathUpdated!);
@@ -182,6 +195,9 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<void> updateWall(Wall wall) async {
+    log("Update wall with name: " + wall.title.toString());
+
+    // Check whether image has to be updated locally
     if (basename(wall.filePath ?? "") != basename(wall.filePathUpdated ?? "")) {
       // Delete old thumbnail, and create and save new one
       await StorageService.deleteFromDevice(wall.thumbnailPath);
@@ -201,7 +217,7 @@ class WallViewModel extends ChangeNotifier {
   }
 
   Future<bool> deleteWall(Wall wall, {bool cascade = false}) async {
-    log("Deleting wall with name: " + wall.title.toString());
+    log("Delete wall with name: " + wall.title.toString());
 
     // Delete thumbnail and image if available
     await StorageService.deleteFromDevice(wall.thumbnailPath);
@@ -232,7 +248,7 @@ class WallViewModel extends ChangeNotifier {
   }
 
   /// Creates a thumbnail 300x300 from the provided [Image] accessible via its [imagePath].
-  /// The thumbnail will be created from the centered 300x300 rectangle.
+  /// The thumbnail will be created from the center 300x300 rectangle.
   /// Returns the filePath of the cached [Image].
   Future<String> _createThumbnailFromImage(String imagePath) async {
     String newPath = "";
@@ -263,6 +279,7 @@ class WallViewModel extends ChangeNotifier {
     return newPath;
   }
 
+  /// Variable for the download progress of a walls' image.
   double? _progress;
   double? get downloadProgress => _progress;
   set downloadProgress(double? progress) {
@@ -271,7 +288,6 @@ class WallViewModel extends ChangeNotifier {
   }
   StreamSubscription<List<int>>? streamSubscriptionWallImageDownload;
   List<int> bytes = [];
-  Wall? selectedWall;
 
   Future<void> cancelWallImageDownload() async {
     selectedWall?.status = WallStatus.persisted;

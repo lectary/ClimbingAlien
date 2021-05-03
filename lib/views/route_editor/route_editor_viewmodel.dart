@@ -9,16 +9,22 @@ import 'package:flutter/material.dart' hide Route;
 
 enum ModelState { IDLE, LOADING }
 
+/// ViewModel for [Grasp] management as well as initMode handling.
+/// Depends on [ClimaxViewModel] for updating climax based on the current [Grasp].
+/// Uses [ModelState] to indicate initial loading process.
 class RouteEditorViewModel extends ChangeNotifier {
   final ClimbingRepository _climbingRepository;
   final ClimaxViewModel climaxViewModel;
   final Route route;
   final Size size;
 
+  /// Entity with additional info about a route (e.g. transformations of background image).
   RouteOption? _routeOption;
 
   ModelState _state = ModelState.LOADING;
+
   ModelState get state => _state;
+
   set state(ModelState state) {
     _state = state;
     notifyListeners();
@@ -104,7 +110,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   /// Edit Mode
   /// Used for switching between strict view mode and step edit mode.
   bool _editMode = false;
+
   bool get editMode => _editMode;
+
   set editMode(bool editMode) {
     _editMode = editMode;
     if (!editMode && step > graspList.length) {
@@ -112,7 +120,6 @@ class RouteEditorViewModel extends ChangeNotifier {
     }
     notifyListeners();
   }
-
 
   ///*****************************************
   /// Init Mode state variables and actions
@@ -123,7 +130,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   /// are transformed together.
   /// Depends on having [climaxViewModel.transformAll] the value [False] by default.
   bool _initMode = false;
+
   bool get initMode => _initMode;
+
   set initMode(bool initMode) {
     if (!initMode && _initMode) {
       _saveRouteOption();
@@ -162,9 +171,12 @@ class RouteEditorViewModel extends ChangeNotifier {
   ///*******************************************************************************
 
   List<Grasp> _graspList = [];
+
   List<Grasp> get graspList => _graspList;
+
   set graspList(List<Grasp> graspList) {
     _graspList = graspList;
+
     /// When no grasp available, permit to save without explicit movement, since the first position
     /// should be valid anyway due to initMode.
     if (_graspList.isEmpty) {
@@ -174,7 +186,9 @@ class RouteEditorViewModel extends ChangeNotifier {
   }
 
   bool _joystickOn = true;
+
   bool get joystickOn => _joystickOn;
+
   set joystickOn(bool joystickOn) {
     _joystickOn = joystickOn;
     notifyListeners();
@@ -243,7 +257,7 @@ class RouteEditorViewModel extends ChangeNotifier {
     _insertGrasp(newGrasp);
     climaxViewModel.deselectLimb();
     if (graspList.length > 0) {
-      climaxViewModel.updateGhost(previousGrasp: graspList[step-2]);
+      climaxViewModel.updateGhost(previousGrasp: graspList[step - 2]);
     }
   }
 

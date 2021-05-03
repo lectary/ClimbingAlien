@@ -2,6 +2,7 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// A color picker where the three available and selectable color options are aligned in a row.
 class ColorRowPicker extends StatefulWidget {
   @override
   _ColorRowPickerState createState() => _ColorRowPickerState();

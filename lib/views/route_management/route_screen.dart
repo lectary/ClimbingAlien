@@ -12,6 +12,10 @@ import 'package:climbing_alien/views/wall_management/wall_image_downloader.dart'
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
 
+
+/// Screen for [Route] management of a specific [Wall].
+///
+/// Uses [RouteViewModel] for operating on [Route] models.
 class RouteScreen extends StatelessWidget {
 
   @override
@@ -44,7 +48,7 @@ class RouteScreen extends StatelessWidget {
               }),
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
-            onPressed: () => RouteForm.showRouteFormDialog(context, wall),
+            onPressed: () => RouteForm.asDialog(context, wall),
           ),
         );
         },
@@ -76,7 +80,7 @@ class RouteScreen extends StatelessWidget {
                 children: [
                   IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () => RouteForm.showRouteFormDialog(context, wall, route: route)),
+                      onPressed: () => RouteForm.asDialog(context, wall, route: route)),
                   IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () async => await Dialogs.showAlertDialog(
@@ -101,7 +105,7 @@ class RouteScreen extends StatelessWidget {
                           }))
                 ],
               ),
-              onLongPress: () => RouteForm.showRouteFormDialog(context, wall, route: route),
+              onLongPress: () => RouteForm.asDialog(context, wall, route: route),
               onTap: () async {
                 if (wall.filePath == null) {
                   final shallDownload = await Dialogs.showAlertDialog(context: context, title: "Wall Image needed", body: "You need to download the wall image first, before you can edit a route.", submitText: "Download") ?? false;
