@@ -109,12 +109,6 @@ class _RouteEditorState extends State<RouteEditor> {
         climaxModel.isTranslating = false;
         climaxModel.isScaling = false;
       },
-      onTapDown: (details) {
-        if (climaxModel.tapOn) {
-          climaxModel.updateSelectedLimbPosition(details.localPosition);
-          climaxModel.tapOn = !climaxModel.tapOn;
-        }
-      },
       child: Container(color: Colors.transparent, child: child),
     );
   }

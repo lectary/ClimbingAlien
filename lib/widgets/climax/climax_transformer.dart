@@ -2,7 +2,6 @@ import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -119,34 +118,19 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     _updateScaleAnimation();
     final followerCameraScale = _scaleAnimation.value;
 
-    final limbs = context.select((ClimaxViewModel model) => model.climaxLimbs);
     // Check whether view or edit mode
     final initMode = Provider.of<RouteEditorViewModel>(context, listen: false).initMode;
+    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (details) {
         if (initMode) return;
-        final offset = details.localPosition;
-        final limb = limbs!.entries.lastWhereOrNull((entry) {
-          if (entry.key != ClimaxLimbEnum.BODY) {
-            final Offset climaxCenter = Provider.of<ClimaxViewModel>(context, listen: false).climaxCenter;
-            final double scaleAll = Provider.of<ClimaxViewModel>(context, listen: false).scaleAll;
-            final Offset deltaTranslateAll = Provider.of<ClimaxViewModel>(context, listen: false).deltaTranslateAll;
 
-            // TODO review and fix
-            // Trying to inverse the translation and scaling of the screen.
-            // Starting by the gestures tap offset, add the global translation and divide throught the global scale.
-            // Because scaling is applied from the screen center, translate everything to the origin before scaling,
-            // and back after.
-            // This approach is kinda suitable for the use cases, but is not totally correct! There is a slight error
-            // in the position calculation.
-            Offset relativeTapPosition = ((offset + deltaTranslateAll - climaxCenter) / scaleAll) + climaxCenter;
+        // Handle selection
+        climaxModel.selectLimbByOffset(details.localPosition);
 
-            return entry.value.contains(relativeTapPosition);
-          }
-          return false;
-        });
-        if (limb != null) Provider.of<ClimaxViewModel>(context, listen: false).selectLimb(limb.key);
+        // Handle tap
+        climaxModel.updateSelectedLimbPosition(details.localPosition);
       },
       child: Transform.scale(
         scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,

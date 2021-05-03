@@ -3,6 +3,7 @@ import 'dart:math' as _math;
 
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/services/shared_prefs_service.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 enum ClimaxLimbEnum {
@@ -367,9 +368,32 @@ class ClimaxViewModel extends ChangeNotifier {
     _updateClimax();
   }
 
+  /// Calculates the absolute position in climax' coordinate system given an offset in the screen' coordinate system with transformations applied.
+  ///
+  /// Climax starts in a coordinate system of [0,screenWidth]:[0,screenHeight]. If climax is moved outside the screen, the values can be higher or lower than the previous interval.
+  /// But still, offsets users screen taps remain in the coordinate system of [0,screenWidth]:[0,screenHeight].
+  /// In addition, to avoid that climax disappears, all of climax' movements (translations) and scaling (zooming) are applied in inverted manner to the scene, so that climax
+  /// stays centered and visible; but still, the position offsets of climax limbs can be outside of this original coordinate system.
+  /// For detecting whether a tap hits a limb of climax, all transformations applied to climax, have to be applied to the tap position offset, to check whether it hits a limb of climax.
+  Offset calculateAbsolutePositionRelativeToTransformations(Offset offset) {
+    // TODO review and fix
+    // Trying to inverse the translation and scaling of the screen.
+    // Starting by the gestures tap offset, add the global translation and divide through the global scale.
+    // Because scaling is applied from the screen center, translate everything to the origin before scaling,
+    // and back after.
+    // This approach is kinda suitable for the use cases, but is not totally correct! There is a slight error
+    // in the position calculation.
+    return ((offset + deltaTranslateAll - climaxCenter) / scaleAll) + climaxCenter;
+  }
+
   /// Updates the offset of the currently selected limb.
   updateSelectedLimbPosition(Offset newPosition) {
-    final newPos = (newPosition + deltaTranslateAll - climaxCenter) / scaleAll + climaxCenter;
+    if (!tapOn) {
+      return;
+    }
+    tapOn = !tapOn;
+
+    final newPos = calculateAbsolutePositionRelativeToTransformations(newPosition);
 
     switch (this._selectedLimb) {
       case ClimaxLimbEnum.BODY:
@@ -417,6 +441,23 @@ class ClimaxViewModel extends ChangeNotifier {
   selectLimb(ClimaxLimbEnum limb) {
     this._selectedLimb = limb;
     notifyListeners();
+  }
+
+  /// Checks whether the passed [offset] hits a limb of climax and selects it.
+  void selectLimbByOffset(Offset offset) {
+    final limb = climaxLimbs!.entries.lastWhereOrNull((entry) {
+      if (entry.key != ClimaxLimbEnum.BODY) {
+        Offset relativeTapPosition = calculateAbsolutePositionRelativeToTransformations(offset);
+        return entry.value.contains(relativeTapPosition);
+      }
+      return false;
+    });
+
+    if (limb == null) {
+      return;
+    }
+
+    selectLimb(limb.key);
   }
 
   updateSpeed(double speed) {
