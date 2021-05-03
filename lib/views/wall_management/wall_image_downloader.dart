@@ -17,7 +17,7 @@ class WallImageDownloader extends StatefulWidget {
     final model = Provider.of<WallViewModel>(context, listen: false);
     return await showDialog<Tuple2<bool, Exception?>>(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (context) => ChangeNotifierProvider.value(
               value: model,
               child: AlertDialog(
