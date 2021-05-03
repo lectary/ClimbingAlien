@@ -1,11 +1,10 @@
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
-import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Widget responsible for applying transformations like translation or scaling to Climax as well as handling Climax' limb selection.
+/// Widget responsible for applying transformations like translation or scaling to Climax.
 /// Further contains animations to apply transformations gradually instead of instantly.
 class ClimaxTransformer extends StatefulWidget {
   /// File path of the image that should be used as background
@@ -101,8 +100,10 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+    // Background transformations
     final scaleBackground = context.select((ClimaxViewModel model) => model.scaleBackground);
     final Offset deltaTranslateBackground = context.select((ClimaxViewModel model) => model.deltaTranslateBackground);
+
     // Used for disabling animations temporarily
     final bool isTranslating = context.select((ClimaxViewModel model) => model.isTranslating);
     final bool isScaling = context.select((ClimaxViewModel model) => model.isScaling);
@@ -118,31 +119,16 @@ class _ClimaxTransformerState extends State<ClimaxTransformer> with TickerProvid
     _updateScaleAnimation();
     final followerCameraScale = _scaleAnimation.value;
 
-    // Check whether view or edit mode
-    final initMode = Provider.of<RouteEditorViewModel>(context, listen: false).initMode;
-    final climaxModel = Provider.of<ClimaxViewModel>(context, listen: false);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (details) {
-        if (initMode) return;
-
-        // Handle selection
-        climaxModel.selectLimbByOffset(details.localPosition);
-
-        // Handle tap
-        climaxModel.updateSelectedLimbPosition(details.localPosition);
-      },
-      child: Transform.scale(
-        scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,
-        child: Transform.translate(
-          offset: isTranslating || isScaling ? -newDeltaTranslateAll : -followerCameraOffset,
-          child: Stack(fit: StackFit.expand, children: [
-            Transform.translate(
-                offset: -deltaTranslateBackground,
-                child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
-            Container(color: Colors.transparent, child: Climax()),
-          ]),
-        ),
+    return Transform.scale(
+      scale: isScaling || isTranslating ? newScaleAll : followerCameraScale,
+      child: Transform.translate(
+        offset: isTranslating || isScaling ? -newDeltaTranslateAll : -followerCameraOffset,
+        child: Stack(fit: StackFit.expand, children: [
+          Transform.translate(
+              offset: -deltaTranslateBackground,
+              child: Transform.scale(scale: scaleBackground, child: ImageDisplay(widget.background))),
+          Container(color: Colors.transparent, child: Climax()),
+        ]),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_transformer.dart';
 import 'package:flutter/material.dart' hide Route;
 import 'package:provider/provider.dart';
@@ -38,7 +39,8 @@ class _RouteEditorState extends State<RouteEditor> {
   @override
   Widget build(BuildContext context) {
     final transformAll = context.select((ClimaxViewModel model) => model.transformAll);
-    return _buildGestureDetector(transformAll, child: ClimaxTransformer(background: widget.wall.filePath));
+    final initMode = context.select((RouteEditorViewModel model) => model.initMode);
+    return _buildGestureDetector(transformAll, initMode, child: ClimaxTransformer(background: widget.wall.filePath));
   }
 
   /// Builds the gesture detector responsible for Climax' transformations requests.
@@ -46,7 +48,7 @@ class _RouteEditorState extends State<RouteEditor> {
   /// Uses the `onScale*` callbacks of the [GestureDetector] to implement Translations and Scaling, where the former is performed
   /// with one Finger (Pointer) and the latter is performed through two Fingers (Pointers). The two transformations are mutually exclusive.
   /// Further, tapping is allowed through [onTapDown].
-  GestureDetector _buildGestureDetector(bool editAll, {Widget? child}) {
+  GestureDetector _buildGestureDetector(bool editAll, bool initMode, {Widget? child}) {
     return GestureDetector(
       onScaleStart: (ScaleStartDetails details) {
         if (climaxModel.tapOn) {
@@ -108,6 +110,13 @@ class _RouteEditorState extends State<RouteEditor> {
       onScaleEnd: (details) {
         climaxModel.isTranslating = false;
         climaxModel.isScaling = false;
+      },
+      onTapDown: (details) {
+        if (initMode) return;
+        // Handle selection
+        climaxModel.selectLimbByOffset(details.localPosition);
+        // Handle tap
+        climaxModel.updateSelectedLimbPosition(details.localPosition);
       },
       child: Container(color: Colors.transparent, child: child),
     );
