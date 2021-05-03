@@ -286,6 +286,9 @@ class WallViewModel extends ChangeNotifier {
     _progress = progress;
     notifyListeners();
   }
+  void resetDownloadProgress() {
+    downloadProgress = null;
+  }
   StreamSubscription<List<int>>? streamSubscriptionWallImageDownload;
   List<int> bytes = [];
 

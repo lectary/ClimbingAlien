@@ -65,8 +65,10 @@ class _WallImageDownloaderState extends State<WallImageDownloader> {
       selector: (context, model) => model.downloadProgress,
       builder: (context, progress, child) {
         if (progress == -1) {
-          WidgetsBinding.instance?.addPostFrameCallback((_) => _navigatorPop(context));
-          wallModel.downloadProgress = null;
+          WidgetsBinding.instance?.addPostFrameCallback((_) async {
+            _navigatorPop(context);
+            wallModel.resetDownloadProgress();
+          });
         }
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -100,7 +102,7 @@ class CircularProgressIndicatorWithNumber extends StatelessWidget {
         LinearProgressIndicator(
           value: progress,
         ),
-        (progress == null || progress! == -1)
+        (progress == null || progress == -1)
             ? Container()
             : Padding(
                 padding: const EdgeInsets.only(top: 32.0),
@@ -116,9 +118,9 @@ class CircularProgressIndicatorWithNumber extends StatelessWidget {
 }
 
 void _navigatorPop(BuildContext context, {Exception? error}) {
-  if (error != null) {
-    Navigator.pop(context, Tuple2(false, error));
-  } else {
+  if (error == null) {
     Navigator.pop(context, Tuple2(true, null));
+  } else {
+    Navigator.pop(context, Tuple2(false, error));
   }
 }
