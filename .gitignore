@@ -121,4 +121,4 @@ app.*.map.json
 /android/app/release
 
 # Flutter version management CLI-tool
-.fvm
+.fvm/flutter_sdk
