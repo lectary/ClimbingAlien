@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/shared/wall_viewmodel.dart';
+import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
 import 'package:climbing_alien/views/wall_management/image_preview.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';
@@ -137,40 +137,42 @@ class WallCard extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: AspectRatio(
-            aspectRatio: 4 / 3,
-            child: wall.status == WallStatus.persisted && wall.filePath != null
-                ? ImageDisplay(
-                    wall.thumbnailPath,
-                    emptyText: 'No image found',
-                  )
-                : (wall.status == WallStatus.downloading
-                    ? Center(child: CircularProgressIndicator())
-                    : ( // To reduce network requests, only load/render [Image.network] when the parent panel is indeed expanded
-                        isExpanded
-                            ? CachedNetworkImage(
-                                imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.thumbnailName!),
-                                progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-                                    child: CircularProgressIndicator(
-                                  value: downloadProgress.totalSize != null
-                                      ? downloadProgress.downloaded / downloadProgress.totalSize!
-                                      : null,
-                                )),
-                                errorWidget: (context, url, error) => Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.error),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      "Error loading thumbnail:\n" +
-                                          (error.toString().contains('404') ? "Not found" : error.toString()),
-                                      textAlign: TextAlign.center,
-                                    )
-                                  ],
-                                ),
-                              )
-                            : Container()))),
+        child: AspectRatio(aspectRatio: 4 / 3, child: _buildImage()),
       ),
+    );
+  }
+
+  Widget _buildImage() {
+    // If not expanded, return early. Nothing to display.
+    if (!isExpanded) return Container();
+
+    // If downloading, show progress indicator
+    if (wall.status == WallStatus.downloading) return Center(child: CircularProgressIndicator());
+
+    // If thumbnail is available, but the image is not saved yet, download and display thumbnail
+    if (wall.filePath == null && wall.thumbnailName != null) {
+      return CachedNetworkImage(
+        imageUrl: ClimbrApi.urlApiEndpoint + basename(wall.thumbnailName!),
+        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+            child: CircularProgressIndicator(
+          value: downloadProgress.totalSize != null ? downloadProgress.downloaded / downloadProgress.totalSize! : null,
+        )),
+        errorWidget: (context, url, error) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error),
+            SizedBox(height: 10),
+            Text(
+              "Error loading thumbnail:\n" + (error.toString().contains('404') ? "Not found" : error.toString()),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      );
+    }
+    // As default, try to display locally persisted thumbnail.
+    return ImageDisplay(
+      wall.thumbnailPath,
     );
   }
 }
