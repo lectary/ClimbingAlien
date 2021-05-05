@@ -111,7 +111,7 @@ class WallViewModel extends ChangeNotifier {
 
   void _sortLocationsAndWalls(List<Location> locations) {
     locationList.forEach((location) => location.walls.sort((wall1, wall2) => wall1.title.compareTo(wall2.title)));
-    locationList.sort((loc1, loc2) => loc1.name.compareTo(loc2.name));
+    locationList.sort((loc1, loc2) => (loc1.name ?? "").compareTo(loc2.name ?? ""));
   }
 
   /// Group walls by [Wall.location].
@@ -120,7 +120,7 @@ class WallViewModel extends ChangeNotifier {
     return groupBy(wallList, (Wall wall) => wall.location)
         .entries
         .map((MapEntry<String?, List<Wall>> entry) =>
-            Location(entry.key ?? "<no-name>", entry.value..sort((w1, w2) => w1.title.compareTo(w2.title))))
+            Location(entry.key, entry.value..sort((w1, w2) => w1.title.compareTo(w2.title))))
         .toList();
   }
 

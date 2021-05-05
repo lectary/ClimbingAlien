@@ -140,7 +140,7 @@ class LocationPanelList extends StatefulWidget {
 
 class _LocationPanelListState extends State<LocationPanelList> {
   // Map for storing whether a location panel is expanded or not
-  Map<String, bool> _expandedList = Map();
+  Map<String?, bool> _expandedList = Map();
 
   @override
   Widget build(BuildContext context) {
@@ -159,10 +159,10 @@ class _LocationPanelListState extends State<LocationPanelList> {
       },
       children: widget.locations.map<ExpansionPanelRadio>((Location location) {
         return ExpansionPanelRadio(
-          value: location.name,
+          value: location.name ?? "<unnamed>",
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
-              title: Text("${location.name} - ${location.walls.length} Walls"),
+              title: Text("${location.name ?? "<unnamed>"} - ${location.walls.length} Walls"),
             );
           },
           body: CarouselSlider.builder(

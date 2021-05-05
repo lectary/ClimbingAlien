@@ -17,7 +17,7 @@ class ImageDisplay extends StatelessWidget {
   final String? imagePath;
   final String emptyText;
   final String errorText;
-  static const _emptyTextDefault = 'No image found.';
+  static const _emptyTextDefault = 'No image set, yet.';
   static const _errorTextDefault = 'Failed to load image 😢';
 
   ImageDisplay(this.imagePath, {this.emptyText = _emptyTextDefault, this.errorText = _errorTextDefault});
@@ -30,7 +30,7 @@ class ImageDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imagePath == null || imagePath!.isEmpty) {
-      return Text(emptyText);
+      return Center(child: Text(emptyText));
     } else {
       return Image.file(File(imagePath!), errorBuilder: _errorBuilderFunction);
     }
