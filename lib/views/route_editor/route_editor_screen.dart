@@ -2,7 +2,7 @@ import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/shared/climax_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_viewmodel.dart';
 import 'package:climbing_alien/widgets/color_picker.dart';

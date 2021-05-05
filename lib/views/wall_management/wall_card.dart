@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
-import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/shared/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_management/route_screen.dart';
 import 'package:climbing_alien/views/wall_management/image_preview.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';

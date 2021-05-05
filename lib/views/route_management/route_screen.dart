@@ -4,7 +4,7 @@ import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/dialogs.dart';
 import 'package:climbing_alien/utils/exceptions/internet_exception.dart';
-import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/shared/wall_viewmodel.dart';
 import 'package:climbing_alien/views/route_editor/route_editor_screen.dart';
 import 'package:climbing_alien/views/route_management/route_form.dart';
 import 'package:climbing_alien/views/route_management/route_viewmodel.dart';

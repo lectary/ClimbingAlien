@@ -1,5 +1,5 @@
 import 'package:climbing_alien/data/entity/wall.dart';
-import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/shared/wall_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';

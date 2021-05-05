@@ -1,7 +1,7 @@
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/utils/utils.dart';
-import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/shared/wall_viewmodel.dart';
 import 'package:climbing_alien/views/wall_management/wall_form_viewmodel.dart';
 import 'package:climbing_alien/widgets/image_display.dart';
 import 'package:climbing_alien/widgets/simple_image_picker_dialog.dart';

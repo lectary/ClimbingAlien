@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/shared/climax_viewmodel.dart';
 import 'package:climbing_alien/widgets/climax/climax_ghost_painter.dart';
 import 'package:climbing_alien/widgets/climax/climax_painter.dart';
 import 'package:flutter/foundation.dart';

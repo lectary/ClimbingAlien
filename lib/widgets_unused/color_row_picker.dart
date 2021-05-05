@@ -1,4 +1,4 @@
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/shared/climax_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

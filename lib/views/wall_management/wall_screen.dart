@@ -3,7 +3,7 @@ import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/wall.dart';
 import 'package:climbing_alien/model/location.dart';
 import 'package:climbing_alien/model/model_state.dart';
-import 'package:climbing_alien/viewmodels/wall_viewmodel.dart';
+import 'package:climbing_alien/shared/wall_viewmodel.dart';
 import 'package:climbing_alien/views/wall_management/wall_card.dart';
 import 'package:climbing_alien/views/wall_management/wall_form.dart';
 import 'package:flutter/material.dart';

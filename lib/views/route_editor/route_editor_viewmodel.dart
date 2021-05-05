@@ -4,7 +4,7 @@ import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/entity/grasp.dart';
 import 'package:climbing_alien/data/entity/route.dart';
 import 'package:climbing_alien/data/entity/route_option.dart';
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/shared/climax_viewmodel.dart';
 import 'package:flutter/material.dart' hide Route;
 
 enum ModelState { IDLE, LOADING }

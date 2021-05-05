@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:climbing_alien/utils/utils.dart';
-import 'package:climbing_alien/viewmodels/climax_viewmodel.dart';
+import 'package:climbing_alien/shared/climax_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 /// [CustomPainter] class for drawing Climax, the Cli-mbing max-erl.
