@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:climbing_alien/data/api/climbr_api.dart';
 import 'package:climbing_alien/data/climbing_repository.dart';
 import 'package:climbing_alien/data/database.dart';
-import 'package:climbing_alien/widgets_unused/camera/image_viewmodel.dart';
 import 'package:climbing_alien/views/wall_management/wall_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,10 +24,7 @@ class ClimbingProviderApp extends StatelessWidget {
     final ClimbrApi climbrApi = ClimbrApi();
     final ClimbingRepository climbingRepository =
         ClimbingRepository(climbingDatabase: climbingDatabase, climbrApi: climbrApi);
-    return MultiProvider(providers: [
-      Provider.value(value: climbingRepository),
-      ChangeNotifierProvider(create: (context) => ImageViewModel()),
-    ], child: ClimbingApp());
+    return Provider.value(value: climbingRepository, child: ClimbingApp());
   }
 }
 

@@ -1,0 +1,90 @@
+lib
+├── data
+│   ├── api
+│   │   └── climbr_api.dart
+│   ├── climbing_repository.dart
+│   ├── dao
+│   │   ├── grasp_dao.dart
+│   │   ├── route_dao.dart
+│   │   └── wall_dao.dart
+│   ├── database.dart
+│   ├── database.g.dart
+│   ├── entity
+│   │   ├── base_object.dart
+│   │   ├── grasp.dart
+│   │   ├── route.dart
+│   │   ├── route_option.dart
+│   │   └── wall.dart
+│   ├── mock_data.dart
+│   └── type_converters.dart
+├── dir_tree_with_files.txt
+├── generated_plugin_registrant.dart
+├── main.dart
+├── model
+│   ├── climbr_data.dart
+│   ├── location.dart
+│   └── model_state.dart
+├── services
+│   ├── shared_prefs_service.dart
+│   └── storage_service.dart
+├── shared
+│   ├── climax_viewmodel.dart
+│   └── wall_viewmodel.dart
+├── utils
+│   ├── dialogs.dart
+│   ├── exceptions
+│   │   ├── internet_exception.dart
+│   │   └── server_response_exception.dart
+│   └── utils.dart
+├── views
+│   ├── route_editor
+│   │   ├── route_editor.dart
+│   │   ├── route_editor_screen.dart
+│   │   └── route_editor_viewmodel.dart
+│   ├── route_management
+│   │   ├── route_form.dart
+│   │   ├── route_screen.dart
+│   │   └── route_viewmodel.dart
+│   └── wall_management
+│       ├── image_preview.dart
+│       ├── wall_card.dart
+│       ├── wall_form.dart
+│       ├── wall_form_viewmodel.dart
+│       ├── wall_image_downloader.dart
+│       └── wall_screen.dart
+├── widgets
+│   ├── climax
+│   │   ├── climax.dart
+│   │   ├── climax_ghost_painter.dart
+│   │   ├── climax_painter.dart
+│   │   └── climax_transformer.dart
+│   ├── color_picker.dart
+│   ├── custom_slider.dart
+│   ├── image_display.dart
+│   ├── joystick_extended.dart
+│   └── simple_image_picker_dialog.dart
+└── widgets_unused
+    ├── README.md
+    ├── camera
+    │   ├── camera_screen.dart
+    │   ├── camera_widget.dart
+    │   ├── display_image_screen.dart
+    │   └── image_viewmodel.dart
+    ├── color_row_picker.dart
+    ├── controls
+    │   ├── control_button.dart
+    │   ├── joystick.dart
+    │   └── joystick_draggable.dart
+    ├── double_swipe_gesture_detector
+    │   ├── double_swipe_drag.dart
+    │   ├── double_swipe_gesture_detector.dart
+    │   └── double_swipe_gesture_recognizer.dart
+    ├── header_control
+    │   ├── header_control.dart
+    │   └── header_extension_animation.dart
+    └── image_picker
+        ├── asset_image_picker.dart
+        ├── image_picker_dialog.dart
+        └── simple_image_picker_dialog.dart
+
+21 directories, 66 files
